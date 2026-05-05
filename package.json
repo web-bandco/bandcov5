@@ -28,9 +28,11 @@
     "format:check": "prettier --check .",
     "validate": "pnpm lint && pnpm check && pnpm build",
     "test": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "generate-types": "wrangler types"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.3.1",
     "@astrojs/mdx": "5.0.0",
     "@astrojs/react": "5.0.0",
     "@astrojs/sitemap": "^3.7.1",
@@ -47,7 +49,8 @@
     "satori-html": "^0.3.2",
     "schema-dts": "^1.1.2",
     "sharp": "^0.34.5",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "wrangler": "^4.87.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.7",
