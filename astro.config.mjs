@@ -48,6 +48,6 @@ export default defineConfig({
       wrap: true,
     },
   },
-  output: 'hybrid',
+  output: 'static',
   adapter: cloudflare(),
 });
