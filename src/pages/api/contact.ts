@@ -1,3 +1,5 @@
+export const prerender = false; // 
+
 import type { APIRoute } from 'astro';
 import { z } from 'astro/zod';
 import { Resend } from 'resend';
@@ -10,13 +12,11 @@ const contactSchema = z.object({
   honeypot: z.string().max(0), // Anti-spam: must be empty
 });
 
-// Initialize Resend
-// Note: We use import.meta.env for local dev and Cloudflare env vars
-const resend = new Resend(import.meta.env.RESEND_API_KEY);
-
 export const POST: APIRoute = async ({ request }) => {
   try {
+    const resend = new Resend(import.meta.env.RESEND_API_KEY);
     const formData = await request.formData();
+
 
     const data = {
       name: formData.get('name')?.toString() || '',
