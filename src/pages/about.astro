@@ -9,14 +9,44 @@ import Card from '@/components/ui/data-display/Card/Card.astro';
 import { Hero } from '@/components/hero';
 import siteConfig from '@/config/site.config';
 import CTA from '@/components/landing/CTA.astro';
+import Accordion from '@/components/ui/overlay/Accordion';
+import Separator from '@/components/ui/layout/Separator';
+
+const webinfo = [
+  {
+    title: "Brighton and Co Version 5",
+    content: "Based on the Velocity template by Southwell Media. This theme teplate leverages a large number of pre-built components, which are then tailored to Brighton and Co.",
+    defaultOpen: true,
+  },
+  {
+    title: "Improvements",
+    content: "A completely brand new look, with more fluid, uniform styling and animations.",
+  },
+  {
+    title: "Performance",
+    content: "Brighton and Co Version 5 uses pre-built components, built to be as lightweight and efficient as possible, whilst remaining fully accessible to every user.",
+  },
+  {
+    title: "Visual Changes",
+    content: "With Brighton and Co Version 5, the site has a completely refreshed look and feel, with more fluid animations. Moreover, a more comprehensive design system provides a more uniform and cohesive website design.",
+  },
+  {
+    title: "More Customisation",
+    content: "With the range of components available with the Velocity theme template, there are far greater options and much greater potential for future developments to Brighton and Co.",
+  },
+  {
+    title: "More Content",
+    content: "The potential for more content and features for the site is seemingly exponentially increased with the Velocity theme teplate. Blog posts in particular will benefit from this new design.",
+  }
+]
 ---
 
 <PageLayout
   title="About"
-  description="Add your description here"
+  description="About Brighton and Co - who we are, what this site is, and more."
 >
   <!-- Hero Section -->
-  <Hero layout="centered" size="sm" showGrid>
+  <Hero layout="centered" size="sm">
     <Badge slot="badge" pill pulse>Want to know more about B&CO?</Badge>
 
     <h1 slot="title">
@@ -27,12 +57,16 @@ import CTA from '@/components/landing/CTA.astro';
       Learn more about Brighton and Co - who made what you're looking at right now, and more.
     </p>
   </Hero>
-  <section class="py-20 bg-secondary">
-    <div class="container">
-      <h1 class="text-4xl font-bold text-foreground">About</h1>
-      <p class="mt-4 text-foreground-muted max-w-2xl">
-        Add your content here.
-      </p>
+  
+  <section class="py-16">
+      <div class="container max-w-4xl">
+        <h1 class="text-4xl font-bold text-foreground mb-8">Some key information about the site:</h1>
+        <Accordion 
+         items={webinfo} 
+         variant="card" 
+          size="lg" 
+          exclusive={true}
+      />
     </div>
   </section>
 
@@ -42,5 +76,6 @@ import CTA from '@/components/landing/CTA.astro';
       <!-- Your content -->
     </div>
   </section>
+  <Separator orientation="horizontal" class="my-20" />
   <CTA />
 </PageLayout>

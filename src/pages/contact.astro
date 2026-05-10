@@ -14,13 +14,15 @@ import { Hero } from '@/components/hero';
 import GoogleMap from '@/components/ui/data-display/GoogleMap/GoogleMap.astro';
 import siteConfig from '@/config/site.config';
 import CTA from '@/components/landing/CTA.astro';
+import Toast from '@/components/ui/feedback/Toast/Toast.astro';
+import { Separator } from '@/components/ui';
 ---
 
 <PageLayout
   title="Contact Us"
   description="Get in touch with Brighton and Co."
 >
-  <Hero layout="centered" size="sm" showGrid>
+  <Hero layout="centered" size="sm">
     <Badge slot="badge" pill pulse>Get in Touch</Badge>
 
     <h1 slot="title">
@@ -167,23 +169,32 @@ import CTA from '@/components/landing/CTA.astro';
       </div>
     </div>
   </section>
+  <Separator orientation="horizontal" className="my-20" />
   <CTA />
+  <Toast />
 </PageLayout>
 
 <script>
   function initContactForm() {
     const form = document.getElementById('contact-form') as HTMLFormElement;
     const button = document.getElementById('submit-button') as HTMLButtonElement;
-    const message = document.getElementById('form-message') as HTMLDivElement;
 
-    if (!form || !button || !message) return;
+    if (!form || !button) return;
+
+    const originalButtonHTML = button.innerHTML;
+    
+    const spinnerSVG = `<svg class="animate-spin shrink-0 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+    const checkSVG = `<svg class="shrink-0 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    const xSVG = `<svg class="shrink-0 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      button.disabled = false;
-      button.textContent = 'Sending...';
-      message.classList.add('hidden');
+      button.disabled = true;
+      button.innerHTML = `${spinnerSVG} Sending...`;
+      
+      // ✅ Updated to remove new classes
+      button.classList.remove('!bg-green-600', '!bg-red-600', '!text-white', '!opacity-100');
 
       try {
         const formData = new FormData(form);
@@ -195,21 +206,45 @@ import CTA from '@/components/landing/CTA.astro';
         const data = await response.json();
 
         if (data.success) {
-          message.textContent = 'Message sent successfully! We will get back to you soon.';
-          message.className = 'text-sm text-success';
+          button.innerHTML = `${checkSVG} Sent!`;
+          // ✅ Added !opacity-100 so it doesn't look greyed out
+          button.classList.add('!bg-green-600', '!text-white', '!opacity-100');
           form.reset();
+
+          window.dispatchEvent(
+            new CustomEvent('show-toast', {
+              detail: { title: 'Message Sent', description: 'We will get back to you soon.', variant: 'success' },
+            })
+          );
         } else {
           const errors = data.errors ? Object.values(data.errors).flat().join(', ') : 'Something went wrong';
-          message.textContent = errors;
-          message.className = 'text-sm text-destructive';
+          button.innerHTML = `${xSVG} Failed`;
+          // ✅ Changed to standard Tailwind red and forced opacity
+          button.classList.add('!bg-red-600', '!text-white', '!opacity-100');
+
+          window.dispatchEvent(
+            new CustomEvent('show-toast', {
+              detail: { title: 'Failed to send', description: errors, variant: 'error' },
+            })
+          );
         }
       } catch {
-        message.textContent = 'Failed to send message. Please try again later.';
-        message.className = 'text-sm text-destructive';
+        button.innerHTML = `${xSVG} Failed`;
+        // ✅ Changed to standard Tailwind red and forced opacity
+        button.classList.add('!bg-red-600', '!text-white', '!opacity-100');
+
+        window.dispatchEvent(
+          new CustomEvent('show-toast', {
+            detail: { title: 'Error', description: 'Failed to send message. Please try again later.', variant: 'error' },
+          })
+        );
       } finally {
-        button.disabled = false;
-        button.textContent = 'Send Message';
-        message.classList.remove('hidden');
+        setTimeout(() => {
+          button.innerHTML = originalButtonHTML;
+          // ✅ Clean up all the override classes
+          button.classList.remove('!bg-green-600', '!bg-red-600', '!text-white', '!opacity-100');
+          button.disabled = false;
+        }, 3000);
       }
     });
   }

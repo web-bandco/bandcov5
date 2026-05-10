@@ -1,11 +1,18 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 /**
  * Format a date for display
  */
-export function formatDate(date: Date, locale = 'en-US'): string {
+export function formatDate(date: Date, locale = "en-GB"): string {
   return new Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   }).format(date);
 }
 
@@ -21,7 +28,7 @@ export function getReadingTime(content: string): number {
 /**
  * Generate a unique ID
  */
-export function generateId(prefix = 'id'): string {
+export function generateId(prefix = "id"): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
@@ -29,5 +36,5 @@ export function generateId(prefix = 'id'): string {
  * Check if a URL is external
  */
 export function isExternalUrl(url: string): boolean {
-  return url.startsWith('http://') || url.startsWith('https://');
+  return url.startsWith("http://") || url.startsWith("https://");
 }

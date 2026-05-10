@@ -11,14 +11,52 @@ import FeatureTabs from '@/components/landing/FeatureTabs.tsx';
 import LighthouseScores from '@/components/landing/LighthouseScores.astro';
 import Credibility from '@/components/landing/Credibility.astro';
 import CTA from '@/components/landing/CTA.astro';
+
+// Import the React components
+import { ScrollArea } from "@/components/ui/overlay/ScrollArea/scroll-area";
+import Separator from '@/components/ui/layout/Separator';
+
+// 1. Create a structured array for your updates
+const siteUpdates = [
+  {
+    version: "v0.5.2.0",
+    date: "10 May 2026",
+    title: "Further Enhancements",
+    description: "Made some additional improvements to the contact form to increase interacitvity. Also added this scrollable area to document changes to the site."
+  },
+  {
+    version: "v0.5.1.4b",
+    date: "9 May 2026",
+    title: "More Contact Form Improvements",
+    description: "Made additional improvements to the contact form, to ensure it fully works.."
+  },
+  {
+    version: "v0.5.1.0",
+    date: "9 May 2026",
+    title: "Contact Form Implemented",
+    description: "Fully implemented the contact form with validation and submission handling."
+  },
+  {
+    version: "v0.5.0.1",
+    date: "5th May 2026",
+    title: "Theme Adjustment",
+    description: "Swapped the legacy orange color palette for a perceptually uniform sky-blue theme using OKLCH."
+  },
+  {
+    version: "v0.5.0.0",
+    date: "5th May 2026",
+    title: "Public Beta Launch",
+    description: "Complete rewrite of Brighton and Co using Astro and the Velocity theme. Massive performance improvements."
+  }
+];
 ---
 
 <LandingLayout
   title="Brighton and Co"
   description="Design tokens, accessible components, SEO, and i18n configured from the first commit. Velocity ships what other starters leave as homework."
 >
-  <Hero layout="split" size="lg" showGrid showBlob blobPosition="right">
-    <Badge slot="badge" pill pulse>B&Co v5.0 Public Beta is Live</Badge>
+  <Hero layout="split" size="lg" showBlob blobPosition="right">
+    <Badge slot="badge" pill pulse>B&Co v0.5.2.0 Public Beta is Live</Badge>
 
     <h1 slot="title">
       Welcome to <span class="text-brand-500">Brighton and Co</span>
@@ -46,11 +84,52 @@ import CTA from '@/components/landing/CTA.astro';
       </Button>
     </Fragment>
 
-    <TerminalDemo slot="aside" client:load />
+    {/* 2. Map over the structured data to build the feed UI */}
+    {/* 1. Added type="auto" and removed 'p-6' from the ScrollArea wrapper */}
+    <ScrollArea slot="aside" client:load type="auto" className="h-[450px] w-full max-w-[500px] rounded-xl border border-border bg-surface-secondary/50 shadow-sm backdrop-blur-sm">
+      
+      {/* 2. Added the p-6 padding to a div INSIDE the scroll area instead */}
+      <div class="p-6">
+        <div class="mb-6 flex items-center gap-2">
+          <Icon name="bell" size="sm" class="text-brand-500" />
+          <h2 class="text-lg font-bold text-foreground">Site Updates</h2>
+        </div>
+        
+        <div class="flex flex-col gap-1">
+          {siteUpdates.map((update, index) => (
+            <>
+              <div class="group flex flex-col gap-2 py-3">
+                <div class="flex items-center justify-between">
+                  <span class="inline-flex items-center rounded-full bg-brand-500/10 px-2.5 py-0.5 text-xs font-semibold text-brand-500 border border-brand-500/20">
+                    {update.version}
+                  </span>
+                  <span class="text-xs font-medium text-foreground-muted/80">
+                    {update.date}
+                  </span>
+                </div>
+                <div>
+                  <h3 class="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors">
+                    {update.title}
+                  </h3>
+                  <p class="mt-1 text-sm text-foreground-muted leading-relaxed">
+                    {update.description}
+                  </p>
+                </div>
+              </div>
+              {index !== siteUpdates.length - 1 && (
+                <Separator class="my-1 opacity-50" />
+              )}
+            </>
+          ))}
+        </div>
+      </div>
+    </ScrollArea>
+    
   </Hero>
 
-  <TechStack />
   <FeatureTabs client:visible />
+  <TechStack />
+
   <LighthouseScores />
   <Credibility />
   <CTA />

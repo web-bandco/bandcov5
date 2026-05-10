@@ -13,6 +13,7 @@ interface Toast {
 }
 
 interface ToastContextValue {
+[x: string]: any;
   toast: (options: Omit<Toast, 'id'>) => void;
   dismiss: (id: string) => void;
 }
@@ -130,6 +131,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
+  // ✅ NEW: Listen for custom events triggered by vanilla Astro scripts
+  useEffect(() => {
+    const handleCustomToast = (e: Event) => {
+      const event = e as CustomEvent<Omit<Toast, 'id'>>;
+      toast(event.detail);
+    };
+
+    window.addEventListener('show-toast', handleCustomToast);
+    return () => window.removeEventListener('show-toast', handleCustomToast);
+  }, [toast]);
+
   return (
     <ToastContext.Provider value={{ toast, dismiss }}>
       {children}
@@ -146,5 +158,3 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     </ToastContext.Provider>
   );
 }
-
-export default ToastProvider;
