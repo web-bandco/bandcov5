@@ -11,6 +11,7 @@ import siteConfig from '@/config/site.config';
 import CTA from '@/components/landing/CTA.astro';
 import Accordion from '@/components/ui/overlay/Accordion';
 import Separator from '@/components/ui/layout/Separator';
+import TechStack from '@/components/landing/TechStack.astro';
 
 const webinfo = [
   {
@@ -76,6 +77,7 @@ const webinfo = [
       <!-- Your content -->
     </div>
   </section>
-  <Separator orientation="horizontal" class="my-20" />
+    <TechStack />
+
   <CTA />
 </PageLayout>

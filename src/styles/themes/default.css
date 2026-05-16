@@ -26,6 +26,7 @@
      ------------------------------------------------------------------------- */
   --background: var(--gray-0);
   --background-secondary: var(--gray-50);
+  --background-cta: var(--brand-100);
   --background-tertiary: var(--gray-100);
   --background-elevated: var(--gray-0);
 
