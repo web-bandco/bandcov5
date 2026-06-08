@@ -23,7 +23,6 @@ export interface Product {
   description: string;
   images: string[];
   url: string;
-  rotationClass?: string; 
   condition?: string;
   size?: string;
 }
@@ -35,15 +34,16 @@ interface ShopCarouselProps {
 
 function ProductCard({ product, storeName, gradientStyle }: { product: Product, storeName: string, gradientStyle: React.CSSProperties }) {
   const [activeIndex, setActiveIndex] = React.useState(0);
-  
   const [isMounted, setIsMounted] = React.useState(false);
+
   React.useEffect(() => {
     setIsMounted(true);
   }, []);
 
   return (
     <Dialog>
-        <div className="card bg-surface-primary shadow-sm hover:shadow-md transition-shadow border border-border h-full flex flex-col group overflow-hidden rounded-2xl">        
+      <div className="card bg-surface-primary shadow-sm hover:shadow-md transition-shadow border border-border h-full flex flex-col group overflow-hidden rounded-2xl">
+        
         <DialogTrigger asChild>
           <figure 
             className="relative w-full aspect-[3/4] overflow-hidden border-b border-border bg-surface-secondary cursor-pointer"
@@ -54,8 +54,13 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
                 key={i} 
                 src={img} 
                 alt={`${product.title} - Image ${i + 1}`} 
-                className={`absolute inset-0 object-cover w-full h-full ${product.rotationClass || ''} ${activeIndex === i ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}
-                loading={i === 0 ? "eager" : "lazy"} 
+                className="absolute inset-0 object-cover w-full h-full"
+                // CHANGED: Transitions completely removed for an instant hard-snap
+                style={{
+                  opacity: activeIndex === i ? 1 : 0,
+                  zIndex: activeIndex === i ? 0 : -10
+                }}
+                loading="eager" 
                 decoding="async"
               />
             ))}
@@ -73,7 +78,6 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
         </DialogTrigger>
 
         <div className="card-body p-5 flex flex-col flex-grow">
-          {/* CHANGED: Added min-h-[3.5rem] to force consistent title height and align metadata perfectly */}
           <h2 className="card-title flex items-start justify-between text-foreground text-lg mb-2 gap-4 min-h-[3.5rem]">
             <span className="line-clamp-2 leading-tight">{product.title}</span>
             <span className="font-bold whitespace-nowrap text-brand-500">{product.price}</span>
@@ -104,7 +108,6 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
             </a>
           </div>
         </div>
-
       </div>
 
       {isMounted && (
@@ -130,10 +133,11 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
 
                     <div className="relative z-10 group/lightbox pointer-events-auto w-full max-w-[85vw] md:max-w-none md:w-auto max-h-[70vh] md:h-full md:max-h-[85vh] aspect-[3/4] rounded-lg shadow-2xl drop-shadow-2xl overflow-hidden bg-black/5">
                       
+                      {/* CHANGED: Removed transition-transform to keep lightbox rendering completely static */}
                       <img 
                         src={img} 
                         alt={`${product.title} - Expanded Image ${i + 1}`} 
-                        className={`w-full h-full object-cover transition-transform duration-300 ${product.rotationClass || ''}`}
+                        className="w-full h-full object-cover"
                       />
 
                       <DialogClose className="absolute top-3 right-3 md:top-4 md:right-4 z-50 p-2 rounded-full bg-background/60 hover:bg-background backdrop-blur-md transition-all text-foreground outline-none opacity-100 md:opacity-0 md:group-hover/lightbox:opacity-100">
