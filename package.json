@@ -37,7 +37,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "npm run build && wrangler dev",
     "check": "astro check",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -46,10 +46,11 @@
     "validate": "pnpm lint && pnpm check && pnpm build",
     "test": "vitest",
     "test:e2e": "playwright test",
-    "generate-types": "wrangler types"
+    "generate-types": "wrangler types",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^13.6.1",
+    "@astrojs/cloudflare": "^13.7.0",
     "@astrojs/mdx": "^6.0.2",
     "@astrojs/react": "^5.0.7",
     "@astrojs/sitemap": "^3.7.3",
@@ -71,8 +72,7 @@
     "satori-html": "^0.3.2",
     "schema-dts": "^1.1.2",
     "sharp": "^0.34.5",
-    "tailwind-merge": "^2.6.0",
-    "wrangler": "^4.87.0"
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.2",
@@ -94,7 +94,8 @@
     "tailwindcss": "^4.3.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.18.0",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.8",
+    "wrangler": "^4.99.0"
   },
   "overrides": {
     "vite": "^7.3.1"

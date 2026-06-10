@@ -3,7 +3,9 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
-import { passthroughImageService } from "astro/config"; 
+import { passthroughImageService } from "astro/config";
+
+import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   site: process.env.SITE_URL || 'https://example.com',
@@ -50,6 +52,7 @@ export default defineConfig({
       wrap: true,
     },
   },
-  
-  output: 'static'
+
+  output: 'static',
+  adapter: cloudflare()
 });

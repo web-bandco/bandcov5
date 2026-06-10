@@ -58,3 +58,9 @@ public/pagefind/
 # Internal docs
 southwell-astro-boilerplate-docs.md
 southwell-astro-boilerplate-prd.md
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
