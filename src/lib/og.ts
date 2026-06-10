@@ -2,10 +2,8 @@ import satori from 'satori';
 import { html } from 'satori-html';
 import { Resvg, initWasm } from '@resvg/resvg-wasm';
 import siteConfig from '@/config/site.config';
-
-// ✅ Import the WebAssembly file directly as a module.
-// This bypasses the need for the file system entirely and is natively supported by Cloudflare.
-import resvgWasmModule from '@resvg/resvg-wasm/index_bg.wasm?module';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 export interface OGImageOptions {
   title: string;
@@ -78,10 +76,12 @@ export async function generateOGImage(options: OGImageOptions): Promise<Uint8Arr
     ],
   });
 
-  // ✅ Boot the WebAssembly engine using the imported module
+  // ✅ Read the file directly from the hard drive (100% allowed now)
   if (!wasmInitialized) {
     try {
-      await initWasm(resvgWasmModule);
+      const wasmPath = join(process.cwd(), 'node_modules', '@resvg/resvg-wasm', 'index_bg.wasm');
+      const wasmBuffer = readFileSync(wasmPath);
+      await initWasm(wasmBuffer);
       wasmInitialized = true;
     } catch (e) {
       console.warn("Wasm initialization warning:", e);
