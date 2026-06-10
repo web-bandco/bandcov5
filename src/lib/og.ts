@@ -1,6 +1,6 @@
 import satori from 'satori';
 import { html } from 'satori-html';
-import { Resvg } from '@resvg/resvg-wasm';
+import { Resvg } from '@resvg/resvg-js';
 import siteConfig from '@/config/site.config';
 
 export interface OGImageOptions {

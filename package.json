@@ -1,6 +1,6 @@
 {
   "name": "bandcov5",
-  "version": "0.5.9.2",
+  "version": "0.5.9.3",
   "description": "Brighton and Co Version 5.",
   "type": "module",
   "author": "Harry B",
@@ -56,7 +56,7 @@
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/manrope": "^5.2.8",
     "@fontsource-variable/outfit": "^5.2.8",
-    "@resvg/resvg-wasm": "^2.6.2",
+    "@resvg/resvg-js": "^2.6.2",
     "astro": "^6.4.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

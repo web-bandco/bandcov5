@@ -7,6 +7,7 @@ import siteConfig from '@/config/site.config';
 const STATIC_PAGES = [
   { slug: 'index', title: siteConfig.name, description: siteConfig.description },
   { slug: 'about', title: 'About', description: `Learn more about ${siteConfig.name}` },
+  { slug: 'shop', title: 'Shop', description: `Browse our selection of ${siteConfig.name} products` },
   { slug: 'contact', title: 'Contact', description: `Get in touch with ${siteConfig.name}` },
   { slug: 'blog', title: 'Blog', description: `Latest articles and updates from ${siteConfig.name}` },
   { slug: 'components', title: 'Component Library', description: 'UI component showcase' },
