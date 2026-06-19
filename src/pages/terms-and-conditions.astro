@@ -16,28 +16,67 @@ import TechStack from '@/components/landing/TechStack.astro';
 const webinfo = [
   {
     title: "1. What the Brighton and Co site is -",
-    content: "The Brighton and Co site is my own website (Harry Brighton). I solely maintain the website in my own free time. When references are subsequently made to 'my', 'myself', 'my own', or something similar, it is referring to me, Harry Brighton. When references are subsequently made to 'website', 'site', or something similar, it is referring to new.brightonandco.co.uk and to any and all of its constituent pages, unless explicitly stated otherwise.",
+    content: [
+      "<strong class='text-foreground font-semibold'>1.1</strong> The Brighton and Co site is my own website (Harry Brighton). I solely maintain the website in my own free time.",
+      "<strong class='text-foreground font-semibold'>1.2</strong> When references are subsequently made to 'my', 'myself', 'my own', or something similar, it is referring to me, Harry Brighton.",
+      "<strong class='text-foreground font-semibold'>1.3</strong> When references are subsequently made to 'website', 'site', or something similar, it is referring to <a href='/' class='text-brand-500 font-medium hover:underline'>new.brightonandco.co.uk</a> and to any and all of its constituent pages, unless explicitly stated otherwise."
+    ],
     defaultOpen: true,
   },
   {
     title: "2. Using the Brighton and Co site -",
-    content: "You agree to use the Brighton and Co site and all its pages for solely lawful purposes, permitted by UK law, particularly the law of England and Wales. Otherwise, as permitted by local laws. You must also use it in a way that does not infringe the rights of, or restrict or inhibit the use and enjoyment of, this site by anyone else. Your use and continued use of this website can and may likely be used to infer consent with all of the terms contained on this page. The Brighton and Co site is often updated. This means that content on this website may be changed, altered or removed with no notice.",
+    content: [
+      "<strong class='text-foreground font-semibold'>2.1</strong> You agree to use the Brighton and Co site and all its pages for solely lawful purposes, permitted by UK law, particularly the law of England and Wales. Otherwise, as permitted by local laws.",
+      "<strong class='text-foreground font-semibold'>2.2</strong> You must also use it in a way that does not infringe the rights of, or restrict or inhibit the use and enjoyment of, this site by anyone else.",
+      "<strong class='text-foreground font-semibold'>2.3</strong> Your use and continued use of this website can and may likely be used to infer consent with all of the terms contained on this page.",
+      "<strong class='text-foreground font-semibold'>2.4</strong> The Brighton and Co site is often updated. This means that content on this website may be changed, altered or removed with no notice."
+    ],
   },
   {
     title: "3. Services on the Brighton and Co site -",
-    content: "You can use the Brighton and Co site, specifically the form located on the Contact page to send messages and enquiries to myself. The purpose behind the form is to send formal messages and enquiries, such as to request further information about something pertaining to either myself, or to the website, for example. This method of sending enquiries is managed solely by myself, using Web3Forms - which has its own terms and conditions.",
+    content: [
+      "<strong class='text-foreground font-semibold'>3.1</strong> You can use the Brighton and Co site, specifically the form located on the <a href='/contact' class='text-brand-500 font-medium hover:underline'>Contact page</a> to send messages and enquiries to myself.",
+      "<strong class='text-foreground font-semibold'>3.2</strong> The purpose behind the form is to send formal messages and enquiries, such as to request further information about something pertaining to either myself, or to the website, for example.", 
+      "<strong class='text-foreground font-semibold'>3.3</strong> This method of sending enquiries is managed solely by myself, using Web3Forms - which has its own terms and conditions."
+    ],
   },
   {
     title: "4. Linking to the Brighton and Co site -",
-    content: "With Brighton and Co Version 5, the site has a completely refreshed look and feel, with more fluid animations. Moreover, a more comprehensive design system provides a more uniform and cohesive website design.",
+    content: [
+      "<strong class='text-foreground font-semibold'>4.1</strong> Links to the Brighton and Co site are not permitted unless permission has been sought and granted by myself in advance.",
+      "<strong class='text-foreground font-semibold'>4.2</strong> If you would like to have a link on your own website, and/or on social media, please use the form on the <a href='/contact' class='text-brand-500 font-medium hover:underline'>Contact page</a> to request permission.",
+      "<strong class='text-foreground font-semibold'>4.3</strong> Until and unless permission has been expressly granted for linking to the Brighton and Co site and/or to any of its constituent pages, and/or associated sites, please understand that you are not permitted to link to any or all of this website whatsoever."
+    ],
   },
   {
-    title: "5. More Customisation",
-    content: "With the range of components available with the Velocity theme template, there are far greater options and much greater potential for future developments to Brighton and Co.",
+    title: "5. Linking from the Brighton and Co site -",
+    content: [
+      "<strong class='text-foreground font-semibold'>5.1</strong> The Brighton and Co site may link to other third-party websites. Brighton and Co does not control nor have any responsibility over the contents of such third-party links.",
+      "<strong class='text-foreground font-semibold'>5.2</strong> Links to external websites are signified with some of the following - a special icon, a hover effect, and/or a dialogue warning - visually demonstrating that they link to a site that is external to the Brighton and Co site.",
+      "<strong class='text-foreground font-semibold'>5.3</strong> Thus, I, nor Brighton and Co is responsible for:",
+      /* Flex gap ensures the text doesn't wrap directly underneath the numbers! */
+      "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>5.3.1</strong> <span>the protection of any information you give to these websites, or</span></div>",
+      "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>5.3.2</strong> <span>any loss or damage that may come from your use of these websites, or any other websites they link to.</span></div>",
+      "<strong class='text-foreground font-semibold'>5.4</strong> You agree to release myself from any claims or disputes that may come from using these websites.",
+      "<strong class='text-foreground font-semibold'>5.5</strong> You are encouraged and should read all terms and conditions, privacy policies and end user licences that relate to these websites before you use them."
+    ],
   },
   {
-    title: "6. More Content",
-    content: "The potential for more content and features for the site is seemingly exponentially increased with the Velocity theme teplate. Blog posts in particular will benefit from this new design.",
+    title: "6. Using content from and/or on the Brighton and Co site -",
+    content: [
+      "<strong class='text-foreground font-semibold'>6.1</strong> Most - if not all photos on web.brightonandco.co.uk are taken by myself and thus I consider myself to be the sole owner of these images.",
+      "<strong class='text-foreground font-semibold'>6.2</strong> Thus permission is not granted for the following:",
+      "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.1</strong> <span>to use,</span></div>",
+      "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.2</strong> <span>to copy,</span></div>",
+      "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.3</strong> <span>to share/redistribute,</span></div>",
+      "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.4</strong> <span>to modify,</span></div>",
+      "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.5</strong> <span>to reproduce, or,</span></div>",
+      "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.6</strong> <span>to process or use for any purposes for AI, such as training or modelling.</span></div>",
+      "<strong class='text-foreground font-semibold'>6.3</strong> Unless and/or until permission is granted expressly for one or any or multiple of the above mentioned purposes, you are strictly prohibited from using or obtaining any of these such images for any above mentioned or similar purposes.",
+      "<strong class='text-foreground font-semibold'>6.4</strong> If you would like to obtain permission to use or obtain any images from myself for any of these above purposes - excluding AI training/modelling expressly, please use the form on the <a href='/contact' class='text-brand-500 font-medium hover:underline'>Contact page</a>.",
+      "<strong class='text-foreground font-semibold'>6.5</strong> If you attempt to use AI for the purposes of training, modelling, and/or other such similar purposes, you agree that you may be indemnified for any and all potential reasonable costs and damages that may be sought on the basis of breach of contract, due to violating the terms and conditions of this website.",
+
+    ],
   }
 ]
 ---
@@ -46,7 +85,6 @@ const webinfo = [
   title="Terms and Conditions"
   description="Site Terms and Conditions"
 >
-  <!-- Hero Section -->
   <Hero layout="split" size="lg" showBlob>
     
 
@@ -83,11 +121,9 @@ const webinfo = [
     </div>
   </section>
 
-  <!-- Content Section -->
   <section class="py-16">
     <div class="container">
-      <!-- Your content -->
-    </div>
+      </div>
   </section>
   <CTA />
 </PageLayout>

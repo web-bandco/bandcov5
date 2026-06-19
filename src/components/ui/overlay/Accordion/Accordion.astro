@@ -10,7 +10,8 @@ import Icon from '../../primitives/Icon/Icon.astro';
 
 interface AccordionItem {
   title: string;
-  content: string;
+  // UPDATED: Now accepts either a single string or an array of strings
+  content: string | string[];
   defaultOpen?: boolean;
 }
 
@@ -50,7 +51,16 @@ const groupName = exclusive ? `accordion-${Math.random().toString(36).slice(2, 9
         />
       </summary>
       <div class="pb-4 text-sm text-foreground-muted leading-relaxed">
-        {item.content}
+        {/* UPDATED: Map over the array if multiple paragraphs are provided */}
+        {Array.isArray(item.content) ? (
+          <div class="space-y-4">
+            {item.content.map((paragraph) => (
+              <div set:html={paragraph} />
+            ))}
+          </div>
+        ) : (
+          <p>{item.content}</p>
+        )}
       </div>
     </details>
   ))}

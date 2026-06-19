@@ -4,7 +4,8 @@ import { accordionItemVariants, accordionTriggerVariants } from './accordion.var
 
 interface AccordionItem {
   title: string;
-  content: string;
+  // UPDATED: Now accepts either a single string or an array of strings
+  content: string | string[];
   defaultOpen?: boolean;
 }
 
@@ -94,7 +95,16 @@ export function Accordion({
               hidden={!isOpen}
               className="pb-4 text-sm text-foreground-muted leading-relaxed"
             >
-              {item.content}
+              {Array.isArray(item.content) ? (
+                <div className="space-y-4">
+                  {item.content.map((paragraph, pIndex) => (
+                    // FIXED: Renders the raw HTML strings safely
+                    <div key={pIndex} dangerouslySetInnerHTML={{ __html: paragraph }} />
+                  ))}
+                </div>
+              ) : (
+                <div dangerouslySetInnerHTML={{ __html: item.content }} />
+              )}
             </div>
           </div>
         );
