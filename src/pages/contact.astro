@@ -135,19 +135,21 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
 
             <div class="flex flex-col gap-4 w-full">
               
-              {/* EMAIL LINK (Standard internal app trigger) */}
-              <a href={`mailto:${siteConfig.email}`} class="block w-full">
-                <Card hover padding="sm">
-                  <div class="flex items-center gap-4">
-                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
-                      <Icon name="mail" size="md" />
+              {/* EMAIL LINK */}
+              <a href={`mailto:${siteConfig.email}`} class="flex w-full">
+                <div class="w-full">
+                  <Card hover padding="sm">
+                    <div class="flex items-center gap-4">
+                      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
+                        <Icon name="mail" size="md" />
+                      </div>
+                      <div>
+                        <p class="text-sm text-foreground-muted">Email</p>
+                        <p class="font-medium text-foreground">{siteConfig.email}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p class="text-sm text-foreground-muted">Email</p>
-                      <p class="font-medium text-foreground">{siteConfig.email}</p>
-                    </div>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               </a>
 
               {/* GITHUB LINK */}
@@ -155,19 +157,21 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
                 client:load
                 href="https://github.com/ItsHarryB"
                 showIndicator={false}
-                className="block w-full" 
+                className="!flex w-full" 
               >
-                <Card hover padding="sm">
-                  <div class="flex items-center gap-4">
-                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
-                      <Icon name="github" size="md" />
+                <div class="w-full">
+                  <Card hover padding="sm">
+                    <div class="flex items-center gap-4">
+                      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
+                        <Icon name="github" size="md" />
+                      </div>
+                      <div>
+                        <p class="text-sm text-foreground-muted">GitHub</p>
+                        <p class="font-medium text-foreground">ItsHarryB</p>
+                      </div>
                     </div>
-                    <div>
-                      <p class="text-sm text-foreground-muted">GitHub</p>
-                      <p class="font-medium text-foreground">ItsHarryB</p>
-                    </div>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               </ExternalLink>
 
               {/* TWITTER LINK */}
@@ -176,19 +180,21 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
                   client:load
                   href={`https://twitter.com/${siteConfig.twitter.site.replace('@', '')}`}
                   showIndicator={false}
-                  className="block w-full"
+                  className="!flex w-full"
                 >
-                  <Card hover padding="sm">
-                    <div class="flex items-center gap-4">
-                      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
-                        <Icon name="twitter" size="md" />
+                  <div class="w-full">
+                    <Card hover padding="sm">
+                      <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
+                          <Icon name="twitter" size="md" />
+                        </div>
+                        <div>
+                          <p class="text-sm text-foreground-muted">Twitter</p>
+                          <p class="font-medium text-foreground">{siteConfig.twitter.site}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p class="text-sm text-foreground-muted">Twitter</p>
-                        <p class="font-medium text-foreground">{siteConfig.twitter.site}</p>
-                      </div>
-                    </div>
-                  </Card>
+                    </Card>
+                  </div>
                 </ExternalLink>
               )}
               

@@ -44,22 +44,23 @@ import { ExternalLink } from '@/components/ui/content/ExternalLink';
     </p>
 
     <Fragment slot="actions">
-      <Button size="lg" href="/about">
+      {/* FIXED: Added identical specific widths and justification */}
+      <Button size="lg" href="/about" class="w-full sm:w-[220px] justify-center">
         About B&Co
         <Icon name="arrow-right" size="sm" />
       </Button>
       
-      {/* WRAPPED TEST SITE BUTTON */}
+      {/* FIXED: Overrode inline-flex with !flex, added matching width */}
       <ExternalLink 
         client:load 
         href="https://test.brightonandco.co.uk/" 
         showIndicator={false} 
-        className="inline-block"
+        className="!flex w-full sm:w-[220px]"
       >
         <Button
           size="lg"
           variant="outline"
-          class="pointer-events-none" 
+          class="w-full justify-center pointer-events-none" 
         >
           <Icon name="flask-conical" size="sm" />
           View Test Site
