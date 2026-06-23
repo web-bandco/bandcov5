@@ -3,6 +3,7 @@ import { cn } from '@/lib/cn';
 import { accordionItemVariants, accordionTriggerVariants } from './accordion.variants';
 
 interface AccordionItem {
+  id?: string;
   title: string;
   // UPDATED: Now accepts either a single string or an array of strings
   content: string | string[];
@@ -56,7 +57,7 @@ export function Accordion({
         const panelId = `${id}-panel-${index}`;
 
         return (
-          <div key={index} className={cn(accordionItemVariants({ variant }))}>
+          <div key={index} id={item.id} className={cn(accordionItemVariants({ variant }))}>
             <button
               id={triggerId}
               type="button"

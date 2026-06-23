@@ -144,33 +144,42 @@ const siteUpdates = [
 </div>
 
 <script>
-  // Vanilla JS to handle the mobile collapse/expand
-  const widget = document.getElementById('updates-widget');
-  const toggleBtn = document.getElementById('updates-toggle');
-  const plusIcon = document.getElementById('updates-plus');
-  const minusIcon = document.getElementById('updates-minus');
-  const scrollWrapper = document.getElementById('updates-scroll-wrapper');
+  function initSiteUpdates() {
+    const widget = document.getElementById('updates-widget');
+    const toggleBtn = document.getElementById('updates-toggle');
+    const plusIcon = document.getElementById('updates-plus');
+    const minusIcon = document.getElementById('updates-minus');
+    const scrollWrapper = document.getElementById('updates-scroll-wrapper');
 
-  if (toggleBtn && widget && scrollWrapper) {
-    toggleBtn.addEventListener('click', () => {
-      // UX Fix: If the box is about to collapse, reset the scroll position back to the top
-      if (widget.classList.contains('h-[350px]')) {
-        const viewport = scrollWrapper.querySelector('[data-radix-scroll-area-viewport]');
-        if (viewport) {
-          viewport.scrollTop = 0;
+    // Added a data attribute check to prevent attaching the listener multiple times
+    if (toggleBtn && widget && scrollWrapper && !toggleBtn.dataset.initialized) {
+      toggleBtn.dataset.initialized = 'true';
+      
+      toggleBtn.addEventListener('click', () => {
+        // UX Fix: If the box is about to collapse, reset the scroll position back to the top
+        if (widget.classList.contains('h-[350px]')) {
+          const viewport = scrollWrapper.querySelector('[data-radix-scroll-area-viewport]');
+          if (viewport) {
+            viewport.scrollTop = 0;
+          }
         }
-      }
 
-      // Swap heights: 76px (collapsed) to 350px (expanded)
-      widget.classList.toggle('h-[76px]');
-      widget.classList.toggle('h-[350px]');
+        // Swap heights: 76px (collapsed) to 350px (expanded)
+        widget.classList.toggle('h-[76px]');
+        widget.classList.toggle('h-[350px]');
 
-      // Swap the + and - icons
-      plusIcon?.classList.toggle('hidden');
-      minusIcon?.classList.toggle('hidden');
+        // Swap the + and - icons
+        plusIcon?.classList.toggle('hidden');
+        minusIcon?.classList.toggle('hidden');
 
-      // Toggle pointer-events to prevent/allow scrolling
-      scrollWrapper.classList.toggle('pointer-events-none');
-    });
+        // Toggle pointer-events to prevent/allow scrolling
+        scrollWrapper.classList.toggle('pointer-events-none');
+      });
+    }
   }
+
+  // Run immediately on first load
+  initSiteUpdates();
+  // Re-run every time the user navigates back to the home page via View Transitions
+  document.addEventListener('astro:page-load', initSiteUpdates);
 </script>

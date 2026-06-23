@@ -9,6 +9,7 @@ import { accordionItemVariants, accordionTriggerVariants } from './accordion.var
 import Icon from '../../primitives/Icon/Icon.astro';
 
 interface AccordionItem {
+  id?: string;
   title: string;
   // UPDATED: Now accepts either a single string or an array of strings
   content: string | string[];
@@ -33,6 +34,7 @@ const groupName = exclusive ? `accordion-${Math.random().toString(36).slice(2, 9
 <div class={cn('w-full', className)} data-accordion={exclusive ? 'exclusive' : undefined}>
   {items.map((item) => (
     <details
+      id={item.id}
       class={cn(accordionItemVariants({ variant }))}
       open={item.defaultOpen}
       name={groupName}
