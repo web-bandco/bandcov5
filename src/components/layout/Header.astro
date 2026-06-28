@@ -626,6 +626,56 @@ const buttonId = `${menuId}-button`;
   document.addEventListener('astro:page-load', initMagicPills);
   document.addEventListener('astro:after-swap', initMagicPills);
 </script>
+
+<script>
+  function initMobileSwipeNav() {
+    const mobileNav = document.getElementById('mobile-nav');
+    if (!mobileNav) return;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let activeTarget: HTMLAnchorElement | null = null;
+
+    mobileNav.addEventListener('touchstart', (e: TouchEvent) => {
+      // Cast to HTMLElement to satisfy TS strict mode & safely use .closest()
+      const target = (e.target as HTMLElement)?.closest('a.mobile-nav-link');
+      if (target) {
+        activeTarget = target as HTMLAnchorElement;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    mobileNav.addEventListener('touchmove', (e: TouchEvent) => {
+      const touch = e.touches[0];
+      const element = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (element?.closest('a.mobile-nav-link')) {
+        activeTarget = element.closest('a.mobile-nav-link') as HTMLAnchorElement;
+      }
+    }, { passive: true });
+
+    mobileNav.addEventListener('touchend', (e: TouchEvent) => {
+      if (!activeTarget) return;
+
+      const diffX = Math.abs(e.changedTouches[0].clientX - touchStartX);
+      const diffY = Math.abs(e.changedTouches[0].clientY - touchStartY);
+      const isSwipe = diffX > 20 || diffY > 20;
+
+      if (isSwipe && activeTarget.href && !activeTarget.href.startsWith('#')) {
+        window.location.href = activeTarget.href;
+      }
+      
+      activeTarget = null;
+    }, { passive: true });
+  }
+
+  initMobileSwipeNav();
+  document.addEventListener('astro:page-load', initMobileSwipeNav);
+  document.addEventListener('astro:after-swap', initMobileSwipeNav);
+</script>
+
+
+
 <style is:global>
   .mobile-menu-blur {
     opacity: 0.3;
