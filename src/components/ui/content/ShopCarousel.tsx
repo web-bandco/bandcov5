@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/shadcn/dialog"
 import { Skeleton } from "@/components/ui/shadcn/skeleton"
 import { ExternalLink } from "@/components/ui/content/ExternalLink"
+import { sanityClient } from '@/lib/sanity' // Adjust path as needed
 
 export interface ProductImage {
   thumb: string;
@@ -309,10 +310,48 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
   )
 }
 
-export function ShopCarousel({ products, storeName }: ShopCarouselProps) {
-  if (!products || products.length === 0) return null;
+export function ShopCarousel({ storeName }: { storeName: "Vinted" | "eBay" }) {
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchLiveProducts = async () => {
+      try {
+        // Fetches strictly the items for this specific carousel's platform
+        const query = `*[_type == "product" && storeName == "${storeName}"]`;
+        const data = await sanityClient.fetch(query);
+        
+        // Map Sanity's internal _id to our component's expected id
+        const formattedData = data.map((item: any) => ({
+          ...item,
+          id: item._id
+        }));
+
+        setProducts(formattedData);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLiveProducts();
+  }, [storeName]);
 
   const gradientStyle = { background: 'linear-gradient(135deg, #ff0055, #ff2e43)' };
+
+  // Show a loading state while fetching live prices
+  if (isLoading) {
+    return (
+      <div className="w-full flex space-x-4 px-4 overflow-hidden">
+        <Skeleton className="w-[85%] sm:w-[60%] md:w-[50%] lg:w-[33%] aspect-[3/4] rounded-2xl" />
+        <Skeleton className="hidden md:block w-[50%] lg:w-[33%] aspect-[3/4] rounded-2xl" />
+        <Skeleton className="hidden lg:block w-[33%] aspect-[3/4] rounded-2xl" />
+      </div>
+    );
+  }
+
+  if (!products || products.length === 0) return <p className="px-4 text-foreground-muted">No items currently listed.</p>;
 
   return (
       <Carousel 
