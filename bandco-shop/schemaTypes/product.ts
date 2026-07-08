@@ -51,19 +51,20 @@ export const product = defineType({
     }),
     // For now, we will keep image URLs as strings pointing to your Astro assets, 
     // or you can upload images directly to Sanity later.
+    // Replace the old 'images' field with this native one
     defineField({
       name: 'images',
       title: 'Images',
       type: 'array',
       of: [
         {
-          type: 'object',
-          fields: [
-            { name: 'thumb', title: 'Thumbnail URL', type: 'string' },
-            { name: 'full', title: 'Full Image URL', type: 'string' }
-          ]
+          type: 'image',
+          options: {
+            hotspot: true, // Allows you to crop images directly inside the Sanity dashboard
+          }
         }
-      ]
+      ],
+      validation: (Rule) => Rule.required().min(1)
     })
   ],
 })

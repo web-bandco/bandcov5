@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/shadcn/dialog"
 import { Skeleton } from "@/components/ui/shadcn/skeleton"
 import { ExternalLink } from "@/components/ui/content/ExternalLink"
-import { sanityClient } from '@/lib/sanity' // Adjust path as needed
+import { sanityClient, urlFor } from '@/lib/sanity'
 
 export interface ProductImage {
   thumb: string;
@@ -208,8 +208,8 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
           <div className="card-actions justify-end mt-5">
             <ExternalLink 
               href={product.url}
-              requireConfirm={false} 
-              showIndicator={false}
+              requireConfirm={true} 
+              showIndicator={true}
               className="btn border-none rounded-xl text-white w-full opacity-90 hover:opacity-100 hover:scale-[1.02] transition-all shadow-sm flex justify-center items-center"
               style={gradientStyle}
             >
@@ -317,14 +317,22 @@ export function ShopCarousel({ storeName }: { storeName: "Vinted" | "eBay" }) {
   React.useEffect(() => {
     const fetchLiveProducts = async () => {
       try {
-        // Fetches strictly the items for this specific carousel's platform
+        // TEMPORARY X-RAY QUERY: Grab literally every product in the database
         const query = `*[_type == "product" && storeName == "${storeName}"]`;
+        
+        console.log("1. Astro is asking for storeName:", storeName);
+        
         const data = await sanityClient.fetch(query);
         
-        // Map Sanity's internal _id to our component's expected id
+        console.log("2. Sanity replied with this data:", data);
+        
         const formattedData = data.map((item: any) => ({
           ...item,
-          id: item._id
+          id: item._id,
+          images: item.images?.map((img: any) => ({
+            thumb: urlFor(img).width(600).format('webp').quality(80).url(),
+            full: urlFor(img).width(1600).format('webp').quality(90).url()
+          })) || []
         }));
 
         setProducts(formattedData);
