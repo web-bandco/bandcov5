@@ -106,7 +106,7 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
 
   const [isTitleExpanded, setIsTitleExpanded] = React.useState(false);
   const [showTitleToggle, setShowTitleToggle] = React.useState(false);
-  const titleRef = React.useRef<HTMLSpanElement>(null);
+  const titleRef = React.useRef<HTMLHeadingElement>(null);
 
   const [isOpen, setIsOpen] = React.useState(false);
   const [dialogApi, setDialogApi] = React.useState<CarouselApi>()
@@ -192,7 +192,7 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <div className="card bg-surface-primary shadow-sm hover:shadow-lg transition-shadow border border-border flex flex-col group overflow-hidden rounded-2xl transform-gpu">
+      <div className="card bg-surface-primary shadow-sm hover:shadow-lg transition-shadow border border-border flex flex-col group overflow-hidden rounded-2xl transform-gpu h-full">
         
         <figure 
           className="relative z-10 w-full aspect-[3/4] overflow-hidden bg-surface-secondary cursor-pointer shadow-lg"
@@ -233,34 +233,40 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
         </figure>
 
         <div className="card-body p-5 flex flex-col flex-grow">
-          <div className="flex flex-col mb-2 min-h-[3.5rem]">
-            <h2 className="card-title flex items-start justify-between text-foreground text-lg gap-4">
-              <span 
+          
+          {/* REVISED TITLE SECTION: Zero vertical height impact */}
+          <div className="flex items-start justify-between gap-3 mb-2 min-h-[3.5rem]">
+            
+            <div className="relative flex-1 min-w-0">
+              <h2
                 ref={titleRef}
-                className={`leading-snug break-words ${isTitleExpanded ? '' : 'line-clamp-2'}`}
+                className={`card-title text-foreground text-lg leading-snug break-words ${isTitleExpanded ? 'pb-8' : 'line-clamp-2 pr-8'}`}
               >
                 {product.title}
-              </span>
-              <span className="font-bold whitespace-nowrap text-brand-500 shrink-0 mt-0.5">{product.price}</span>
-            </h2>
-            
-            {showTitleToggle && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsTitleExpanded(!isTitleExpanded);
-                }}
-                className="mt-1 flex items-center justify-center w-6 h-6 rounded-full bg-surface-secondary hover:bg-surface-tertiary text-foreground-muted hover:text-foreground transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label={isTitleExpanded ? 'Show less' : 'Read full title'}
-                title={isTitleExpanded ? 'Show less' : 'Read full title'}
-              >
-                {isTitleExpanded ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </button>
-            )}
+              </h2>
+              
+              {showTitleToggle && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsTitleExpanded(!isTitleExpanded);
+                  }}
+                  className={`absolute flex items-center justify-center w-6 h-6 rounded-full bg-surface-secondary hover:bg-surface-tertiary text-foreground-muted hover:text-foreground transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring ${isTitleExpanded ? 'bottom-0 left-0' : 'bottom-0 right-0'}`}
+                  aria-label={isTitleExpanded ? 'Show less' : 'Read full title'}
+                  title={isTitleExpanded ? 'Show less' : 'Read full title'}
+                >
+                  {isTitleExpanded ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </button>
+              )}
+            </div>
+
+            <div className="shrink-0 pt-0.5">
+              <span className="font-bold whitespace-nowrap text-brand-500 text-lg">{product.price}</span>
+            </div>
           </div>
 
           <div className="flex flex-col gap-0.5 mb-3 text-sm text-foreground h-[2.5rem] justify-start">
