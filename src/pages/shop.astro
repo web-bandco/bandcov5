@@ -90,35 +90,33 @@ const ebayItems = await Promise.all(
   <section class="py-16 bg-surface-secondary border-t border-border">
     <div class="container max-w-6xl space-y-10">
       
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 px-4 md:px-0">
-        <div>
-          <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
-            <ExternalLink 
-              href="https://vinted.co.uk/member/272494517" 
-              client:load
-              showIndicator={false}
-              className="hover:opacity-80 transition-opacity flex items-center mt-1"
-            >
-              <SiVinted className="w-8 h-8" style={{ color: "#017573" }} />
-            </ExternalLink>
-            Vinted Highlights
-          </h2>
-          <p class="mt-2 text-foreground-muted">
-            A selection of items from the SHOP: B&Co Vinted -
-          </p>
+      {/* Notice how the entire header block is now wrapped inside the <ShopCarousel> tags! */}
+      <ShopCarousel storeName="Vinted" client:only="react">
+        <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
+          <ExternalLink 
+            href="https://vinted.co.uk/member/272494517" 
+            client:load
+            showIndicator={false}
+            className="hover:opacity-80 transition-opacity flex items-center mt-1"
+          >
+            <SiVinted className="w-8 h-8" style={{ color: "#017573" }} />
+          </ExternalLink>
+          Vinted Highlights
+        </h2>
+        
+        <div class="mt-2 text-foreground-muted flex flex-wrap items-center gap-1.5">
+          <span>A selection of items from the SHOP: B&Co Vinted -</span>
+          <ExternalLink 
+            href="https://vinted.co.uk/member/272494517" 
+            client:load
+            showIndicator={false}
+            className="text-sm font-medium hover:underline" 
+            style={{ color: "#ff0055" }}
+          >
+            View full Vinted profile &rarr;
+          </ExternalLink>
         </div>
-        <ExternalLink 
-          href="https://vinted.co.uk/member/272494517" 
-          client:load
-          showIndicator={false}
-          className="text-sm font-medium hover:underline" 
-          style={{ color: "#ff0055" }}
-        >
-          View full Vinted profile &rarr;
-        </ExternalLink>
-      </div>
-
-      <ShopCarousel products={vintedItems} storeName="Vinted" client:only="react" />
+      </ShopCarousel>
 
     </div>
   </section>
@@ -126,35 +124,32 @@ const ebayItems = await Promise.all(
   <section class="py-16 bg-background border-y border-border">
     <div class="container max-w-6xl space-y-10">
       
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 px-4 md:px-0">
-        <div>
-          <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
-            <ExternalLink 
-              href="https://ebay.co.uk/usr/itsharryb/" 
-              client:load
-              showIndicator={false}
-              className="hover:opacity-80 transition-opacity flex items-center mt-1"
-            >
-              <SiEbay className="w-10 h-10" style={{ color: "#0064D2" }} />
-            </ExternalLink>
-            eBay Highlights
-          </h2>
-          <p class="mt-2 text-foreground-muted">
-            A selection of items from the SHOP: B&Co eBay -
-          </p>
+      <ShopCarousel storeName="eBay" client:only="react">
+        <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
+          <ExternalLink 
+            href="https://ebay.co.uk/usr/itsharryb/" 
+            client:load
+            showIndicator={false}
+            className="hover:opacity-80 transition-opacity flex items-center mt-1"
+          >
+            <SiEbay className="w-10 h-10" style={{ color: "#0064D2" }} />
+          </ExternalLink>
+          eBay Highlights
+        </h2>
+        
+        <div class="mt-2 text-foreground-muted flex flex-wrap items-center gap-1.5">
+          <span>A selection of items from the SHOP: B&Co eBay -</span>
+          <ExternalLink 
+            href="https://ebay.co.uk/usr/itsharryb/" 
+            client:load
+            showIndicator={false}
+            className="text-sm font-medium hover:underline" 
+            style={{ color: "#ff0055" }}
+          >
+            View full eBay profile &rarr;
+          </ExternalLink>
         </div>
-        <ExternalLink 
-          href="https://ebay.co.uk/usr/itsharryb/" 
-          client:load
-          showIndicator={false}
-          className="text-sm font-medium hover:underline" 
-          style={{ color: "#ff0055" }}
-        >
-          View full eBay profile &rarr;
-        </ExternalLink>
-      </div>
-
-      <ShopCarousel products={ebayItems} storeName="eBay" client:only="react" />
+      </ShopCarousel>
 
     </div>
   </section>

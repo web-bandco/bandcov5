@@ -11,10 +11,10 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  DialogClose,
   DialogTrigger,
 } from "@/components/ui/shadcn/dialog"
 import { Skeleton } from "@/components/ui/shadcn/skeleton"
+import { Spinner } from "@/components/ui/shadcn/spinner"
 
 export interface CarouselImage {
   src: string;
@@ -36,6 +36,7 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
   const [selectedIndex, setSelectedIndex] = React.useState(0)
   
   const [gridLoadedImages, setGridLoadedImages] = React.useState<Record<string, boolean>>({})
+  const [lightboxLoadedImages, setLightboxLoadedImages] = React.useState<Record<string, boolean>>({})
 
   const getActiveWindow = React.useCallback((currentIndex: number, total: number) => {
     const window = new Set<number>();
@@ -82,7 +83,6 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
     dialogApi.on("select", onDialogSelect);
   }, [dialogApi, images.length, getActiveWindow]);
 
-  // CAPTURE-PHASE EVENT INTERCEPTOR: Destroys the event before React can bubble it to background carousels
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen || !dialogApi) return;
@@ -117,10 +117,13 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
     setGridLoadedImages((prev) => ({ ...prev, [key]: true }));
   };
 
+  const handleLightboxImageLoad = (key: string) => {
+    setLightboxLoadedImages((prev) => ({ ...prev, [key]: true }));
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       
-      {/* 1. THE MAIN PAGE CAROUSEL (Grid Thumbnails) */}
       <Carousel 
         setApi={setMainApi}
         opts={{ align: "start", loop: true }}
@@ -130,6 +133,7 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
         <CarouselContent>
           {images.map((image, index) => {
             const shouldLoad = mainActiveSlides.has(index);
+            const isLoaded = gridLoadedImages[`main-${index}`];
             
             return (
               <CarouselItem key={index}>
@@ -139,7 +143,10 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
                       onClick={() => handleImageClick(index)}
                       className="overflow-hidden rounded-2xl border border-border bg-surface-primary shadow-sm aspect-[4/3] relative flex items-center justify-center cursor-pointer"
                     >
-                      <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
+                      {/* Reverted to pure, minimal Shadcn Skeleton */}
+                      {!isLoaded && (
+                        <Skeleton className="absolute inset-0 w-full h-full rounded-none z-10" />
+                      )}
                       
                       {shouldLoad && (
                         <img 
@@ -147,12 +154,11 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
                           alt={image.alt} 
                           onLoad={() => handleGridImageLoad(`main-${index}`)}
                           ref={(img) => {
-                            if (img && img.complete && !gridLoadedImages[`main-${index}`]) {
+                            if (img && img.complete && !isLoaded) {
                               handleGridImageLoad(`main-${index}`);
                             }
                           }}
-                          className="absolute inset-0 object-cover w-full h-full transition-opacity duration-300"
-                          style={{ opacity: gridLoadedImages[`main-${index}`] ? 1 : 0 }}
+                          className={`absolute inset-0 object-cover w-full h-full transition-opacity duration-300 z-0 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                           decoding="async"
                         />
                       )}
@@ -181,7 +187,6 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
         </button>
       </Carousel>
 
-      {/* 2. THE FULL-SCREEN LIGHTBOX */}
       <DialogContent 
         showCloseButton={false}
         className="max-w-none sm:max-w-none w-screen h-[100dvh] bg-transparent border-none shadow-none p-0 flex flex-col justify-center overflow-hidden data-[state=open]:animate-none outline-none"
@@ -226,6 +231,7 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
           <CarouselContent className="h-full ml-0 items-center">
             {images.map((image, index) => {
               const shouldLoad = lightboxActiveSlides.has(index);
+              const isLoaded = lightboxLoadedImages[`lightbox-${index}`];
 
               return (
                 <CarouselItem key={index} className="flex h-[100dvh] flex-col items-center justify-center pl-0 relative">
@@ -237,18 +243,31 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
                   />
 
                   <div className="relative w-full h-full p-4 md:p-24 flex items-center justify-center pointer-events-none z-10 md:cursor-pointer" onClick={() => setIsOpen(false)}>
+                    
+                    {/* Increased Spinner to w-12 h-12 */}
+                    {!isLoaded && shouldLoad && (
+                      <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <Spinner className="w-12 h-12 text-brand-500 animate-spin" />
+                      </div>
+                    )}
+
                     {shouldLoad && (
                       <img 
                         src={image.fullSrc} 
                         alt={image.alt} 
+                        onLoad={() => handleLightboxImageLoad(`lightbox-${index}`)}
+                        ref={(img) => {
+                          if (img && img.complete && !isLoaded) {
+                            handleLightboxImageLoad(`lightbox-${index}`);
+                          }
+                        }}
                         onClick={(e) => e.stopPropagation()} 
                         onPointerDown={(e) => {
                           if (e.pointerType === 'mouse' || window.matchMedia('(min-width: 768px)').matches) {
                             e.stopPropagation();
                           }
                         }}
-                        // THE SHRINK-WRAP FIX: w-auto h-auto strictly forces the swipe box to map exactly to the pixels of the photo.
-                        className="max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing md:cursor-default z-20"
+                        className={`max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing md:cursor-default z-20 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                         decoding="async"
                       />
                     )}

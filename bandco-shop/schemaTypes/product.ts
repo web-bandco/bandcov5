@@ -49,6 +49,15 @@ export const product = defineType({
       type: 'url',
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+      options: {
+        list: ['T-Shirts', 'Jackets', 'Trousers', 'Shirts', 'Accessories', 'Tech'],
+        layout: 'dropdown', 
+      },
+    }),
     // For now, we will keep image URLs as strings pointing to your Astro assets, 
     // or you can upload images directly to Sanity later.
     // Replace the old 'images' field with this native one
