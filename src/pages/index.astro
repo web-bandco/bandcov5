@@ -50,21 +50,13 @@ import { ExternalLink } from '@/components/ui/content/ExternalLink';
       </Button>
       
       {/* FIXED: Overrode inline-flex with !flex, added matching width */}
-      <ExternalLink 
-        client:load 
-        href="https://test.brightonandco.co.uk/" 
-        showIndicator={false} 
-        className="!flex w-full sm:w-[220px]"
-      >
-        <Button
-          size="lg"
-          variant="outline"
-          class="w-full justify-center pointer-events-none" 
-        >
-          <Icon name="flask-conical" size="sm" />
-          View Test Site
-        </Button>
-      </ExternalLink>
+      {/* FIXED: Added identical specific widths and justification */}
+      <Button size="lg" href="/contact" variant="outline" class="w-full sm:w-[220px] justify-center">
+        Contact B&Co
+        <Icon name="mail" size="sm" />
+      </Button>
+
+      
     </Fragment>
 
     <SiteUpdates slot="aside" />
