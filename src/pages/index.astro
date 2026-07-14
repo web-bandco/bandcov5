@@ -1,157 +1,199 @@
 ---
 import LandingLayout from '@/layouts/LandingLayout.astro';
-import { Hero } from '@/components/hero';
-import Button from '@/components/ui/form/Button/Button.astro';
-import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import TextCarousel from '@/components/landing/TextCarousel.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
-import FeatureTabs from '@/components/landing/FeatureTabs.tsx';
-import CTA from '@/components/landing/CTA.astro';
-import packageData from '../../package.json';
-import { Card } from '@/components/ui';
-
-// Import the React components
-import { ScrollArea } from "@/components/ui/overlay/ScrollArea/scroll-area";
-import Separator from '@/components/ui/layout/Separator';
-import { HomeTabs } from '@/components/landing/HomeTabs';
 import SiteUpdates from '@/components/landing/SiteUpdates.astro';
-import { ExternalLink } from '@/components/ui/content/ExternalLink';
-// 1. Create a structured array for your updates
+import CTA from '@/components/landing/CTA.astro';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
 
+import { Image } from 'astro:assets';
+
+import welcomeBg from '@/assets/images/main/home-landscape1.jpg';
+import shopBg from '@/assets/images/main/home-shop.jpg';
+import photoBg from '@/assets/images/main/home-photography.jpg';
+
+import shopImg from '@/assets/images/quicklinks/shop1.jpg';
+import photoImg from '@/assets/images/quicklinks/photography1.jpg';
+import contactImg from '@/assets/images/quicklinks/contact1.png';
 ---
 
-<LandingLayout
-  title="Brighton and Co"
-  description="The Brighton and Co Website, the homepage, showcasing the interests of Harry Brighton."
->
-  {/* ADDED: class="mt-24 md:mt-28" to push the Hero down below the header */}
-  <Hero 
-    layout="split" 
-    size="md" 
-    showBlob 
-    blobPosition="right"
-    class="mt-24 md:mt-28" 
-  >
-    <Badge slot="badge" pill pulse>B&Co v{packageData.version} Public Beta is Live</Badge>
-
-    <h1 slot="title">
-      Welcome to <span class="text-brand-500">Brighton and Co</span>
-    </h1>
-
-    <p slot="description">
-      The brand new Brighton and Co site built with Velocity.
-      This site is being actively developed and improved - if you have any feedback or suggestions, please <a href="/contact" class="text-brand-500 hover:underline"> get in touch</a>!
-    </p>
-
-    <Fragment slot="actions">
-      {/* FIXED: Added identical specific widths and justification */}
-      <Button size="lg" href="/about" class="w-full sm:w-[220px] justify-center">
-        About B&Co
-        <Icon name="arrow-right" size="sm" />
-      </Button>
-      
-      {/* FIXED: Overrode inline-flex with !flex, added matching width */}
-      {/* FIXED: Added identical specific widths and justification */}
-      <Button size="lg" href="/contact" variant="outline" class="w-full sm:w-[220px] justify-center">
-        Contact B&Co
-        <Icon name="mail" size="sm" />
-      </Button>
-
-      
-    </Fragment>
-
-    <SiteUpdates slot="aside" />
+<LandingLayout title="Brighton and Co">
+  
+  <section class="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
     
-  </Hero>
-    {/* NEW PURE TAILWIND CARDS SECTION */}
-  {/* 1 & 2. Added border-t, and reduced the top padding (pt-8 md:pt-12) to pull it closer to the Hero */}
-  <section class="pt-8 pb-16 md:pt-10 md:pb-24 bg-secondary border-t border-border">
-    
+    <div id="hero-backgrounds" class="absolute inset-0 w-full h-full pointer-events-none">
+      
+      {/* Index 0: Welcome (EAGER LOADED) */}
+      <Image 
+        src={welcomeBg} 
+        alt="Landscape Welcome" 
+        loading="eager"
+        fetchpriority="high"
+        class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-100 transition-opacity duration-1000 ease-in-out" 
+      />
+      
+      {/* Index 1: Shop (LAZY LOADED) */}
+      <Image 
+        src={shopBg} 
+        alt="Shop Flatlay" 
+        loading="lazy"
+        class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-0 transition-opacity duration-1000 ease-in-out" 
+      />
+      
+      {/* Index 2: Photography (LAZY LOADED) */}
+      <Image 
+        src={photoBg} 
+        alt="Camera Shot" 
+        loading="lazy"
+        class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-0 transition-opacity duration-1000 ease-in-out" 
+      />
+      
+    </div>
+
+    {/* Dark Vignette Overlay for perfect text contrast on any photo */}
+    <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90 pointer-events-none"></div>
+
+    {/* Central Interactive Carousel */}
+    <div class="relative z-10 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-16 md:mt-0">
+      <TextCarousel />
+    </div>
+
+    {/* Bouncing Scroll Chevron */}
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20">
+      <a href="#explore" class="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 hover:bg-white/20 backdrop-blur-sm text-white border border-white/10 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-500" aria-label="Scroll down">
+        <Icon name="chevron-down" class="w-6 h-6" />
+      </a>
+    </div>
+
+  </section>
+
+  {/* THE BENTO GRID NAVIGATION (Below the fold) */}
+  <section id="explore" class="py-16 md:py-24 bg-surface-primary scroll-mt-0">
     <div class="mx-auto max-w-7xl px-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 justify-items-center">
+      <div class="mb-12 text-center md:text-left">
+        <h2 class="text-3xl md:text-4xl font-bold text-foreground">Dive In</h2>
+        <p class="text-foreground-muted mt-2 text-lg">Choose a department below to get started.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         
-        {/* Card 1: Shop */}
-        <div class="flex flex-row md:flex-col items-center md:items-stretch bg-card border border-border w-full max-w-md md:max-w-sm rounded-2xl shadow-sm overflow-hidden p-3 md:p-0 transition-all">          <a 
-            href="/shop" 
-            class="group shrink-0 flex items-center justify-center w-20 h-20 md:w-auto md:h-auto md:aspect-video md:mx-4 md:mt-4 md:mb-2 rounded-xl border-2 border-accent text-accent transition-all duration-300 hover:bg-accent hover:text-white"
-          >
-            <Icon name="handbag" class="w-8 h-8 md:w-16 md:h-16 transition-transform duration-300 group-hover:scale-110" />
-          </a>
-          <div class="flex flex-col flex-auto ml-4 md:ml-0 md:p-6 md:pt-2">
-            <h2 class="text-lg md:text-xl font-bold text-foreground">SHOP: B&Co</h2>
-            <p class="hidden md:block mt-2 text-sm md:text-base text-foreground-muted">Browse B&Co Vinted and eBay - a variety of pre-loved items.</p>
-            <div class="mt-1 md:mt-4 flex items-center justify-start md:justify-end mt-auto">
-              <a href="/shop" class="text-sm font-semibold text-brand-500 hover:underline">Visit Shop &rarr;</a>
+        {/* CARD 1: SHOP */}
+        {/* Updated: Neutral border by default, glowing brand-500 blue highlight ONLY on hover */}
+        <a href="/shop" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 hover:ring-2 hover:ring-brand-500/50 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+          {/* FIXED: Removed .bg-layer and opacity-0 so the image loads instantly and zooms on hover */}
+          <Image 
+            src={shopImg} 
+            alt="Shop B&Co" 
+            loading="lazy"
+            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative z-10 p-8 flex flex-col items-start translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+            {/* Reset to neutral white by default, highlights blue on hover */}
+            <div class="p-3 bg-white/20 text-white group-hover:bg-brand-500/20 group-hover:text-brand-400 group-hover:border-brand-500/30 backdrop-blur-md rounded-2xl mb-4 border border-white/30 transition-colors duration-300">
+              <Icon name="handbag" class="w-6 h-6" />
             </div>
+            <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">SHOP: B&Co</h2>
+            <p class="text-gray-300 text-sm md:text-base line-clamp-2">Browse the B&Co Vinted and eBay inventories — a curated variety of pre-loved items and tech.</p>
+            <span class="mt-6 inline-flex items-center text-white group-hover:text-brand-400 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
+              Visit Shop <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </span>
           </div>
-        </div>
+        </a>
 
-        {/* Card 2: Contact */}
-        <div class="flex flex-row md:flex-col items-center md:items-stretch bg-card border border-border w-full max-w-md md:max-w-sm rounded-2xl shadow-sm overflow-hidden p-3 md:p-0 transition-all">          <a 
-            href="/contact" 
-            class="group shrink-0 flex items-center justify-center w-20 h-20 md:w-auto md:h-auto md:aspect-video md:mx-4 md:mt-4 md:mb-2 rounded-xl border-2 border-accent text-accent transition-all duration-300 hover:bg-accent hover:text-white"
-          >
-            <Icon name="mail" class="w-8 h-8 md:w-16 md:h-16 transition-transform duration-300 group-hover:scale-110" />
-          </a>
-          <div class="flex flex-col flex-auto ml-4 md:ml-0 md:p-6 md:pt-2">
-            <h2 class="text-lg md:text-xl font-bold text-foreground">Get in Touch</h2>
-            <p class="hidden md:block mt-2 text-sm md:text-base text-foreground-muted">Have a question or suggestion? Send a message.</p>
-            <div class="mt-1 md:mt-4 flex items-center justify-start md:justify-end mt-auto">
-              <a href="/contact" class="text-sm font-semibold text-brand-500 hover:underline">Contact Us &rarr;</a>
+        {/* CARD 2: PHOTOGRAPHY */}
+        <a href="/photography" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 hover:ring-2 hover:ring-brand-500/50 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+          <Image 
+            src={photoImg} 
+            alt="Photography Gallery" 
+            loading="lazy"
+            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative z-10 p-8 flex flex-col items-start translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+            <div class="p-3 bg-white/20 text-white group-hover:bg-brand-500/20 group-hover:text-brand-400 group-hover:border-brand-500/30 backdrop-blur-md rounded-2xl mb-4 border border-white/30 transition-colors duration-300">
+              <Icon name="camera" class="w-6 h-6" />
             </div>
+            <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Photography</h2>
+            <p class="text-gray-300 text-sm md:text-base line-clamp-2">Explore my gallery of high-resolution, original photography.</p>
+            <span class="mt-6 inline-flex items-center text-white group-hover:text-brand-400 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
+              View Gallery <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </span>
           </div>
-        </div>
+        </a>
 
-        {/* Card 3: Photography */}
-        <div class="flex flex-row md:flex-col items-center md:items-stretch bg-card border border-border w-full max-w-md md:max-w-sm rounded-2xl shadow-sm overflow-hidden p-3 md:p-0 transition-all">
-          <a 
-            href="/photography" 
-            class="group shrink-0 flex items-center justify-center w-20 h-20 md:w-auto md:h-auto md:aspect-video md:mx-4 md:mt-4 md:mb-2 rounded-xl border-2 border-accent text-accent transition-all duration-300 hover:bg-accent hover:text-white"
-          >
-            <Icon name="camera" class="w-8 h-8 md:w-16 md:h-16 transition-transform duration-300 group-hover:scale-110" />
-          </a>
-          <div class="flex flex-col flex-auto ml-4 md:ml-0 md:p-6 md:pt-2">
-            <h2 class="text-lg md:text-xl font-bold text-foreground">Photography</h2>
-            <p class="hidden md:block mt-2 text-sm md:text-base text-foreground-muted">Explore a gallery of high-resolution photography.</p>
-            <div class="mt-1 md:mt-4 flex items-center justify-start md:justify-end mt-auto">
-              <a href="/photography" class="text-sm font-semibold text-brand-500 hover:underline">View Gallery &rarr;</a>
+        {/* CARD 3: CONTACT */}
+        <a href="/contact" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 hover:ring-2 hover:ring-brand-500/50 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+          <Image 
+            src={contactImg} 
+            alt="Contact Us" 
+            loading="lazy"
+            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative z-10 p-8 flex flex-col items-start translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+            <div class="p-3 bg-white/20 text-white group-hover:bg-brand-500/20 group-hover:text-brand-400 group-hover:border-brand-500/30 backdrop-blur-md rounded-2xl mb-4 border border-white/30 transition-colors duration-300">
+              <Icon name="mail" class="w-6 h-6" />
             </div>
+            <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Get in Touch</h2>
+            <p class="text-gray-300 text-sm md:text-base line-clamp-2">Have a question regarding an item, or just want to chat? Send me a message.</p>
+            <span class="mt-6 inline-flex items-center text-white group-hover:text-brand-400 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
+              Contact Me <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </span>
           </div>
-        </div>
+        </a>
 
       </div>
     </div>
   </section>
 
-  {/* TWO-COLUMN DASHBOARD & FEATURES SECTION */}
-  {/* 1. Removed the border-t border-border from this section */}
-  <section class="py-16 md:py-24 bg-surface-primary">
-    <div class="mx-auto max-w-7xl px-6">
-      
-      {/* 3. Removed lg:gap-12 so we can handle the gap manually with padding and borders */}
-      <div class="grid grid-cols-1 lg:grid-cols-10 gap-16 lg:gap-0 items-start">
-        
-        {/* Left Column: Added right padding (lg:pr-12) to push content away from the new divider */}
-        <div class="w-full flex flex-col lg:col-span-3 lg:pr-12">
-          <div class="mb-8">
-            <h2 class="font-display text-foreground text-2xl font-bold md:text-3xl">
-              Quick <span class="text-brand-500">Info</span>
-            </h2>
-            <p class="text-foreground-muted mt-3 text-base">
-              Some information about B&Co.
-            </p>
-          </div>
-          <HomeTabs client:visible />
+  {/* MINIMAL SITE UPDATES BAR */}
+  <section class="py-8 bg-surface-secondary border-y border-border">
+    <div class="container max-w-7xl">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-background rounded-2xl border border-border p-6 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <Badge pulse pill variant="brand" class="bg-brand-500/10">Latest Updates</Badge>
+          <span class="text-sm font-medium text-foreground">Keep track of the newest additions to the site.</span>
         </div>
-
-        {/* Right Column: Added the vertical divider (lg:border-l) and left padding (lg:pl-12) */}
-        <div class="w-full flex flex-col lg:col-span-7 border-l-0 lg:border-l border-border lg:pl-12">
-          <FeatureTabs client:visible />
+        <div class="w-full md:w-auto">
+          <SiteUpdates />
         </div>
       </div>
     </div>
   </section>
-  <Separator orientation="horizontal" class="my-20" />
-
 
   <CTA />
 </LandingLayout>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  @keyframes slow-zoom {
+    0% { transform: scale(1.05); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1.05); }
+  }
+  .animate-slow-zoom {
+    animation: slow-zoom 30s ease-in-out infinite;
+  }
+</style>
+
+{/* Listener Script: Crossfades backgrounds based on Text Carousel Events */}
+<script>
+  document.addEventListener('slideChanged', ((e: CustomEvent) => {
+    const activeIndex = e.detail.index;
+    const bgLayers = document.querySelectorAll('.bg-layer');
+    
+    bgLayers.forEach((layer, i) => {
+      if (i === activeIndex) {
+        layer.classList.remove('opacity-0');
+        layer.classList.add('opacity-100');
+      } else {
+        layer.classList.add('opacity-0');
+        layer.classList.remove('opacity-100');
+      }
+    });
+  }) as EventListener);
+</script>

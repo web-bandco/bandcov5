@@ -3,9 +3,6 @@
  * LandingLayout
  * Layout wrapper for landing-style pages (marketing, demo, showcase)
  * Uses Header + Footer with landing-specific configuration
- *
- * This layout is part of the "demo" layer - it can be optionally installed
- * via CLI for users who want the full landing page experience.
  */
 import BaseLayout from './BaseLayout.astro';
 import Header from '@/components/layout/Header.astro';
@@ -50,6 +47,7 @@ const {
     position="fixed"
     size="lg"
     showCta={false}
+    colorScheme="invert" 
     extraNav={[]}
     actions={[
       {

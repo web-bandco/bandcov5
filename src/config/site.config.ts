@@ -50,7 +50,7 @@ export interface SiteConfig {
 
 const siteConfig: SiteConfig = {
   name: 'B&Co',
-  description: 'Brighton and Co Version 5',
+  description: 'Brighton and Co - the personal website of Harry Brighton',
   url: SITE_URL || 'https://new.brightonandco.co.uk',
   ogImage: '/og-default.png',
   author: 'Harry B',

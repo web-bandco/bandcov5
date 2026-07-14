@@ -14,7 +14,10 @@ import Separator from '@/components/ui/layout/Separator';
 import TechStack from '@/components/landing/TechStack.astro';
 import { ImageCarousel } from '@/components/ui/content/ImageCarousel';
 
-// ADDED: Import Image optimization tools
+// NEW RELOCATED COMPONENTS FROM INDEX
+import { HomeTabs } from '@/components/landing/HomeTabs';
+import FeatureTabs from '@/components/landing/FeatureTabs.tsx';
+
 import { Image, getImage } from 'astro:assets';
 
 import pennyImg from '../assets/images/cats/penny.jpg';
@@ -55,7 +58,6 @@ const webinfo = [
   }
 ]
 
-// OPTIMIZATION: Created a raw array, then mapped through it with getImage to resize to 800px WebP
 const rawCatPhotos = [
   { img: pennyImg, alt: "Penny, a British shorthair black cat with orange eyes, laid by the window." },
   { img: poppyImg, alt: "Poppy, a British shorthair blue cat, with orange eyes, stood up by the window." },
@@ -64,14 +66,12 @@ const rawCatPhotos = [
 
 const catPhotos = await Promise.all(
   rawCatPhotos.map(async (photo) => {
-    // 1. The small carousel thumbnail (Fast loading)
     const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    // 2. The large lightbox image (High quality)
     const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
     
     return { 
-      src: thumb.src,       // Passes the thumbnail to the main img tag
-      fullSrc: full.src,    // Passes the high-res to the lightbox
+      src: thumb.src,       
+      fullSrc: full.src,    
       alt: photo.alt 
     };
   })
@@ -112,7 +112,6 @@ const hobbyPhotos = await Promise.all(
 
     <div slot="aside" class="flex flex-col items-center text-center bg-surface-primary border border-border rounded-2xl shadow-sm p-8 w-full max-w-sm mx-auto transition-all hover:shadow-md">
       <figure class="w-32 h-32 mb-6">
-        {/* OPTIMIZATION: Replaced standard img with Astro Image component, target width 256px */}
         <Image
           src={hiwaveImg}
           alt="My memoji waving" 
@@ -143,9 +142,27 @@ const hobbyPhotos = await Promise.all(
     </div>
   </section>
 
+  {/* RELOCATED: Under The Hood (Technical Features) */}
+  <section class="py-16 md:py-24 bg-surface-primary border-t border-border">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-foreground">Under the Hood</h2>
+        <p class="text-foreground-muted mt-2 text-lg">A look at the technical features powering Brighton and Co Version 5.</p>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-10 gap-16 lg:gap-0 items-start">
+        <div class="w-full flex flex-col lg:col-span-3 lg:pr-12">
+          <HomeTabs client:visible />
+        </div>
+        <div class="w-full flex flex-col lg:col-span-7 border-l-0 lg:border-l border-border lg:pl-12">
+          <FeatureTabs client:visible />
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="py-16 bg-surface-secondary border-y border-border">
     <div class="container max-w-6xl">
-      
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-start">
         
         <div class="flex flex-col gap-6">
@@ -165,7 +182,6 @@ const hobbyPhotos = await Promise.all(
         </div>
 
       </div>
-
     </div>
   </section>
 
