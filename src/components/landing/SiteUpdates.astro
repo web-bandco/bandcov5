@@ -104,12 +104,12 @@ const siteUpdates = [
 ---
 
 {/* COLLAPSIBLE UPDATES WIDGET */}
+{/* FIXED: Removed max-w-[500px], changed to w-full so it fills the grid column */}
 <div 
   id="updates-widget" 
-  class="relative mx-auto w-full max-w-[500px] rounded-xl border border-border bg-surface-secondary/50 shadow-sm backdrop-blur-sm overflow-hidden transition-all duration-300 h-[76px] md:h-[450px]"
+  class="relative w-full rounded-3xl border border-border bg-surface-secondary/50 shadow-sm backdrop-blur-sm overflow-hidden transition-all duration-300 h-[76px] md:h-[450px]"
 >
   {/* Mobile Toggle Button (+ / -) */}
-  {/* Fixed: Swapped bg-surface-primary for solid bg-background and added shadow-sm */}
   <button 
     id="updates-toggle" 
     class="absolute right-5 top-5 z-20 flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background shadow-sm text-foreground transition-colors hover:bg-surface-secondary md:hidden"
@@ -120,20 +120,20 @@ const siteUpdates = [
   </button>
 
   {/* The Scroll Area Wrapper */}
-  {/* Fixed: Added an ID and pointer-events-none to prevent touch scrolling when collapsed */}
-  <div id="updates-scroll-wrapper" class="h-full w-full pointer-events-none md:pointer-events-auto">
+  {/* FIXED: Added [&>[data-radix-scroll-area-viewport]]:!w-full to force Radix to stretch text across the full box */}
+  <div id="updates-scroll-wrapper" class="h-full w-full pointer-events-none md:pointer-events-auto [&>[data-radix-scroll-area-viewport]]:!w-full [&>[data-radix-scroll-area-viewport]]:!block">
     <ScrollArea client:load type="auto" className="h-full w-full">
-      <div class="p-6">
-        <div class="mb-6 flex items-center gap-2">
+      <div class="p-6 md:p-8">
+        <div class="mb-6 flex items-center gap-2 border-b border-border/50 pb-4">
           <Icon name="bell" size="sm" class="text-brand-500" />
-          <h2 class="text-lg font-bold text-foreground">Site Updates</h2>
+          <h2 class="text-lg font-bold text-foreground">Site Updates:</h2>
         </div>
         
         <div class="flex flex-col gap-1">
           {siteUpdates.map((update, index) => (
             <>
               <div class="group flex flex-col gap-2 py-3">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-wrap items-center justify-between gap-2">
                   <span class="inline-flex items-center rounded-full bg-brand-500/10 px-2.5 py-0.5 text-xs font-semibold text-brand-500 border border-brand-500/20">
                     {update.version}
                   </span>
@@ -142,7 +142,7 @@ const siteUpdates = [
                   </span>
                 </div>
                 <div>
-                  <h3 class="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors">
+                  <h3 class="text-base font-semibold text-foreground group-hover:text-brand-500 transition-colors">
                     {update.title}
                   </h3>
                   <p class="mt-1 text-sm text-foreground-muted leading-relaxed">
@@ -169,35 +169,28 @@ const siteUpdates = [
     const minusIcon = document.getElementById('updates-minus');
     const scrollWrapper = document.getElementById('updates-scroll-wrapper');
 
-    // Added a data attribute check to prevent attaching the listener multiple times
     if (toggleBtn && widget && scrollWrapper && !toggleBtn.dataset.initialized) {
       toggleBtn.dataset.initialized = 'true';
       
       toggleBtn.addEventListener('click', () => {
-        // UX Fix: If the box is about to collapse, reset the scroll position back to the top
-        if (widget.classList.contains('h-[350px]')) {
+        if (widget.classList.contains('h-[450px]')) {
           const viewport = scrollWrapper.querySelector('[data-radix-scroll-area-viewport]');
           if (viewport) {
             viewport.scrollTop = 0;
           }
         }
 
-        // Swap heights: 76px (collapsed) to 350px (expanded)
         widget.classList.toggle('h-[76px]');
-        widget.classList.toggle('h-[350px]');
+        widget.classList.toggle('h-[450px]');
 
-        // Swap the + and - icons
         plusIcon?.classList.toggle('hidden');
         minusIcon?.classList.toggle('hidden');
 
-        // Toggle pointer-events to prevent/allow scrolling
         scrollWrapper.classList.toggle('pointer-events-none');
       });
     }
   }
 
-  // Run immediately on first load
   initSiteUpdates();
-  // Re-run every time the user navigates back to the home page via View Transitions
   document.addEventListener('astro:page-load', initSiteUpdates);
 </script>

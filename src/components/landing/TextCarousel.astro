@@ -10,11 +10,11 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
   {/* The Adaptive Glass Container */}
   <div class="carousel-container relative overflow-hidden rounded-3xl bg-background/25 dark:bg-background/40 backdrop-blur-xl border border-border shadow-2xl">
     
-    {/* Navigation Arrows */}
-    <button id="prev-btn" aria-label="Previous slide" class="liquid-carousel-btn absolute left-4 top-0 bottom-0 my-auto w-12 h-12 opacity-0 hidden md:flex items-center justify-center group-hover:opacity-100 z-30 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+    {/* Navigation Arrows: Strictly hidden on mobile (<768px) to prevent text overlap, fades in on desktop hover */}
+    <button id="prev-btn" aria-label="Previous slide" class="liquid-carousel-btn absolute left-4 top-0 bottom-0 my-auto w-12 h-12 hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 z-30 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
       <Icon name="chevron-left" class="w-6 h-6" />
     </button>
-    <button id="next-btn" aria-label="Next slide" class="liquid-carousel-btn absolute right-4 top-0 bottom-0 my-auto w-12 h-12 opacity-0 hidden md:flex items-center justify-center group-hover:opacity-100 z-30 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+    <button id="next-btn" aria-label="Next slide" class="liquid-carousel-btn absolute right-4 top-0 bottom-0 my-auto w-12 h-12 hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 z-30 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
       <Icon name="chevron-right" class="w-6 h-6" />
     </button>
 
@@ -27,10 +27,10 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
           Welcome to <span class="text-brand-500">Brighton and Co</span>
         </h2>
         <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
-          A personal digital hub showcasing my technical projects, curated shop inventory, and original photography.
+          A small website maintained as a hobby project, showcasing my personal interests in photography, design, and technology.
         </p>
         <a href="/about" class="liquid-carousel-btn inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-          Learn More <Icon name="user" class="w-4 h-4" />
+          Learn More <Icon name="arrow-right" class="w-4 h-4" />
         </a>
       </div>
 
@@ -40,7 +40,10 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
           <span class="text-transparent bg-clip-text" style={gradientStyle}>SHOP</span>: B&Co
         </h2>
         <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
-          Explore a hand-picked selection of pre-loved fashion and refurbished tech, sourced with care and listed across Vinted and eBay.
+          Explore a small selection of pre-loved fashion and other items - direct from my Vinted and eBay stores.
+        </p>
+        <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
+          All items are in excellent condition, unless otherwise stated - all are packaged and shipped with care.
         </p>
         <a href="/shop" class="liquid-carousel-btn inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           Visit the Shop <Icon name="handbag" class="w-4 h-4" />
@@ -53,7 +56,7 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
           My <span class="text-brand-500">Photography</span>
         </h2>
         <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
-          A dedicated gallery space highlighting my passion for photography, featuring high-resolution landscapes and moments.
+          A dedicated gallery space showcasing my passion for photography, featuring high-resolution landscapes and other moments.
         </p>
         <a href="/photography" class="liquid-carousel-btn inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           View Gallery <Icon name="camera" class="w-4 h-4" />
@@ -77,11 +80,21 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
   }
   
   .animate-progress {
-    animation: progress-fill 10s linear forwards;
+    animation: progress-fill 8s linear forwards;
   }
   
   .pause-progress {
     animation-play-state: paused !important;
+  }
+
+  /* 1-Time Peek Animation to show users the box is swipeable */
+  @keyframes swipe-peek {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(-104%); }
+  }
+  
+  .animate-peek {
+    animation: swipe-peek 1s cubic-bezier(0.25, 1, 0.5, 1) ease-in-out;
   }
 
   @property --glass-angle {
@@ -160,7 +173,6 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
 
 <script>
   function initCarousel() {
-    // Explicitly cast to HTMLElement to satisfy strict TypeScript checking
     const carousel = document.getElementById('text-carousel') as HTMLElement;
     const track = document.getElementById('carousel-track') as HTMLElement;
     
@@ -184,7 +196,9 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
     let currentIndex = 1;
     let isTransitioning = false;
     let isPaused = false;
+    let autoPlayTimer: number;
     const totalSlides = originalSlides.length;
+    const SLIDE_DURATION = 8000; // 8 Seconds per slide
 
     // Position track instantly
     track.style.transition = 'none';
@@ -195,8 +209,20 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
       document.dispatchEvent(new CustomEvent('slideChanged', { detail: { index: realIndex } }));
     }
 
+    // Bulletproof Native JS Timer for Auto-Scrolling
+    function startAutoPlay() {
+      stopAutoPlay();
+      resetProgress();
+      autoPlayTimer = window.setInterval(() => {
+        if (!isPaused) nextSlide();
+      }, SLIDE_DURATION);
+    }
+
+    function stopAutoPlay() {
+      if (autoPlayTimer) clearInterval(autoPlayTimer);
+    }
+
     function updateSlide(smooth = true) {
-      // Explicit null check required by TS closure rules
       if (!track) return;
       
       if (smooth) {
@@ -206,7 +232,7 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
       }
       track.style.transform = `translateX(-${currentIndex * 100}%)`;
       dispatchSlideChange();
-      resetProgress();
+      startAutoPlay();
     }
 
     function resetProgress() {
@@ -246,17 +272,16 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
     prevBtn?.addEventListener('click', prevSlide);
     nextBtn?.addEventListener('click', nextSlide);
 
-    progress?.addEventListener('animationend', () => {
-      if (!isPaused) nextSlide();
-    });
-
+    // Pause on Interaction
     const pauseCarousel = () => {
       isPaused = true;
+      stopAutoPlay();
       progress?.classList.add('pause-progress');
     };
     
     const resumeCarousel = () => {
       isPaused = false;
+      startAutoPlay();
       progress?.classList.remove('pause-progress');
     };
 
@@ -292,7 +317,19 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
       else if (diff < -50) prevSlide();
     }, { passive: true });
 
+    // 1-Time "Swipe Hint" Peek Animation (Triggers 1.5s after load)
+    setTimeout(() => {
+      if (!isPaused && currentIndex === 1) {
+        track.classList.add('animate-peek');
+        track.addEventListener('animationend', () => {
+          track.classList.remove('animate-peek');
+        }, { once: true });
+      }
+    }, 1500);
+
+    // Start everything up!
     setTimeout(dispatchSlideChange, 50);
+    startAutoPlay();
   }
 
   initCarousel();

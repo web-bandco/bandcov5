@@ -147,18 +147,60 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
     </div>
   </section>
 
-  {/* MINIMAL SITE UPDATES BAR */}
-  <section class="py-8 bg-surface-secondary border-y border-border">
-    <div class="container max-w-7xl">
-      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-background rounded-2xl border border-border p-6 shadow-sm">
-        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-          <Badge pulse pill variant="brand" class="bg-brand-500/10">Latest Updates</Badge>
-          <span class="text-sm font-medium text-foreground">Keep track of the newest additions to the site.</span>
+  {/* TWO-COLUMN INFO & UPDATES SECTION */}
+  <section class="py-16 md:py-24 bg-surface-secondary border-t border-border">
+    <div class="mx-auto max-w-7xl px-6">
+      
+      {/* FIXED: Changed items-start to items-stretch to force equal heights */}
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        
+        {/* LEFT COLUMN: Behind the Brand Spotlight */}
+        <div class="lg:col-span-5 flex flex-col justify-between h-full bg-background rounded-3xl border border-border p-8 shadow-sm">
+          <div>
+            <div class="flex items-center gap-3 mb-6">
+              <Badge pulse pill variant="brand" class="bg-brand-500/10">Find out a bit about B&Co</Badge>
+            </div>
+            
+            <h2 class="text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-4">
+              What is B&Co?
+            </h2>
+            
+            <p class="text-foreground-muted text-sm md:text-base leading-relaxed mb-6">
+              Brighton and Co (B&Co) is a personal website and hobby project, maintained by me (Harry B). It serves as the place to dive deeper into my hobby of website development, as well as a way to showcase my interests.
+            </p>
+            
+            <ul class="space-y-3 text-sm text-foreground mb-8">
+              <li class="flex items-start gap-2">
+                <Icon name="check" class="w-4 h-4 text-brand-500 shrink-0 mt-0.5" />
+                <span>Completely personalised by me, Harry B.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon name="check" class="w-4 h-4 text-brand-500 shrink-0 mt-0.5" />
+                <span>Specially selected products from SHOP: B&Co Vinted and eBay.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon name="check" class="w-4 h-4 text-brand-500 shrink-0 mt-0.5" />
+                <span>High-resolution, original digital photography</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="pt-6 border-t border-border/50 flex items-center justify-between">
+            <span class="text-xs font-mono text-foreground-muted">Site Status: Almost there!</span>
+            <a href="/about" class="text-xs font-bold text-brand-500 hover:underline inline-flex items-center gap-1">
+              Read More <Icon name="arrow-right" class="w-3 h-3" />
+            </a>
+          </div>
         </div>
-        <div class="w-full md:w-auto">
+
+        {/* RIGHT COLUMN: The Site Updates Feed */}
+        {/* FIXED: Added h-full to the wrapper so it stretches with the grid */}
+        <div class="lg:col-span-7 w-full h-full">
           <SiteUpdates />
         </div>
+
       </div>
+
     </div>
   </section>
 
