@@ -23,28 +23,40 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
     
     <div id="hero-backgrounds" class="absolute inset-0 w-full h-full pointer-events-none">
       
-      {/* Index 0: Welcome (EAGER LOADED) */}
+      {/* Index 0: Welcome (EAGER LOADED, AVIF Quality 50, Responsive Widths) */}
       <Image 
         src={welcomeBg} 
         alt="Landscape Welcome" 
         loading="eager"
         fetchpriority="high"
+        format="avif"
+        quality={50}
+        widths={[640, 1024, 1920]}
+        sizes="100vw"
         class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-100 transition-opacity duration-1000 ease-in-out" 
       />
       
-      {/* Index 1: Shop (LAZY LOADED) */}
+      {/* Index 1: Shop (LAZY LOADED, AVIF Quality 50, Responsive Widths) */}
       <Image 
         src={shopBg} 
         alt="Shop Flatlay" 
         loading="lazy"
+        format="avif"
+        quality={50}
+        widths={[640, 1024, 1920]}
+        sizes="100vw"
         class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-0 transition-opacity duration-1000 ease-in-out" 
       />
       
-      {/* Index 2: Photography (LAZY LOADED) */}
+      {/* Index 2: Photography (LAZY LOADED, AVIF Quality 50, Responsive Widths) */}
       <Image 
         src={photoBg} 
         alt="Camera Shot" 
         loading="lazy"
+        format="avif"
+        quality={50}
+        widths={[640, 1024, 1920]}
+        sizes="100vw"
         class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-0 transition-opacity duration-1000 ease-in-out" 
       />
       
@@ -77,19 +89,20 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         
-        {/* CARD 1: SHOP */}
-        {/* Updated: Neutral border by default, glowing brand-500 blue highlight ONLY on hover */}
+        {/* CARD 1: SHOP (OPTIMIZED: AVIF Quality 60, capped at 400px/800px widths) */}
         <a href="/shop" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 hover:ring-2 hover:ring-brand-500/50 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-          {/* FIXED: Removed .bg-layer and opacity-0 so the image loads instantly and zooms on hover */}
           <Image 
             src={shopImg} 
             alt="Shop B&Co" 
             loading="lazy"
+            format="avif"
+            quality={60}
+            widths={[400, 800]}
+            sizes="(max-width: 768px) 100vw, 33vw"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div class="relative z-10 p-8 flex flex-col items-start translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-            {/* Reset to neutral white by default, highlights blue on hover */}
             <div class="p-3 bg-white/20 text-white group-hover:bg-brand-500/20 group-hover:text-brand-400 group-hover:border-brand-500/30 backdrop-blur-md rounded-2xl mb-4 border border-white/30 transition-colors duration-300">
               <Icon name="handbag" class="w-6 h-6" />
             </div>
@@ -101,12 +114,16 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
           </div>
         </a>
 
-        {/* CARD 2: PHOTOGRAPHY */}
+        {/* CARD 2: PHOTOGRAPHY (OPTIMIZED: Clamps down the massive 4.3MB 5712x4284 file) */}
         <a href="/photography" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 hover:ring-2 hover:ring-brand-500/50 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           <Image 
             src={photoImg} 
             alt="Photography Gallery" 
             loading="lazy"
+            format="avif"
+            quality={60}
+            widths={[400, 800]}
+            sizes="(max-width: 768px) 100vw, 33vw"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -122,12 +139,16 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
           </div>
         </a>
 
-        {/* CARD 3: CONTACT */}
+        {/* CARD 3: CONTACT (OPTIMIZED: Capped at 400px/800px widths) */}
         <a href="/contact" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 hover:ring-2 hover:ring-brand-500/50 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           <Image 
             src={contactImg} 
             alt="Contact Us" 
             loading="lazy"
+            format="avif"
+            quality={60}
+            widths={[400, 800]}
+            sizes="(max-width: 768px) 100vw, 33vw"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -151,7 +172,6 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
   <section class="py-16 md:py-24 bg-surface-secondary border-t border-border">
     <div class="mx-auto max-w-7xl px-6">
       
-      {/* FIXED: Changed items-start to items-stretch to force equal heights */}
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* LEFT COLUMN: Behind the Brand Spotlight */}
@@ -194,7 +214,6 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
         </div>
 
         {/* RIGHT COLUMN: The Site Updates Feed */}
-        {/* FIXED: Added h-full to the wrapper so it stretches with the grid */}
         <div class="lg:col-span-7 w-full h-full">
           <SiteUpdates />
         </div>

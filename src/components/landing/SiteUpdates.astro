@@ -104,10 +104,10 @@ const siteUpdates = [
 ---
 
 {/* COLLAPSIBLE UPDATES WIDGET */}
-{/* FIXED: Removed max-w-[500px], changed to w-full so it fills the grid column */}
+{/* Retained md:h-[535px] from previous step to match left card footer height perfectly */}
 <div 
   id="updates-widget" 
-  class="relative w-full rounded-3xl border border-border bg-surface-secondary/50 shadow-sm backdrop-blur-sm overflow-hidden transition-all duration-300 h-[76px] md:h-[450px]"
+  class="relative w-full rounded-3xl border border-border bg-surface-secondary/50 shadow-sm backdrop-blur-sm overflow-hidden transition-all duration-300 h-[76px] md:h-[535px]"
 >
   {/* Mobile Toggle Button (+ / -) */}
   <button 
@@ -120,9 +120,9 @@ const siteUpdates = [
   </button>
 
   {/* The Scroll Area Wrapper */}
-  {/* FIXED: Added [&>[data-radix-scroll-area-viewport]]:!w-full to force Radix to stretch text across the full box */}
+  {/* OPTIMIZED: Changed client:load to client:visible to unblock initial LCP execution */}
   <div id="updates-scroll-wrapper" class="h-full w-full pointer-events-none md:pointer-events-auto [&>[data-radix-scroll-area-viewport]]:!w-full [&>[data-radix-scroll-area-viewport]]:!block">
-    <ScrollArea client:load type="auto" className="h-full w-full">
+    <ScrollArea client:visible type="auto" className="h-full w-full">
       <div class="p-6 md:p-8">
         <div class="mb-6 flex items-center gap-2 border-b border-border/50 pb-4">
           <Icon name="bell" size="sm" class="text-brand-500" />
@@ -173,7 +173,7 @@ const siteUpdates = [
       toggleBtn.dataset.initialized = 'true';
       
       toggleBtn.addEventListener('click', () => {
-        if (widget.classList.contains('h-[450px]')) {
+        if (widget.classList.contains('h-[535px]')) {
           const viewport = scrollWrapper.querySelector('[data-radix-scroll-area-viewport]');
           if (viewport) {
             viewport.scrollTop = 0;
@@ -181,7 +181,7 @@ const siteUpdates = [
         }
 
         widget.classList.toggle('h-[76px]');
-        widget.classList.toggle('h-[450px]');
+        widget.classList.toggle('h-[535px]');
 
         plusIcon?.classList.toggle('hidden');
         minusIcon?.classList.toggle('hidden');
