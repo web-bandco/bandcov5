@@ -133,7 +133,7 @@ function getSocialIcon(platform: string): string {
             const isExternal = item.external || item.href.startsWith('http');
             return isExternal ? (
               <ExternalLink
-                client:load
+                client:visible
                 href={item.href}
                 className="transition-colors hover:text-foreground"
                 showIndicator={true}
@@ -160,7 +160,7 @@ function getSocialIcon(platform: string): string {
             <div class="flex items-center gap-[var(--space-stack-md)]">
               {socialLinks.map((social) => (
                 <ExternalLink
-                  client:load
+                  client:visible
                   href={social.href}
                   className="transition-colors text-foreground-muted hover:text-foreground"
                   showIndicator={false}
@@ -201,7 +201,7 @@ function getSocialIcon(platform: string): string {
                 <div class="flex items-center gap-[var(--space-stack-md)] pt-2">
                   {socialLinks.map((social) => (
                     <ExternalLink
-                      client:load
+                      client:visible
                       href={social.href}
                       className="transition-colors text-foreground-muted hover:text-foreground"
                       showIndicator={false}
@@ -232,7 +232,7 @@ function getSocialIcon(platform: string): string {
                       <li>
                         {isExternal ? (
                           <ExternalLink
-                            client:load
+                            client:visible
                             href={link.href}
                             className="text-sm transition-colors text-foreground-muted hover:text-foreground"
                             showIndicator={true}
@@ -275,7 +275,7 @@ function getSocialIcon(platform: string): string {
                       const isExternal = link.href.startsWith('http');
                       return isExternal ? (
                         <ExternalLink
-                          client:load
+                          client:visible
                           href={link.href}
                           className="text-sm transition-colors text-foreground-muted hover:text-foreground"
                           showIndicator={true}
@@ -338,7 +338,7 @@ function getSocialIcon(platform: string): string {
             const isExternal = item.external || item.href.startsWith('http');
             return isExternal ? (
               <ExternalLink
-                client:load
+                client:visible
                 href={item.href}
                 className="transition-colors hover:text-foreground"
                 showIndicator={true}
@@ -362,7 +362,7 @@ function getSocialIcon(platform: string): string {
           <div class="flex items-center gap-[var(--space-stack-md)]">
             {socialLinks.map((social) => (
               <ExternalLink
-                client:load
+                client:visible
                 href={social.href}
                 className="transition-colors text-foreground-muted hover:text-foreground"
                 showIndicator={false}
@@ -389,7 +389,7 @@ function getSocialIcon(platform: string): string {
                   const isExternal = link.href.startsWith('http');
                   return isExternal ? (
                     <ExternalLink
-                      client:load
+                      client:visible
                       href={link.href}
                       className="text-sm transition-colors text-foreground-muted hover:text-foreground"
                       showIndicator={true}

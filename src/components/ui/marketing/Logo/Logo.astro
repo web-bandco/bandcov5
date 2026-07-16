@@ -9,7 +9,6 @@
  * - logo-full-dark.svg → Full logo for dark backgrounds
  */
 import siteConfig from '@/config/site.config';
-// 1. Import Astro's native Image component
 import { Image } from 'astro:assets';
 
 import logomark from '@/assets/branding/logomark.png';
@@ -35,30 +34,38 @@ const {
   class: className,
 } = Astro.props;
 
-// Notice we no longer use .src here! We pass the whole imported object to <Image />
 const lightLogo = variant === 'full' ? logoFull : logomark;
 const darkLogo = variant === 'full' ? logoFullDark : logomarkDark;
 
+// Smart CSS sizing: prevents rectangular full logos from being squished into square aspect ratios
 const sizeClasses: Record<string, string> = {
-  sm: 'h-5 w-5',     // 20px
-  md: 'h-6 w-6',     // 24px
-  lg: 'h-8 w-8',     // 32px
-  xl: 'h-12 w-12',   // 48px
-  '2xl': 'h-24 w-24',// 96px
+  sm: variant === 'full' ? 'h-5 w-auto' : 'h-5 w-5',       // 20px height
+  md: variant === 'full' ? 'h-6 w-auto' : 'h-6 w-6',       // 24px height
+  lg: variant === 'full' ? 'h-8 w-auto' : 'h-8 w-8',       // 32px height
+  xl: variant === 'full' ? 'h-12 w-auto' : 'h-12 w-12',    // 48px height
+  '2xl': variant === 'full' ? 'h-24 w-auto' : 'h-24 w-24', // 96px height
 };
 
-// 2. We define specific pixel widths for Astro's optimizer.
-// We double the size of the CSS classes to ensure they look crisp on high-density/Retina displays!
-const imageWidths: Record<string, number> = {
-  sm: 40,
-  md: 48,
-  lg: 64,
-  xl: 96,
-  '2xl': 192,
+// 1. We define the BASE 1x display widths for square icons vs rectangular logos.
+const logomarkWidths: Record<string, number> = {
+  sm: 20,
+  md: 24,
+  lg: 32,
+  xl: 48,
+  '2xl': 96,
 };
 
+const fullLogoWidths: Record<string, number> = {
+  sm: 50,
+  md: 60,
+  lg: 80,
+  xl: 120,
+  '2xl': 240,
+};
+
+const widthMap = variant === 'full' ? fullLogoWidths : logomarkWidths;
 const sizeClass = sizeClasses[size] || sizeClasses.md;
-const targetWidth = imageWidths[size] || imageWidths.md;
+const targetWidth = widthMap[size] || widthMap.md;
 ---
 
 <span class:list={['inline-block', className]}>
@@ -67,26 +74,36 @@ const targetWidth = imageWidths[size] || imageWidths.md;
       src={darkLogo}
       alt={siteConfig.branding.logo.alt}
       width={targetWidth}
+      densities={[1, 1.5, 2]}
+      format="avif"
+      quality={60}
       loading="eager"
       fetchpriority="high"
       class:list={[sizeClass]}
     />
   ) : (
     <Fragment>
+      {/* Primary visible logo gets top network priority */}
       <Image
         src={lightLogo}
         alt={siteConfig.branding.logo.alt}
         width={targetWidth}
+        densities={[1, 1.5, 2]}
+        format="avif"
+        quality={60}
         loading="eager"
         fetchpriority="high"
         class:list={[sizeClass, 'block dark:hidden']}
       />
+      {/* Hidden dark logo loads eagerly without fighting LCP assets for critical bandwidth */}
       <Image
         src={darkLogo}
         alt=""
         width={targetWidth}
+        densities={[1, 1.5, 2]}
+        format="avif"
+        quality={60}
         loading="eager"
-        fetchpriority="high"
         class:list={[sizeClass, 'hidden dark:block']}
         aria-hidden="true"
       />
