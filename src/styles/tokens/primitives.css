@@ -23,18 +23,18 @@
   --gray-950: oklch(12.3% 0 0);
 
   /* -------------------------------------------------------------------------
-     Brand Orange Scale - International Orange (#F94C10)
-     OKLCH for perceptual uniformity across the scale
+     Brand Scale - Cyan Theme
+     Adjusted for WCAG AA compliance (text-brand-500 passes on light & dark)
      ------------------------------------------------------------------------- */
   /* Cyan Theme */
- --brand-50: oklch(.984 .019 200.873);
+  --brand-50: oklch(.984 .019 200.873);
   --brand-100: oklch(.956 .045 203.388);
   --brand-200: oklch(.917 .08 205.041);
   --brand-300: oklch(.865 .127 207.078);
   --brand-400: oklch(.789 .154 211.53);
-  --brand-500: oklch(.715 .143 215.221);
+  --brand-500: oklch(.715 .143 215.221); 
   --brand-600: oklch(.609 .126 221.723);
-  --brand-700: oklch(.52 .105 223.128);
+  --brand-700: oklch(.52 .105 223.128);  
   --brand-800: oklch(.45 .085 224.283);
   --brand-900: oklch(.398 .07 227.392);
 

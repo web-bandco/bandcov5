@@ -11,7 +11,8 @@ import {
   History,
   Filter,
   SlidersHorizontal,
-  RefreshCw
+  RefreshCw,
+  PackageX // Added a clean icon for the empty state
 } from "lucide-react" 
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures" 
 import {
@@ -234,7 +235,6 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
 
         <div className="card-body p-5 flex flex-col flex-grow">
           
-          {/* REVISED TITLE SECTION: Zero vertical height impact */}
           <div className="flex items-start justify-between gap-3 mb-2 min-h-[3.5rem]">
             
             <div className="relative flex-1 min-w-0">
@@ -265,7 +265,7 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
             </div>
 
             <div className="shrink-0 pt-0.5">
-              <span className="font-bold whitespace-nowrap text-brand-500 text-lg">{product.price}</span>
+              <span className="font-bold whitespace-nowrap text-brand-700 text-lg">{product.price}</span>
             </div>
           </div>
 
@@ -566,15 +566,45 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
 
   if (isLoading) {
     return (
-      <div className="w-full flex space-x-4 px-4 overflow-hidden mt-10">
-        <Skeleton className="w-[85%] sm:w-[60%] md:w-[50%] lg:w-[33%] aspect-[3/4] rounded-2xl" />
-        <Skeleton className="hidden md:block w-[50%] lg:w-[33%] aspect-[3/4] rounded-2xl" />
-        <Skeleton className="hidden lg:block w-[33%] aspect-[3/4] rounded-2xl" />
+      <div className="w-full flex flex-col">
+        {/* Render Header even when loading */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-4 md:px-0 mb-8">
+          <div className="flex-1">
+            {children}
+          </div>
+        </div>
+        <div className="w-full flex space-x-4 px-4 overflow-hidden mt-2">
+          <Skeleton className="w-[85%] sm:w-[60%] md:w-[50%] lg:w-[33%] aspect-[3/4] rounded-2xl" />
+          <Skeleton className="hidden md:block w-[50%] lg:w-[33%] aspect-[3/4] rounded-2xl" />
+          <Skeleton className="hidden lg:block w-[33%] aspect-[3/4] rounded-2xl" />
+        </div>
       </div>
     );
   }
 
-  if (!products || products.length === 0) return <p className="px-4 text-foreground-muted mt-10">No items currently listed.</p>;
+  if (!products || products.length === 0) {
+    return (
+      <div className="w-full flex flex-col">
+        {/* Render Header even when empty */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-4 md:px-0 mb-8">
+          <div className="flex-1">
+            {children}
+          </div>
+        </div>
+        
+        {/* The New Elevated Empty State Box */}
+        <div className="mx-4 md:mx-0 py-16 px-6 bg-surface-primary border border-border/50 rounded-3xl flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6">
+            <PackageX className="w-8 h-8 text-brand-500" />
+          </div>
+          <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 tracking-tight">It's Empty...</h3>
+          <p className="text-foreground-muted max-w-lg mx-auto text-sm md:text-base leading-relaxed">
+            There are currently no items for sale on the SHOP: B&Co {storeName} store — check back again soon.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col">
@@ -616,7 +646,7 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
               
               <SheetHeader className="p-6 border-b border-border text-left">
                 <div className="mb-1">
-                  <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-widest bg-brand-500/10 text-brand-500">
+                  <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-widest bg-brand-500/10 text-brand-700">
                     SHOP: B&CO - {storeName.toUpperCase()}
                   </span>
                 </div>

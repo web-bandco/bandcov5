@@ -13,10 +13,13 @@
 @import '@fontsource-variable/manrope';
 @import '@fontsource-variable/outfit';
 @import '@fontsource-variable/jetbrains-mono';
+
 @plugin 'daisyui' {
   themes: false; /* Disables all injected color themes */
   base: false;   /* Stops DaisyUI from changing your <html> and <body> backgrounds */
 }
+
+@plugin "tailwindcss-animate";
 
 /* Dark mode variant */
 @custom-variant dark (&:where(.dark, .dark *));
