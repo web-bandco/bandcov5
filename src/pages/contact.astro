@@ -102,7 +102,6 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
               required
             />
 
-            {/* ✅ Removed the botcheck honeypot and added the zero-config hCaptcha div */}
             <div class="flex justify-center w-full">
               <div class="h-captcha" data-captcha="true"></div>
             </div>
@@ -136,7 +135,7 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
             <div class="flex flex-col gap-4 w-full">
               
               {/* EMAIL LINK */}
-              <a href={`mailto:${siteConfig.email}`} class="flex w-full">
+              <a href={`mailto:${siteConfig.email}`} class="flex w-full outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-2xl">
                 <div class="w-full">
                   <Card hover padding="sm">
                     <div class="flex items-center gap-4">
@@ -152,9 +151,9 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
                 </div>
               </a>
 
-              {/* GITHUB LINK */}
+              {/* GITHUB LINK (Changed to client:visible) */}
               <ExternalLink
-                client:load
+                client:visible
                 href="https://github.com/web-bandco"
                 showIndicator={false}
                 className="!flex w-full" 
@@ -174,10 +173,10 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
                 </div>
               </ExternalLink>
 
-              {/* TWITTER LINK */}
+              {/* TWITTER LINK (Changed to client:visible) */}
               {siteConfig.twitter && (
                 <ExternalLink
-                  client:load
+                  client:visible
                   href={`https://twitter.com/${siteConfig.twitter.site.replace('@', '')}`}
                   showIndicator={false}
                   className="!flex w-full"
@@ -208,8 +207,7 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
   <CTA />
   <Toast />
 
-  {/* ✅ Added the required Web3Forms script to load the hCaptcha widget */}
-  <script is:inline src="https://web3forms.com/client/script.js" async defer></script>
+  {/* Removed the blocking inline script. The dynamic loader below handles it instead. */}
 </PageLayout>
 
 <script>
@@ -218,6 +216,24 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
     const button = document.getElementById('submit-button') as HTMLButtonElement;
 
     if (!form || !button) return;
+
+    // --- DYNAMIC HCAPTCHA LOADER ---
+    let captchaLoaded = false;
+    const loadCaptcha = () => {
+      if (captchaLoaded) return;
+      captchaLoaded = true;
+      const script = document.createElement('script');
+      script.src = "https://web3forms.com/client/script.js";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    };
+
+    // Inject the script the moment the user shows intent to interact
+    form.addEventListener('mouseenter', loadCaptcha, { passive: true, once: true });
+    form.addEventListener('touchstart', loadCaptcha, { passive: true, once: true });
+    form.addEventListener('focusin', loadCaptcha, { passive: true, once: true });
+    // --------------------------------
 
     const originalButtonHTML = button.innerHTML;
     
@@ -260,7 +276,6 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
           button.classList.add('!bg-green-600', '!text-white', '!opacity-100');
           form.reset();
           
-          // ✅ TypeScript fix applied here
           if ((window as any).hcaptcha) {
             (window as any).hcaptcha.reset();
           }
