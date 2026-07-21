@@ -90,12 +90,12 @@ const ebayItems = await Promise.all(
   <section class="py-16 bg-surface-secondary border-t border-border">
     <div class="container max-w-6xl space-y-10">
       
-      {/* Notice how the entire header block is now wrapped inside the <ShopCarousel> tags! */}
-      <ShopCarousel storeName="Vinted" client:only="react">
+      {/* OPTIMIZATION: Switched to client:visible to defer heavy React/Embla hydration until scrolled into view */}
+      <ShopCarousel storeName="Vinted" client:visible>
         <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
           <ExternalLink 
             href="https://vinted.co.uk/member/272494517" 
-            client:load
+            client:visible
             showIndicator={false}
             className="hover:opacity-80 transition-opacity flex items-center mt-1"
           >
@@ -108,7 +108,7 @@ const ebayItems = await Promise.all(
           <span>A selection of items from the SHOP: B&Co Vinted -</span>
           <ExternalLink 
             href="https://vinted.co.uk/member/272494517" 
-            client:load
+            client:visible
             showIndicator={false}
             className="text-sm font-medium hover:underline" 
             style={{ color: "#ff0055" }}
@@ -124,11 +124,12 @@ const ebayItems = await Promise.all(
   <section class="py-16 bg-background border-y border-border">
     <div class="container max-w-6xl space-y-10">
       
-      <ShopCarousel storeName="eBay" client:only="react">
+      {/* OPTIMIZATION: Switched to client:visible */}
+      <ShopCarousel storeName="eBay" client:visible>
         <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
           <ExternalLink 
             href="https://ebay.co.uk/usr/itsharryb/" 
-            client:load
+            client:visible
             showIndicator={false}
             className="hover:opacity-80 transition-opacity flex items-center mt-1"
           >
@@ -141,7 +142,7 @@ const ebayItems = await Promise.all(
           <span>A selection of items from the SHOP: B&Co eBay -</span>
           <ExternalLink 
             href="https://ebay.co.uk/usr/itsharryb/" 
-            client:load
+            client:visible
             showIndicator={false}
             className="text-sm font-medium hover:underline" 
             style={{ color: "#ff0055" }}

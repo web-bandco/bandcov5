@@ -12,7 +12,7 @@ import {
   Filter,
   SlidersHorizontal,
   RefreshCw,
-  PackageX // Added a clean icon for the empty state
+  PackageX 
 } from "lucide-react" 
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures" 
 import {
@@ -96,7 +96,8 @@ function FilterSection({ title, children }: { title: string, children: React.Rea
   );
 }
 
-function ProductCard({ product, storeName, gradientStyle }: { product: Product, storeName: string, gradientStyle: React.CSSProperties }) {
+// OPTIMIZATION: Passed down a prioritized prop so only the very first visible card eagerly loads its image
+function ProductCard({ product, storeName, gradientStyle, isPriority }: { product: Product, storeName: string, gradientStyle: React.CSSProperties, isPriority?: boolean }) {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [isMounted, setIsMounted] = React.useState(false);
   const [loadedImages, setLoadedImages] = React.useState<Record<string, boolean>>({});
@@ -202,6 +203,9 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
         >
           {product.images.map((imgObj, i) => {
             const isLoaded = loadedImages[`card-${i}`];
+            // OPTIMIZATION: Only eagerly load the VERY FIRST image of the VERY FIRST card.
+            const shouldEagerLoad = isPriority && i === 0;
+
             return (
               <React.Fragment key={i}>
                 {!isLoaded && activeIndex === i && (
@@ -215,7 +219,7 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
                   style={{
                     zIndex: activeIndex === i ? 0 : -10
                   }}
-                  loading={i === 0 ? "eager" : "lazy"} 
+                  loading={shouldEagerLoad ? "eager" : "lazy"} 
                   decoding="async"
                 />
               </React.Fragment>
@@ -265,7 +269,7 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
             </div>
 
             <div className="shrink-0 pt-0.5">
-              <span className="font-bold whitespace-nowrap text-brand-700 text-lg">{product.price}</span>
+              <span className="font-bold whitespace-nowrap text-brand-700 dark:text-brand-400 text-lg">{product.price}</span>
             </div>
           </div>
 
@@ -348,6 +352,13 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="m9 18 6-6-6-6"/></svg>
           </button>
 
+          {/* ADDED: Full-screen click-to-close backdrop layer behind the carousel */}
+          <div 
+            className="absolute inset-0 z-0 cursor-pointer"
+            onClick={() => setIsOpen(false)}
+            aria-hidden="true"
+          />
+
           <Carousel 
             setApi={setDialogApi}
             opts={{ 
@@ -357,7 +368,7 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
               watchDrag: (root) => window.matchMedia('(max-width: 768px)').matches
             }}
             plugins={[WheelGesturesPlugin()]} 
-            className="w-full h-full flex items-center justify-center max-md:pointer-events-none"
+            className="w-full h-full flex items-center justify-center max-md:pointer-events-none z-10"
           >
             <CarouselContent className="h-full ml-0">
               {product.images.map((imgObj, i) => {
@@ -367,13 +378,17 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
                 return (
                   <CarouselItem key={i} className="flex h-[100dvh] flex-col items-center justify-center pl-0 relative">
                     
+                    {/* EXPANDED: This inner backdrop now covers the entire CarouselItem area to catch missed taps */}
                     <div 
-                      className="absolute inset-0 z-0 cursor-pointer"
+                      className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
                       onClick={() => setIsOpen(false)} 
-                      onPointerDown={(e) => e.stopPropagation()} 
+                      onPointerDown={(e) => {
+                        // Let touches fall through on mobile so swipe gestures still work
+                        if (e.pointerType === 'mouse') e.stopPropagation()
+                      }} 
                     />
 
-                    <div className="relative w-full h-full p-4 md:p-24 flex items-center justify-center pointer-events-none z-10 md:cursor-pointer" onClick={() => setIsOpen(false)}>
+                    <div className="relative w-full h-full p-4 md:p-24 flex items-center justify-center pointer-events-none z-10">
                       
                       {!isLoaded && shouldLoad && (
                         <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -391,7 +406,11 @@ function ProductCard({ product, storeName, gradientStyle }: { product: Product, 
                               handleImageLoad(`lightbox-${i}`);
                             }
                           }}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Optional: Close on image tap for mobile, but usually users expect to swipe.
+                            // if (window.matchMedia('(max-width: 768px)').matches) setIsOpen(false);
+                          }}
                           onPointerDown={(e) => {
                             if (e.pointerType === 'mouse' || window.matchMedia('(min-width: 768px)').matches) {
                               e.stopPropagation();
@@ -567,7 +586,6 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
   if (isLoading) {
     return (
       <div className="w-full flex flex-col">
-        {/* Render Header even when loading */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-4 md:px-0 mb-8">
           <div className="flex-1">
             {children}
@@ -585,19 +603,17 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
   if (!products || products.length === 0) {
     return (
       <div className="w-full flex flex-col">
-        {/* Render Header even when empty */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-4 md:px-0 mb-8">
           <div className="flex-1">
             {children}
           </div>
         </div>
         
-        {/* The New Elevated Empty State Box */}
         <div className="mx-4 md:mx-0 py-16 px-6 bg-surface-primary border border-border/50 rounded-3xl flex flex-col items-center justify-center text-center shadow-sm">
           <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6">
             <PackageX className="w-8 h-8 text-brand-500" />
           </div>
-          <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 tracking-tight">It's Empty...</h3>
+          <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 tracking-tight">Store Empty</h3>
           <p className="text-foreground-muted max-w-lg mx-auto text-sm md:text-base leading-relaxed">
             There are currently no items for sale on the SHOP: B&Co {storeName} store — check back again soon.
           </p>
@@ -646,7 +662,7 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
               
               <SheetHeader className="p-6 border-b border-border text-left">
                 <div className="mb-1">
-                  <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-widest bg-brand-500/10 text-brand-700">
+                  <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-widest bg-brand-500/10 text-brand-700 dark:text-brand-400">
                     SHOP: B&CO - {storeName.toUpperCase()}
                   </span>
                 </div>
@@ -797,10 +813,11 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
           className="w-full px-4 md:px-0 group [&_.overflow-hidden]:rounded-2xl relative"
         >
           <CarouselContent className="-ml-4 items-start">
-            {filteredAndSortedProducts.map((product) => (
+            {/* OPTIMIZATION: Passed the 'isPriority' prop down to ONLY the first item in the list */}
+            {filteredAndSortedProducts.map((product, index) => (
               <CarouselItem key={product.id} className="pl-4 basis-[85%] sm:basis-[60%] md:basis-1/2 lg:basis-1/3">
                 <div className="p-1">
-                  <ProductCard product={product} storeName={storeName} gradientStyle={gradientStyle} />
+                  <ProductCard product={product} storeName={storeName} gradientStyle={gradientStyle} isPriority={index === 0} />
                 </div>
               </CarouselItem>
             ))}
