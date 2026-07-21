@@ -104,7 +104,8 @@ const hobbyPhotos = await Promise.all(
   <Hero layout="split" size="sm">
     <Badge slot="badge" pill pulse>Want to know more about B&CO?</Badge>
     <h1 slot="title">
-      About <span class="text-brand-700">B&CO</span>
+      {/* ACCESSIBILITY: Updated text color to 700 to pass contrast ratio checks */}
+      About <span class="text-brand-700 dark:text-brand-400">B&CO</span>
     </h1>
     <p slot="description">
       Learn more about Brighton and Co - who made what you're looking at right now, and more.

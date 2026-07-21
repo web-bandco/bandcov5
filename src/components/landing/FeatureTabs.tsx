@@ -42,7 +42,7 @@ export function FeatureTabs() {
       <div className="mb-8">
         <h2 className="font-display text-foreground text-2xl font-bold md:text-3xl">
           The latest from: <br />
-          <span className="text-brand-500">Brighton and Co</span>
+          <span className="text-brand-700">Brighton and Co</span>
         </h2>
         <p className="text-foreground-muted mt-3 text-base">
           Below are the latest features, updates and improvements made to the site. New features are constantly being added and refined.

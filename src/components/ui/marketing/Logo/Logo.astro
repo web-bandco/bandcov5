@@ -1,20 +1,14 @@
 ---
 /**
  * Logo Component
- *
- * To customize: Replace the SVG files in src/assets/branding/
- * - logomark.svg      → Icon for light backgrounds
- * - logomark-dark.svg  → Icon for dark backgrounds
- * - logo-full.svg      → Full logo for light backgrounds
- * - logo-full-dark.svg → Full logo for dark backgrounds
  */
 import siteConfig from '@/config/site.config';
 import { Image } from 'astro:assets';
 
 import logomark from '@/assets/branding/logomark.png';
 import logomarkDark from '@/assets/branding/logomark-dark.png';
-import logoFull from '@/assets/branding/logo-full.svg';
-import logoFullDark from '@/assets/branding/logo-full-dark.svg';
+import logoFull from '@/assets/branding/logo-full.png'; // Update extension if using .svg/.jpg
+import logoFullDark from '@/assets/branding/logo-full-dark.png';
 
 interface Props {
   /** Size preset */
@@ -25,6 +19,10 @@ interface Props {
   variant?: 'logomark' | 'full';
   /** Additional CSS classes */
   class?: string;
+  /** Optional loading behavior override */
+  loading?: 'lazy' | 'eager';
+  /** Optional network priority override */
+  fetchpriority?: 'high' | 'low' | 'auto';
 }
 
 const {
@@ -32,35 +30,32 @@ const {
   forceDark = false,
   variant = 'logomark',
   class: className,
+  loading = 'lazy',
+  fetchpriority = 'auto'
 } = Astro.props;
 
 const lightLogo = variant === 'full' ? logoFull : logomark;
 const darkLogo = variant === 'full' ? logoFullDark : logomarkDark;
 
-// Smart CSS sizing: prevents rectangular full logos from being squished into square aspect ratios
 const sizeClasses: Record<string, string> = {
-  sm: variant === 'full' ? 'h-5 w-auto' : 'h-5 w-5',       // 20px height
-  md: variant === 'full' ? 'h-6 w-auto' : 'h-6 w-6',       // 24px height
-  lg: variant === 'full' ? 'h-8 w-auto' : 'h-8 w-8',       // 32px height
-  xl: variant === 'full' ? 'h-12 w-auto' : 'h-12 w-12',    // 48px height
-  '2xl': variant === 'full' ? 'h-24 w-auto' : 'h-24 w-24', // 96px height
+  sm: variant === 'full' ? 'h-8 w-auto' : 'h-5 w-5',       
+  md: variant === 'full' ? 'h-10 w-auto' : 'h-6 w-6',       
+  lg: variant === 'full' ? 'h-12 w-auto' : 'h-8 w-8',       
+  xl: variant === 'full' ? 'h-16 w-auto' : 'h-12 w-12',    
+  '2xl': variant === 'full' ? 'h-24 w-auto' : 'h-24 w-24', 
 };
 
-// 1. We define the BASE 1x display widths for square icons vs rectangular logos.
+// Mathematically mapped base CSS pixel widths
 const logomarkWidths: Record<string, number> = {
-  sm: 20,
-  md: 24,
-  lg: 32,
-  xl: 48,
-  '2xl': 96,
+  sm: 20, md: 24, lg: 32, xl: 48, '2xl': 96,
 };
 
 const fullLogoWidths: Record<string, number> = {
-  sm: 50,
-  md: 60,
-  lg: 80,
-  xl: 120,
-  '2xl': 240,
+  sm: 135,
+  md: 167, // Perfectly calibrated to the PSI rendered dimension
+  lg: 200,
+  xl: 260,
+  '2xl': 400,
 };
 
 const widthMap = variant === 'full' ? fullLogoWidths : logomarkWidths;
@@ -72,30 +67,28 @@ const targetWidth = widthMap[size] || widthMap.md;
   {forceDark ? (
     <Image
       src={darkLogo}
-      alt={siteConfig.branding.logo.alt}
+      alt={siteConfig.branding.logo.alt || "Logo"}
       width={targetWidth}
       densities={[1, 1.5, 2]}
       format="avif"
       quality={60}
-      loading="eager"
-      fetchpriority="high"
+      loading={loading}
+      fetchpriority={fetchpriority}
       class:list={[sizeClass]}
     />
   ) : (
     <Fragment>
-      {/* Primary visible logo gets top network priority */}
       <Image
         src={lightLogo}
-        alt={siteConfig.branding.logo.alt}
+        alt={siteConfig.branding.logo.alt || "Logo"}
         width={targetWidth}
         densities={[1, 1.5, 2]}
         format="avif"
         quality={60}
-        loading="eager"
-        fetchpriority="high"
+        loading={loading}
+        fetchpriority={fetchpriority}
         class:list={[sizeClass, 'block dark:hidden']}
       />
-      {/* Hidden dark logo loads eagerly without fighting LCP assets for critical bandwidth */}
       <Image
         src={darkLogo}
         alt=""
@@ -103,7 +96,7 @@ const targetWidth = widthMap[size] || widthMap.md;
         densities={[1, 1.5, 2]}
         format="avif"
         quality={60}
-        loading="eager"
+        loading={loading}
         class:list={[sizeClass, 'hidden dark:block']}
         aria-hidden="true"
       />

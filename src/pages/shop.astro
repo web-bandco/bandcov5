@@ -8,14 +8,12 @@ import { SiVinted, SiEbay } from "react-icons/si";
 import Badge from '@/components/ui/data-display/Badge/Badge.astro';
 
 import { getCollection } from 'astro:content';
-// ADDED: Import Image component alongside getImage
 import { getImage, Image } from 'astro:assets';
 import { ExternalLink } from '@/components/ui/content/ExternalLink';
 
 const rawVintedItems = await getCollection('vinted');
 const rawEbayItems = await getCollection('ebay');
 
-// OPTIMIZATION: Reduced width from 1080 to 800. Carousel cards don't need 1080px widths.
 const vintedItems = await Promise.all(
   rawVintedItems
     .filter(item => item.data.status === 'For Sale')
@@ -31,7 +29,7 @@ const vintedItems = await Promise.all(
       return {
         ...item.data,
         id: item.id,
-        images: optimizedImages // This is now an array of {thumb, full} objects!
+        images: optimizedImages 
       };
     })
 );
@@ -65,7 +63,6 @@ const ebayItems = await Promise.all(
     <Badge slot="badge" pill pulse>Shop my eBay and Vinted pages</Badge>
 
     <h1 slot="title" class="flex flex-col items-center gap-6">
-      {/* OPTIMIZATION: Replaced standard img with Astro Image component, target width 192px (2x the w-24 size) */}
       <Image 
         src={shopLogo} 
         alt="SHOP: B&Co Logo" 
@@ -90,16 +87,20 @@ const ebayItems = await Promise.all(
   <section class="py-16 bg-surface-secondary border-t border-border">
     <div class="container max-w-6xl space-y-10">
       
-      {/* OPTIMIZATION: Switched to client:visible to defer heavy React/Embla hydration until scrolled into view */}
       <ShopCarousel storeName="Vinted" client:visible>
         <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
+          {/* OPTIMIZATION: Added aria-label to the anchor link */}
           <ExternalLink 
             href="https://vinted.co.uk/member/272494517" 
             client:visible
             showIndicator={false}
+            aria-label="Visit my Vinted profile"
             className="hover:opacity-80 transition-opacity flex items-center mt-1"
           >
-            <SiVinted className="w-8 h-8" style={{ color: "#017573" }} />
+            {/* OPTIMIZATION: Added title tag inside SVG for img alt text */}
+            <SiVinted className="w-8 h-8" style={{ color: "#017573" }}>
+              <title>Vinted Logo</title>
+            </SiVinted>
           </ExternalLink>
           Vinted Highlights
         </h2>
@@ -124,16 +125,20 @@ const ebayItems = await Promise.all(
   <section class="py-16 bg-background border-y border-border">
     <div class="container max-w-6xl space-y-10">
       
-      {/* OPTIMIZATION: Switched to client:visible */}
       <ShopCarousel storeName="eBay" client:visible>
         <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
+          {/* OPTIMIZATION: Added aria-label to the anchor link */}
           <ExternalLink 
             href="https://ebay.co.uk/usr/itsharryb/" 
             client:visible
             showIndicator={false}
+            aria-label="Visit my eBay profile"
             className="hover:opacity-80 transition-opacity flex items-center mt-1"
           >
-            <SiEbay className="w-10 h-10" style={{ color: "#0064D2" }} />
+            {/* OPTIMIZATION: Added title tag inside SVG for img alt text */}
+            <SiEbay className="w-10 h-10" style={{ color: "#0064D2" }}>
+              <title>eBay Logo</title>
+            </SiEbay>
           </ExternalLink>
           eBay Highlights
         </h2>

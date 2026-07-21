@@ -114,7 +114,11 @@ function getSocialIcon(platform: string): string {
               <slot name="logo" />
             ) : (
               <a href="/" class="flex items-center gap-2">
-                <Logo size="sm" />
+                <Logo 
+                  size="sm" 
+                  loading="lazy" 
+                  fetchpriority="low" 
+                />
                 <span class="font-display text-lg font-bold text-brand-700">
                   {siteConfig.name}
                 </span>

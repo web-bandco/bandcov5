@@ -269,6 +269,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
             </div>
 
             <div className="shrink-0 pt-0.5">
+              {/* ACCESSIBILITY: Updated text color to 700 to pass contrast ratio checks */}
               <span className="font-bold whitespace-nowrap text-brand-700 dark:text-brand-400 text-lg">{product.price}</span>
             </div>
           </div>
@@ -312,6 +313,8 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
               href={product.url}
               requireConfirm={true} 
               showIndicator={true}
+              /* ACCESSIBILITY: Explicitly name the item being bought for screen readers */
+              aria-label={`Buy ${product.title} on ${storeName}`}
               className="btn border-none rounded-xl text-white w-full opacity-90 hover:opacity-100 hover:scale-[1.02] transition-all shadow-sm flex justify-center items-center"
               style={gradientStyle}
             >
@@ -352,7 +355,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="m9 18 6-6-6-6"/></svg>
           </button>
 
-          {/* ADDED: Full-screen click-to-close backdrop layer behind the carousel */}
+          {/* UX OPTIMIZATION: Full-screen click-to-close backdrop layer behind the carousel */}
           <div 
             className="absolute inset-0 z-0 cursor-pointer"
             onClick={() => setIsOpen(false)}
@@ -378,7 +381,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
                 return (
                   <CarouselItem key={i} className="flex h-[100dvh] flex-col items-center justify-center pl-0 relative">
                     
-                    {/* EXPANDED: This inner backdrop now covers the entire CarouselItem area to catch missed taps */}
+                    {/* UX OPTIMIZATION: Inner backdrop covering entire CarouselItem to catch missed mobile taps */}
                     <div 
                       className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
                       onClick={() => setIsOpen(false)} 
@@ -408,8 +411,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            // Optional: Close on image tap for mobile, but usually users expect to swipe.
-                            // if (window.matchMedia('(max-width: 768px)').matches) setIsOpen(false);
                           }}
                           onPointerDown={(e) => {
                             if (e.pointerType === 'mouse' || window.matchMedia('(min-width: 768px)').matches) {
@@ -662,6 +663,7 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
               
               <SheetHeader className="p-6 border-b border-border text-left">
                 <div className="mb-1">
+                  {/* ACCESSIBILITY: Updated badge text color to 700 to pass contrast checks */}
                   <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-widest bg-brand-500/10 text-brand-700 dark:text-brand-400">
                     SHOP: B&CO - {storeName.toUpperCase()}
                   </span>
@@ -675,7 +677,8 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
                 <div className="md:hidden">
                   <FilterSection title="Sort By">
                     <Select value={sortOption} onValueChange={setSortOption}>
-                      <SelectTrigger className="w-full bg-surface-primary border-border text-foreground !h-11 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                      {/* ACCESSIBILITY: Explicit aria-label for screen readers */}
+                      <SelectTrigger aria-label="Sort products" className="w-full bg-surface-primary border-border text-foreground !h-11 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring">
                         <SelectValue placeholder="Newest First" />
                       </SelectTrigger>
                       <SelectContent position="popper" sideOffset={8} className="rounded-xl border-border bg-background shadow-2xl z-[200]">
@@ -765,7 +768,8 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
 
           <div className="hidden md:block relative shrink-0 w-[240px]">
             <Select value={sortOption} onValueChange={setSortOption}>
-              <SelectTrigger className="w-full !h-11 px-4 bg-surface-primary border-border text-foreground rounded-xl shadow-sm hover:shadow-md transition-all font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              {/* ACCESSIBILITY: Explicit aria-label for screen readers */}
+              <SelectTrigger aria-label="Sort products" className="w-full !h-11 px-4 bg-surface-primary border-border text-foreground rounded-xl shadow-sm hover:shadow-md transition-all font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <div className="flex items-center gap-2 overflow-hidden">
                   <span className="text-foreground-muted font-normal shrink-0">Sort by:</span>
                   <SelectValue placeholder="Newest First" />

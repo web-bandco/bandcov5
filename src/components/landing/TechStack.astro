@@ -56,7 +56,8 @@ const stack = [
                 <div class="tech-icon-wrap">
                   <Icon name={item.icon} size="lg" />
                 </div>
-                <Badge variant="brand" size="sm" pill>{item.version}</Badge>
+                {/* ACCESSIBILITY: Explicitly enforce the text-brand-700 class override for contrast compliance */}
+                <Badge variant="brand" size="sm" pill class="text-brand-700 dark:text-brand-400">{item.version}</Badge>
               </div>
               <span class="font-display text-lg font-bold text-foreground">{item.name}</span>
               <p class="text-sm text-foreground-muted">{item.desc}</p>

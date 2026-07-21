@@ -57,16 +57,14 @@ const rawRecentPhotos = [
 
 const recentPhotos = await Promise.all(
   rawRecentPhotos.map(async (photo) => {
-    // 1. The small carousel thumbnail (Fast loading)
     const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    // 2. The large lightbox image (High quality)
     const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
     
     return { 
-      src: thumb.src,       // Passes the thumbnail to the main img tag
+      src: thumb.src,       
       fullSrc: full.src, 
       width: full.attributes.width,
-      height: full.attributes.height,   // Passes the high-res to the lightbox
+      height: full.attributes.height,  
       alt: photo.alt 
     };
   })
@@ -81,16 +79,14 @@ const rawMoreCatPhotos = [
 
 const moreCatPhotos = await Promise.all(
   rawMoreCatPhotos.map(async (photo) => {
-    // 1. The small carousel thumbnail (Fast loading)
     const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    // 2. The large lightbox image (High quality)
     const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
     
     return { 
-      src: thumb.src,       // Passes the thumbnail to the main img tag
+      src: thumb.src,       
       fullSrc: full.src,
       width: full.attributes.width,
-      height: full.attributes.height,    // Passes the high-res to the lightbox
+      height: full.attributes.height,    
       alt: photo.alt 
     };
   })
@@ -110,16 +106,14 @@ const rawPraguePhotos = [
 
 const praguePhotos = await Promise.all(
   rawPraguePhotos.map(async (photo) => {
-    // 1. The small carousel thumbnail (Fast loading)
     const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    // 2. The large lightbox image (High quality)
     const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
     
     return { 
-      src: thumb.src,       // Passes the thumbnail to the main img tag
+      src: thumb.src,       
       fullSrc: full.src,
       width: full.attributes.width,
-      height: full.attributes.height,    // Passes the high-res to the lightbox
+      height: full.attributes.height,    
       alt: photo.alt 
     };
   })
@@ -138,16 +132,14 @@ const rawPefkosRhodesPhotos = [
 
 const pefkosrhodesPhotos = await Promise.all(
   rawPefkosRhodesPhotos.map(async (photo) => {
-    // 1. The small carousel thumbnail (Fast loading)
     const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    // 2. The large lightbox image (High quality)
     const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
     
     return { 
-      src: thumb.src,       // Passes the thumbnail to the main img tag
+      src: thumb.src,       
       fullSrc: full.src,
       width: full.attributes.width,
-      height: full.attributes.height,    // Passes the high-res to the lightbox
+      height: full.attributes.height,    
       alt: photo.alt 
     };
   })
@@ -163,16 +155,14 @@ const rawLondonPhotos = [
 
 const londonPhotos = await Promise.all(
   rawLondonPhotos.map(async (photo) => {
-    // 1. The small carousel thumbnail (Fast loading)
     const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    // 2. The large lightbox image (High quality)
     const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
     
     return { 
-      src: thumb.src,       // Passes the thumbnail to the main img tag
+      src: thumb.src,       
       fullSrc: full.src,
       width: full.attributes.width,
-      height: full.attributes.height,    // Passes the high-res to the lightbox
+      height: full.attributes.height,    
       alt: photo.alt 
     };
   })
@@ -183,89 +173,91 @@ const londonPhotos = await Promise.all(
   title="Photography"
   description="Add your description here"
 >
-  <!-- Hero Section -->
-  <Hero layout="split" size="lg" showBlob>
-    <Badge slot="badge" pill pulse>Some of my favourite photographs</Badge>
+  <main id="main-content">
+    <!-- Hero Section -->
+    <Hero layout="split" size="lg" showBlob>
+      <Badge slot="badge" pill pulse>Some of my favourite photographs</Badge>
 
-    <h1 slot="title">
-      Photography
-    </h1>
+      <h1 slot="title">
+        Photography
+      </h1>
 
-    <p slot="description">
-      A selection of some of my favourite photographs I've taken. From cats, to trips abroad, there are a lot of different photos to see here.
-    </p>
-  </Hero>
-  <section class="py-16 md:py-24 bg-surface-secondary border-t border-border">
-    <div class="container max-w-7xl space-y-24"> 
+      <p slot="description">
+        A selection of some of my favourite photographs I've taken. From cats, to trips abroad, there are a lot of different photos to see here.
+      </p>
+    </Hero>
+    
+    <section class="py-16 md:py-24 bg-surface-secondary border-t border-border" aria-labelledby="recent-photos-heading">
+      <div class="container max-w-7xl space-y-24"> 
 
-      {/* ROW 1: Text Left, Carousel Right */}
-      <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-        <div class="w-full lg:w-2/5 text-center lg:text-left">
-          <h2 class="text-3xl md:text-4xl font-bold text-foreground">Some Recent Photos</h2>
-          <p class="text-foreground-muted mt-4 text-lg">Some of my favourite photos I've taken recently.</p>
+        {/* ROW 1: Text Left, Carousel Right */}
+        <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+          <div class="w-full lg:w-2/5 text-center lg:text-left">
+            <h2 id="recent-photos-heading" class="text-3xl md:text-4xl font-bold text-foreground">Some Recent Photos</h2>
+            <p class="text-foreground-muted mt-4 text-lg">Some of my favourite photos I've taken recently.</p>
+          </div>
+          <div class="w-full lg:w-3/5">
+            <ImageCarousel images={recentPhotos} client:visible />
+          </div>
         </div>
-        <div class="w-full lg:w-3/5">
-          <ImageCarousel images={recentPhotos} client:visible />
-        </div>
-      </div>
 
-      {/* ROW 2: Carousel Left, Text Right */}
-      {/* flex-col-reverse ensures the text elegantly stacks ON TOP of the carousel on mobile! */}
-      <div class="flex flex-col-reverse lg:flex-row items-center gap-8 lg:gap-16">
-        <div class="w-full lg:w-3/5">
-          <ImageCarousel images={moreCatPhotos} client:visible />
-        </div>
-        <div class="w-full lg:w-2/5 text-center lg:text-right">
-          <h2 class="text-3xl md:text-4xl font-bold text-foreground">Some More Cat Photos</h2>
-          <p class="text-foreground-muted mt-4 text-lg">More photos of my cats, of course.</p>
-        </div>
-      </div>
-      
-    </div>
-  </section>  
-
-  <section class="py-16 bg-background border-y border-border">
-    <div class="container max-w-6xl">
-      <div class="flex flex-col gap-6">
-        <div class="text-center lg:text-left mb-8">
-          <h1 class="text-3xl font-bold text-foreground">Holiday Photos -</h1>
-          <p class="text-foreground-muted mt-2">Photos from holidays from around the world.</p>
+        {/* ROW 2: Carousel Left, Text Right */}
+        <div class="flex flex-col-reverse lg:flex-row items-center gap-8 lg:gap-16">
+          <div class="w-full lg:w-3/5">
+            <ImageCarousel images={moreCatPhotos} client:visible />
+          </div>
+          <div class="w-full lg:w-2/5 text-center lg:text-right">
+            <h2 class="text-3xl md:text-4xl font-bold text-foreground">Some More Cat Photos</h2>
+            <p class="text-foreground-muted mt-4 text-lg">More photos of my cats, of course.</p>
+          </div>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-          
-          {/* 1. Prague */}
-          <div>
-            <div class="mb-4">
-              <h3 class="text-xl font-bold text-foreground">Prague</h3>
-              <p class="text-foreground-muted">Czech Republic, 2024.</p>
-            </div>
-            <ImageCarousel images={praguePhotos} client:visible />
+      </div>
+    </section>  
+
+    <section class="py-16 bg-background border-y border-border" aria-labelledby="holiday-photos-heading">
+      <div class="container max-w-6xl">
+        <div class="flex flex-col gap-6">
+          <div class="text-center lg:text-left mb-8">
+            {/* ACCESSIBILITY FIX: Changed h1 to h2 to maintain strict descending order */}
+            <h2 id="holiday-photos-heading" class="text-3xl font-bold text-foreground">Holiday Photos -</h2>
+            <p class="text-foreground-muted mt-2">Photos from holidays from around the world.</p>
           </div>
           
-          {/* 2. Pefkos/Rhodes */}
-          <div>
-            <div class="mb-4">
-              <h3 class="text-xl font-bold text-foreground">Pefkos/Rhodes</h3>
-              <p class="text-foreground-muted">Greece, 2025.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            
+            {/* 1. Prague */}
+            <div>
+              <div class="mb-4">
+                <h3 class="text-xl font-bold text-foreground">Prague</h3>
+                <p class="text-foreground-muted">Czech Republic, 2024.</p>
+              </div>
+              <ImageCarousel images={praguePhotos} client:visible />
             </div>
-            <ImageCarousel images={pefkosrhodesPhotos} client:visible />
-          </div>
-          
-          {/* 3. London (FIXED: Added the missing wrapper div!) */}
-          <div>
-            <div class="mb-4">
-              <h3 class="text-xl font-bold text-foreground">London</h3>
-              <p class="text-foreground-muted">United Kingdom, 2025.</p>
+            
+            {/* 2. Pefkos/Rhodes */}
+            <div>
+              <div class="mb-4">
+                <h3 class="text-xl font-bold text-foreground">Pefkos/Rhodes</h3>
+                <p class="text-foreground-muted">Greece, 2025.</p>
+              </div>
+              <ImageCarousel images={pefkosrhodesPhotos} client:visible />
             </div>
-            <ImageCarousel images={londonPhotos} client:visible />
+            
+            {/* 3. London */}
+            <div>
+              <div class="mb-4">
+                <h3 class="text-xl font-bold text-foreground">London</h3>
+                <p class="text-foreground-muted">United Kingdom, 2025.</p>
+              </div>
+              <ImageCarousel images={londonPhotos} client:visible />
+            </div>
+            
           </div>
-          
-          {/* Future collections will drop in perfectly right here! */}
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <CTA />
+    <CTA />
+  </main>
 </PageLayout>
