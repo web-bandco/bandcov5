@@ -71,11 +71,11 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
         
       </div>
 
-      {/* Dark Vignette Overlay */}
-      <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90 pointer-events-none" aria-hidden="true"></div>
+      {/* UX FIX: Dark Vignette Overlay with Static Baseline Blur */}
+      <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90 backdrop-blur-[2px] pointer-events-none" aria-hidden="true"></div>
 
-      {/* Central Interactive Carousel */}
-      <div class="relative z-10 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-16 md:mt-0">
+      {/* Central Interactive Carousel (UX FIX: Forced Hardware Acceleration) */}
+      <div class="relative z-10 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-16 md:mt-0 transform-gpu">
         <TextCarousel />
       </div>
 

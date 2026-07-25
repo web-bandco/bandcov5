@@ -2,6 +2,27 @@
 import LandingLayout from '@/layouts/LandingLayout.astro';
 import Button from '@/components/ui/form/Button/Button.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import { getImage } from 'astro:assets';
+
+// 1. Import all memoji assets statically
+import confused from '@/assets/images/404-memoji/confused-memoji.png';
+import dazed from '@/assets/images/404-memoji/dazed-memoji.png';
+import facepalm from '@/assets/images/404-memoji/facepalm-memoji.png';
+import sadface from '@/assets/images/404-memoji/sadface-memoji.png';
+import shocked from '@/assets/images/404-memoji/shocked-memoji.png';
+import shrugbody from '@/assets/images/404-memoji/shrugbody-memoji.png';
+import sneeze from '@/assets/images/404-memoji/sneeze-memoji.png';
+
+const rawMemojis = [confused, dazed, facepalm, sadface, shocked, shrugbody, sneeze];
+
+// 2. Pre-process them into highly optimized, lightweight AVIF URLs during the build step
+const optimizedMemojis = await Promise.all(
+  rawMemojis.map(async (img) => {
+    // Bumped width to 256px to ensure the larger memoji stays crisp on retina screens
+    const opt = await getImage({ src: img, format: 'avif', width: 256, quality: 80 });
+    return opt.src;
+  })
+);
 ---
 
 <LandingLayout
@@ -9,7 +30,8 @@ import Icon from '@/components/ui/primitives/Icon/Icon.astro';
   description="The page you're looking for has either been moved, deleted, or never existed in the first place."
   noindex
 >
-  <section class="relative min-h-[calc(100vh-8rem)] flex items-center justify-center overflow-hidden pt-16">
+  {/* Added generous py-24 lg:py-32 padding to create significant breathing room top and bottom */}
+  <section class="relative min-h-[calc(100vh-8rem)] flex items-center justify-center overflow-hidden py-24 lg:py-32">
     <!-- Background Effects -->
     <div class="absolute inset-0 bg-grid-pattern [mask-image:radial-gradient(ellipse_at_center,white_20%,transparent_70%)] pointer-events-none opacity-40"></div>
     <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-500/15 rounded-full blur-[120px] pointer-events-none"></div>
@@ -17,8 +39,9 @@ import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 
     <div class="relative container px-6">
       <div class="max-w-2xl mx-auto text-center">
+        
         <!-- Animated 404 -->
-        <div class="relative mb-8">
+        <div class="relative mb-2">
           <div class="error-code font-display text-[10rem] md:text-[14rem] lg:text-[18rem] font-bold leading-none tracking-tighter select-none">
             <span class="inline-block error-digit" style="animation-delay: 0s;">4</span>
             <span class="inline-block error-digit text-transparent bg-clip-text bg-gradient-to-br from-brand-400 via-brand-500 to-brand-600" style="animation-delay: 0.1s;">0</span>
@@ -28,6 +51,16 @@ import Icon from '@/components/ui/primitives/Icon/Icon.astro';
           <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div class="w-32 h-32 md:w-48 md:h-48 bg-brand-500/20 rounded-full blur-[60px] animate-pulse"></div>
           </div>
+        </div>
+
+        <!-- Random Memoji Container -->
+        {/* Increased height classes to perfectly frame the scaled-up memoji */}
+        <div 
+          id="memoji-container" 
+          class="flex items-center justify-center h-36 md:h-48 mb-8" 
+          data-memojis={JSON.stringify(optimizedMemojis)}
+        >
+          <!-- The script below will inject exactly ONE image tag here -->
         </div>
 
         <!-- Copy -->
@@ -104,3 +137,33 @@ import Icon from '@/components/ui/primitives/Icon/Icon.astro';
     opacity: 1;
   }
 </style>
+
+<script>
+  function injectRandomMemoji() {
+    const container = document.getElementById('memoji-container');
+    
+    // Stop if the container doesn't exist or an image has already been injected
+    if (!container || container.querySelector('img')) return;
+    
+    try {
+      const memojis = JSON.parse(container.dataset.memojis || '[]');
+      const randomIndex = Math.floor(Math.random() * memojis.length);
+      
+      const img = document.createElement('img');
+      img.src = memojis[randomIndex];
+      img.alt = "404 Error Memoji";
+      // Increased scaling to w-48 and h-48 for a punchier visual impact
+      img.className = "w-36 h-36 md:w-48 md:h-48 object-contain drop-shadow-xl animate-in zoom-in fade-in duration-500";
+      img.decoding = "async";
+      img.loading = "eager"; 
+      
+      container.appendChild(img);
+    } catch (error) {
+      console.error("Failed to load random memoji:", error);
+    }
+  }
+
+  // Run on initial load and handle Astro's View Transitions
+  injectRandomMemoji();
+  document.addEventListener('astro:after-swap', injectRandomMemoji);
+</script>
