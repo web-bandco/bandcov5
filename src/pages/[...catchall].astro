@@ -1,12 +1,14 @@
 ---
-export const prerender = true;
+// src/pages/[...catchall].astro
+
+// 1. Explicitly force a 404 HTTP status code for correct SEO indexing
+Astro.response.status = 404;
 
 import LandingLayout from '@/layouts/LandingLayout.astro';
 import Button from '@/components/ui/form/Button/Button.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
-import { getImage } from 'astro:assets';
 
-// 1. Import all memoji assets statically
+// 2. Import all memoji assets statically (Astro still hashes and caches these automatically)
 import confused from '@/assets/images/404-memoji/confused-memoji.png';
 import dazed from '@/assets/images/404-memoji/dazed-memoji.png';
 import facepalm from '@/assets/images/404-memoji/facepalm-memoji.png';
@@ -17,14 +19,9 @@ import sneeze from '@/assets/images/404-memoji/sneeze-memoji.png';
 
 const rawMemojis = [confused, dazed, facepalm, sadface, shocked, shrugbody, sneeze];
 
-// 2. Pre-process them into highly optimized, lightweight AVIF URLs during the build step
-const optimizedMemojis = await Promise.all(
-  rawMemojis.map(async (img) => {
-    // Bumped width to 256px to ensure the larger memoji stays crisp on retina screens
-    const opt = await getImage({ src: img, format: 'avif', width: 256, quality: 80 });
-    return opt.src;
-  })
-);
+// 3. Bypass 'getImage' to prevent Cloudflare Worker crashes. 
+// We simply map the array to output the direct URL strings (.src) for your script to use.
+const optimizedMemojis = rawMemojis.map(img => img.src);
 ---
 
 <LandingLayout
