@@ -117,26 +117,19 @@ const configJson = JSON.stringify(consentConfig);
       </div>
 
       <div slot="footer" class="consent-settings-footer">
+        <div class="consent-settings-bulk-actions">
+          <Button variant="secondary" size="sm" fullWidth id="consent-settings-accept-all">
+            {ui.acceptAll}
+          </Button>
+          <Button variant="secondary" size="sm" fullWidth id="consent-settings-decline-all">
+            {ui.declineAll}
+          </Button>
+        </div>
         <Button variant="primary" size="sm" fullWidth id="consent-save-preferences">
           {ui.savePreferences}
         </Button>
       </div>
     </Dialog>
-
-    <!-- Reopener Button -->
-    <button
-      type="button"
-      id="consent-reopener"
-      class:list={[
-        'consent-reopener',
-        isTop ? 'consent-reopener--top' : 'consent-reopener--bottom',
-      ]}
-      aria-label="Open cookie settings"
-    >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-      </svg>
-    </button>
 
     <!-- Config data for client script -->
     <script is:inline type="application/json" id="consent-config-data" set:html={configJson} />
@@ -255,7 +248,6 @@ const configJson = JSON.stringify(consentConfig);
 
           hideBanner();
           closeSettings();
-          showReopener();
         }
 
         // ── Banner show/hide ──
@@ -284,25 +276,21 @@ const configJson = JSON.stringify(consentConfig);
           }, 300);
         }
 
-        // ── Reopener ──
-        function showReopener() {
-          const btn = document.getElementById('consent-reopener');
-          if (btn) btn.classList.add('consent-reopener--visible');
-        }
-
-        function hideReopener() {
-          const btn = document.getElementById('consent-reopener');
-          if (btn) btn.classList.remove('consent-reopener--visible');
-        }
-
         // ── Settings panel (via Dialog API) ──
         function openSettings() {
           const stored = getStored();
           Object.keys(config.categories).forEach(function(key: string) {
             const cb = document.getElementById('consent-' + key) as HTMLInputElement | null;
-            if (cb && !config.categories[key].required) {
-              cb.checked = stored ? !!stored.categories[key] : config.categories[key].defaultEnabled;
-              cb.setAttribute('aria-checked', cb.checked ? 'true' : 'false');
+            if (cb) {
+              // Force the visual "ON" state for strictly required cookies
+              if (config.categories[key].required) {
+                cb.checked = true;
+                cb.setAttribute('aria-checked', 'true');
+              } else {
+                // Dynamically set user preferences for optional cookies
+                cb.checked = stored ? !!stored.categories[key] : config.categories[key].defaultEnabled;
+                cb.setAttribute('aria-checked', cb.checked ? 'true' : 'false');
+              }
             }
           });
 
@@ -364,7 +352,6 @@ const configJson = JSON.stringify(consentConfig);
 
           const state = w.__consentState;
           if (state && state.decided) {
-            showReopener();
             return;
           }
 
@@ -388,8 +375,6 @@ const configJson = JSON.stringify(consentConfig);
                   const state = w.__consentState;
                   if (!state || !state.decided) {
                     showBanner();
-                  } else {
-                    showReopener();
                   }
                 }
               }
@@ -410,7 +395,8 @@ const configJson = JSON.stringify(consentConfig);
           const declineBtn = document.getElementById('consent-decline-all');
           const customizeBtn = document.getElementById('consent-customize');
           const saveBtn = document.getElementById('consent-save-preferences');
-          const reopenerBtn = document.getElementById('consent-reopener');
+          const settingsAcceptBtn = document.getElementById('consent-settings-accept-all');
+          const settingsDeclineBtn = document.getElementById('consent-settings-decline-all');
 
           if (acceptBtn) acceptBtn.addEventListener('click', function() {
             applyConsent(buildAllGranted());
@@ -429,9 +415,49 @@ const configJson = JSON.stringify(consentConfig);
             applyConsent(getCategoriesFromToggles());
           }, { signal: signal });
 
-          if (reopenerBtn) reopenerBtn.addEventListener('click', function() {
-            hideReopener();
-            openSettings();
+          if (settingsAcceptBtn) settingsAcceptBtn.addEventListener('click', function() {
+            applyConsent(buildAllGranted());
+          }, { signal: signal });
+
+          if (settingsDeclineBtn) settingsDeclineBtn.addEventListener('click', function() {
+            applyConsent(buildAllDenied());
+          }, { signal: signal });
+
+          // ── Accessibility & UX: Esc Key & Click Outside to Close ──
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+              const dialog = document.getElementById('consent-settings');
+              if (dialog && !dialog.classList.contains('hidden')) {
+                closeSettings();
+              }
+            }
+          }, { signal: signal });
+
+          document.addEventListener('mousedown', function(e) {
+            const dialog = document.getElementById('consent-settings');
+            if (!dialog || dialog.classList.contains('hidden')) return;
+
+            // Prevent instantly closing if the user is clicking a button that explicitly opens the dialog
+            if ((e.target as Element).closest('#consent-customize') || (e.target as Element).closest('button[onclick*="openConsentSettings"]')) {
+              return;
+            }
+
+            // Identify the internal content blocks of the Dialog component
+            const body = dialog.querySelector('.consent-settings-body');
+            const footer = dialog.querySelector('.consent-settings-footer');
+            
+            // The header is typically the preceding sibling of the body container
+            const header = body ? body.previousElementSibling : null;
+
+            const clickedInBody = body && body.contains(e.target as Node);
+            const clickedInFooter = footer && footer.contains(e.target as Node);
+            const clickedInHeader = header && header.contains(e.target as Node);
+
+            // If the user clicked somewhere that is NOT inside our known internal content blocks,
+            // they must have clicked the external backdrop layer.
+            if (!clickedInBody && !clickedInFooter && !clickedInHeader) {
+              closeSettings();
+            }
           }, { signal: signal });
 
           watchDialogClose();
@@ -547,6 +573,14 @@ const configJson = JSON.stringify(consentConfig);
     border-top: 1px solid var(--border);
   }
 
+  /* ─── Bulk Action Buttons ─── */
+  .consent-settings-bulk-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
   /* ─── Category rows ─── */
   .consent-category {
     display: flex;
@@ -591,57 +625,6 @@ const configJson = JSON.stringify(consentConfig);
     color: var(--foreground-subtle);
   }
 
-  /* ─── Reopener Button ─── */
-  .consent-reopener {
-    position: fixed;
-    z-index: 49;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 9999px;
-    border: 1px solid var(--border);
-    background: var(--background-elevated);
-    color: var(--foreground-muted);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    transform: scale(0.8);
-    transition:
-      opacity var(--transition-normal),
-      transform var(--transition-normal),
-      color var(--transition-fast),
-      background-color var(--transition-fast);
-  }
-
-  .consent-reopener--bottom {
-    bottom: 1rem;
-    left: 1rem;
-  }
-
-  .consent-reopener--top {
-    top: 1rem;
-    left: 1rem;
-  }
-
-  .consent-reopener--visible {
-    opacity: 1;
-    pointer-events: auto;
-    transform: scale(1);
-  }
-
-  .consent-reopener:hover {
-    color: var(--foreground);
-    background: var(--muted);
-  }
-
-  .consent-reopener:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
-  }
-
   /* ─── Responsive ─── */
   @media (max-width: 640px) {
     .consent-banner-inner {
@@ -656,8 +639,7 @@ const configJson = JSON.stringify(consentConfig);
 
   /* ─── Reduced Motion ─── */
   @media (prefers-reduced-motion: reduce) {
-    .consent-banner,
-    .consent-reopener {
+    .consent-banner {
       transition: none;
     }
   }

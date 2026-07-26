@@ -1,9 +1,10 @@
 {
-  "name": "Southwell Media",
+  "name": "Harry B",
+  "image": "/assets/images/memoji/wink.png",
   "bio": "A digital agency focused on building fast, beautiful, and accessible websites.",
   "social": {
-    "twitter": "https://twitter.com/southwellmedia",
+    "twitter": "https://twitter.com/itsharryb",
     "github": "https://github.com/ItsHarryB",
-    "linkedin": "https://linkedin.com/company/southwellmedia"
+    "linkedin": "https://linkedin.com/harry-brighton"
   }
 }

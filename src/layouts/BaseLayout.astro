@@ -185,7 +185,7 @@ if (includeOrgSchema) {
               </ExternalLink>
             </li>
             <li>
-              <ExternalLink client:load disableHover={true} href="https://github.com/ItsHarryB" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
+              <ExternalLink client:load disableHover={true} href="https://github.com/web-bandco" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
                 <Icon name="github" size="sm" class="group-hover:text-brand-500 transition-colors" /> GitHub
               </ExternalLink>
             </li>
@@ -211,11 +211,18 @@ if (includeOrgSchema) {
               <p>&copy; {new Date().getFullYear()} Brighton and Co.</p>
               <p>All rights reserved.</p>
            </div>
-            {/* ADDED: Terms and Conditions internal link */}
-            <div class="pt-2 mt-2 border-t border-border/50">
+            {/* Terms and Conditions & Cookie Preferences links */}
+            <div class="pt-2 mt-2 border-t border-border/50 flex flex-col items-start gap-1">
               <a href="/terms-and-conditions" class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
                 Terms & Conditions
               </a>
+              <button 
+                type="button" 
+                onclick="window.openConsentSettings && window.openConsentSettings()" 
+                class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1 cursor-pointer"
+              >
+                Cookie Preferences
+              </button>
             </div>
           </div>
         </div>

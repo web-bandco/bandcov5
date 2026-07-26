@@ -1,423 +1,818 @@
----
+ ---
+
 /**
+
  * Footer Component
+
  * Flexible footer with variant-based configuration
+
  */
+
 import type { HTMLAttributes } from 'astro/types';
+
 import { cn } from '@/lib/cn';
+
 import { getNavItems, type NavItem as NavConfigItem } from '@/config/nav.config';
+
 import { footerVariants, footerColumnGridVariants } from './footer.variants';
+
 import Logo from '@/components/ui/marketing/Logo/Logo.astro';
+
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+
 import siteConfig from '@/config/site.config';
+
 import { Home } from 'lucide-react';
+
 import { ExternalLink } from '@/components/ui/content/ExternalLink';
 
+
 export interface NavItem {
+
   label: string;
+
   href: string;
+
   external?: boolean;
+
 }
+
 
 export interface FooterLinkGroup {
+
   title: string;
+
   links: NavItem[];
+
 }
+
 
 export interface SocialLink {
+
   platform: 'github' | 'twitter' | 'linkedin' | string;
+
   href: string;
+
   label?: string;
+
 }
+
 
 export interface LegalLink {
+
   label: string;
+
   href: string;
+
 }
+
 
 interface Props extends HTMLAttributes<'footer'> {
+
   layout?: 'simple' | 'columns' | 'minimal' | 'stacked';
+
   columns?: 2 | 3 | 4;
+
   background?: 'default' | 'secondary' | 'invert';
+
   nav?: NavItem[];
+
   linkGroups?: FooterLinkGroup[];
+
   socialLinks?: SocialLink[];
+
   showSocial?: boolean;
+
   showCopyright?: boolean;
+
   copyright?: string;
+
   legalLinks?: LegalLink[];
+
   hideLogo?: boolean;
+
   tagline?: string;
+
 }
 
+
 const {
+
   layout = 'columns',
+
   columns = 4,
+
   background = 'secondary',
+
   nav,
+
   linkGroups = [],
+
   socialLinks = [],
+
   showSocial = true,
+
   showCopyright = true,
+
   copyright = '© {year} {siteName}. All rights reserved.',
+
   legalLinks = [],
+
   hideLogo = false,
+
   tagline,
+
   class: className,
+
   ...attrs
+
 } = Astro.props;
 
+
 const defaultNav: NavItem[] = getNavItems().map((item: NavConfigItem) => ({
+
   label: item.label,
+
   href: item.href,
+
 }));
+
 const navItems: NavItem[] = nav || defaultNav;
 
+
 const defaultExternalLinks: NavItem[] = [
+
   { label: 'GitHub', href: 'https://github.com/web-bandco', external: true },
+
   { label: 'License', href: 'https://github.com/southwellmedia/velocity/blob/main/LICENSE', external: true },
+
 ];
+
 
 const allNavItems: NavItem[] = nav ? navItems : [...navItems, ...defaultExternalLinks];
 
+
 const currentYear = new Date().getFullYear();
+
 const processedCopyright = copyright
+
   .replace('{year}', String(currentYear))
+
   .replace('{siteName}', siteConfig.name);
 
+
 const hasLogoSlot = Astro.slots.has('logo');
+
 const hasTaglineSlot = Astro.slots.has('tagline');
+
 const hasColumnsSlot = Astro.slots.has('columns');
+
 const hasSocialSlot = Astro.slots.has('social');
+
 const hasBottomSlot = Astro.slots.has('bottom');
+
 
 const footerClasses = cn(footerVariants({ background }), className);
 
+
 const socialIcons: Record<string, string> = {
+
   github: 'github',
+
   twitter: 'twitter',
+
   linkedin: 'linkedin',
+
 };
 
+
 function getSocialIcon(platform: string): string {
+
   return socialIcons[platform] || platform;
+
 }
+
 ---
 
+
 <footer class={footerClasses} {...attrs}>
+
   <div class="mx-auto max-w-6xl px-6">
+
     {layout === 'simple' && (
+
       <div class="flex flex-col md:flex-row justify-between items-center gap-[var(--space-stack-lg)]">
+
         {!hideLogo && (
+
           <div class="flex flex-col items-center md:items-start gap-2">
+
             {hasLogoSlot ? (
+
               <slot name="logo" />
+
             ) : (
+
               <a href="/" class="flex items-center gap-2">
-                <Logo 
-                  size="sm" 
-                  loading="lazy" 
-                  fetchpriority="low" 
+
+                <Logo
+
+                  size="sm"
+
+                  loading="lazy"
+
+                  fetchpriority="low"
+
                 />
+
                 <span class="font-display text-lg font-bold text-brand-700">
+
                   {siteConfig.name}
+
                 </span>
+
               </a>
+
             )}
+
             {(hasTaglineSlot || tagline) && (
+
               <p class="text-sm text-foreground-muted">
+
                 {hasTaglineSlot ? <slot name="tagline" /> : tagline}
+
               </p>
+
             )}
+
           </div>
+
         )}
+
 
         <nav class="flex flex-wrap justify-center gap-[var(--space-inline-lg)] md:gap-[var(--space-stack-lg)] text-sm font-medium text-foreground-muted">
+
           {allNavItems.map((item) => {
+
             const isExternal = item.external || item.href.startsWith('http');
+
             return isExternal ? (
+
               <ExternalLink
+
                 client:visible
+
                 href={item.href}
+
                 className="transition-colors hover:text-foreground"
+
                 showIndicator={true}
+
                 requireConfirm={true}
+
                 disableHover={true}
+
               >
+
                 {item.label}
+
               </ExternalLink>
+
             ) : (
+
               <a
+
                 href={item.href}
+
                 class="transition-colors hover:text-foreground"
+
               >
+
                 {item.label}
+
               </a>
+
             );
+
           })}
+
         </nav>
 
+
         {showSocial && socialLinks.length > 0 && (
+
           hasSocialSlot ? (
+
             <slot name="social" />
+
           ) : (
+
             <div class="flex items-center gap-[var(--space-stack-md)]">
+
               {socialLinks.map((social) => (
+
                 <ExternalLink
+
                   client:visible
+
                   href={social.href}
+
                   className="transition-colors text-foreground-muted hover:text-foreground"
+
                   showIndicator={false}
+
                   requireConfirm={true}
+
                   disableHover={true}
+
                   aria-label={social.label || `Follow us on ${social.platform}`}
+
                 >
+
                   <Icon name={getSocialIcon(social.platform)} size="md" />
+
                 </ExternalLink>
+
               ))}
+
             </div>
+
           )
+
         )}
+
       </div>
+
     )}
+
 
     {layout === 'columns' && (
+
       <>
+
         <div class={footerColumnGridVariants({ columns })}>
+
           {!hideLogo && (
+
             <div class="space-y-[var(--space-stack-md)]">
+
               {hasLogoSlot ? (
+
                 <slot name="logo" />
+
               ) : (
+
                 <a href="/" class="flex items-center gap-2">
+
                   <Logo size="sm" />
+
                   <span class="font-display text-lg font-bold text-brand-700">
+
                     {siteConfig.name}
+
                   </span>
+
                 </a>
+
               )}
+
               {(hasTaglineSlot || tagline) && (
+
                 <p class="text-sm max-w-xs text-foreground-muted">
+
                   {hasTaglineSlot ? <slot name="tagline" /> : tagline}
+
                 </p>
+
               )}
+
               {showSocial && socialLinks.length > 0 && (
+
                 <div class="flex items-center gap-[var(--space-stack-md)] pt-2">
+
                   {socialLinks.map((social) => (
+
                     <ExternalLink
+
                       client:visible
+
                       href={social.href}
+
                       className="transition-colors text-foreground-muted hover:text-foreground"
+
                       showIndicator={false}
+
                       requireConfirm={true}
+
                       disableHover={true}
+
                       aria-label={social.label || `Follow us on ${social.platform}`}
+
                     >
+
                       <Icon name={getSocialIcon(social.platform)} size="md" />
+
                     </ExternalLink>
+
                   ))}
+
                 </div>
+
               )}
+
             </div>
+
           )}
+
 
           {hasColumnsSlot ? (
+
             <slot name="columns" />
+
           ) : (
+
             linkGroups.map((group) => (
+
               <div class="space-y-[var(--space-stack-md)]">
+
                 <h3 class="font-semibold text-sm text-foreground">
+
                   {group.title}
+
                 </h3>
+
                 <ul class="space-y-2">
+
                   {group.links.map((link) => {
+
                     const isExternal = link.external || link.href.startsWith('http');
+
                     return (
+
                       <li>
+
                         {isExternal ? (
+
                           <ExternalLink
+
                             client:visible
+
                             href={link.href}
+
                             className="text-sm transition-colors text-foreground-muted hover:text-foreground"
+
                             showIndicator={true}
+
                             requireConfirm={true}
+
                             disableHover={true}
+
                           >
+
                             {link.label}
+
                           </ExternalLink>
+
                         ) : (
+
                           <a
+
                             href={link.href}
+
                             class="text-sm transition-colors text-foreground-muted hover:text-foreground"
+
                           >
+
                             {link.label}
+
                           </a>
+
                         )}
+
                       </li>
+
                     );
+
                   })}
+
                 </ul>
+
               </div>
+
             ))
+
           )}
+
         </div>
 
+
         {(showCopyright || legalLinks.length > 0) && (
+
           <div class="mt-[var(--space-section-header)] pt-[var(--space-stack-lg)] border-t border-border flex flex-col md:flex-row justify-between items-center gap-[var(--space-stack-md)]">
+
             {hasBottomSlot ? (
+
               <slot name="bottom" />
+
             ) : (
+
               <>
+
                 {showCopyright && (
+
                   <p class="text-sm text-foreground-muted">
+
                     {processedCopyright}
+
                   </p>
+
                 )}
+
                 {legalLinks.length > 0 && (
+
                   <div class="flex items-center gap-[var(--space-inline-lg)]">
+
                     {legalLinks.map((link) => {
+
                       const isExternal = link.href.startsWith('http');
+
                       return isExternal ? (
+
                         <ExternalLink
+
                           client:visible
+
                           href={link.href}
+
                           className="text-sm transition-colors text-foreground-muted hover:text-foreground"
+
                           showIndicator={true}
+
                           requireConfirm={true}
+
                           disableHover={true}
+
                         >
+
                           {link.label}
+
                         </ExternalLink>
+
                       ) : (
+
                         <a
+
                           href={link.href}
+
                           class="text-sm transition-colors text-foreground-muted hover:text-foreground"
+
                         >
+
                           {link.label}
+
                         </a>
+
                       );
+
                     })}
+
                   </div>
+
                 )}
+
               </>
+
             )}
+
           </div>
+
         )}
+
       </>
+
     )}
+
 
     {layout === 'minimal' && (
+
       <div class="text-center">
+
         {showCopyright && (
+
           <p class="text-sm text-foreground-muted">
+
             {processedCopyright}
+
           </p>
+
         )}
+
       </div>
+
     )}
+
 
     {layout === 'stacked' && (
+
       <div class="flex flex-col items-center gap-[var(--space-stack-lg)] text-center">
+
         {!hideLogo && (
+
           hasLogoSlot ? (
+
             <slot name="logo" />
+
           ) : (
+
             <a href="/" class="flex items-center gap-2">
+
               <Logo size="md" />
+
               <span class="font-display text-xl font-bold text-brand-700">
+
                 {siteConfig.name}
+
               </span>
+
             </a>
+
           )
+
         )}
+
 
         {(hasTaglineSlot || tagline) && (
+
           <p class="text-sm max-w-md text-foreground-muted">
+
             {hasTaglineSlot ? <slot name="tagline" /> : tagline}
+
           </p>
+
         )}
+
 
         <nav class="flex flex-wrap justify-center gap-[var(--space-inline-lg)] text-sm font-medium text-foreground-muted">
+
           {allNavItems.map((item) => {
+
             const isExternal = item.external || item.href.startsWith('http');
+
             return isExternal ? (
+
               <ExternalLink
+
                 client:visible
+
                 href={item.href}
+
                 className="transition-colors hover:text-foreground"
+
                 showIndicator={true}
+
                 requireConfirm={true}
+
                 disableHover={true}
+
               >
+
                 {item.label}
+
               </ExternalLink>
+
             ) : (
+
               <a
+
                 href={item.href}
+
                 class="transition-colors hover:text-foreground"
+
               >
+
                 {item.label}
+
               </a>
+
             );
+
           })}
+
         </nav>
 
+
         {showSocial && socialLinks.length > 0 && (
+
           <div class="flex items-center gap-[var(--space-stack-md)]">
+
             {socialLinks.map((social) => (
+
               <ExternalLink
+
                 client:visible
+
                 href={social.href}
+
                 className="transition-colors text-foreground-muted hover:text-foreground"
+
                 showIndicator={false}
+
                 requireConfirm={true}
+
                 disableHover={true}
+
                 aria-label={social.label || `Follow us on ${social.platform}`}
+
               >
+
                 <Icon name={getSocialIcon(social.platform)} size="md" />
+
               </ExternalLink>
+
             ))}
+
           </div>
+
         )}
+
 
         {(showCopyright || legalLinks.length > 0) && (
+
           <div class="pt-[var(--space-stack-lg)] border-t border-border w-full flex flex-col items-center gap-[var(--space-stack-md)]">
+
             {showCopyright && (
+
               <p class="text-sm text-foreground-muted">
+
                 {processedCopyright}
+
               </p>
+
             )}
+
             {legalLinks.length > 0 && (
+
               <div class="flex items-center gap-[var(--space-inline-lg)]">
+
                 {legalLinks.map((link) => {
+
                   const isExternal = link.href.startsWith('http');
+
                   return isExternal ? (
+
                     <ExternalLink
+
                       client:visible
+
                       href={link.href}
+
                       className="text-sm transition-colors text-foreground-muted hover:text-foreground"
+
                       showIndicator={true}
+
                       requireConfirm={true}
+
                       disableHover={true}
+
                     >
+
                       {link.label}
+
                     </ExternalLink>
+
                   ) : (
+
                     <a
+
                       href={link.href}
+
                       class="text-sm transition-colors text-foreground-muted hover:text-foreground"
+
                     >
+
                       {link.label}
+
                     </a>
+
                   );
+
                 })}
+
               </div>
+
             )}
+
           </div>
+
         )}
+
       </div>
+
     )}
+
   </div>
 
+
   <slot />
-</footer>
+
+</footer> 
