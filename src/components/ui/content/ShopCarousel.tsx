@@ -614,7 +614,7 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
           <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6">
             <PackageX className="w-8 h-8 text-brand-500" />
           </div>
-          <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 tracking-tight">Store Empty</h3>
+          <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 tracking-tight">There's nothing left...</h3>
           <p className="text-foreground-muted max-w-lg mx-auto text-sm md:text-base leading-relaxed">
             There are currently no items for sale on the SHOP: B&Co {storeName} store — check back again soon.
           </p>

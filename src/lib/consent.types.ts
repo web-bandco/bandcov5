@@ -18,10 +18,10 @@ export type ConsentModeType = 'consent_mode_v2' | 'strict';
 export type GCMType =
   | 'ad_storage'
   | 'ad_user_data'
-  | 'ad_personalization'
+  | 'ad_personalisation'
   | 'analytics_storage'
   | 'functionality_storage'
-  | 'personalization_storage'
+  | 'personalisation_storage'
   | 'security_storage';
 
 /** Configuration for a single consent category */
@@ -54,7 +54,7 @@ export interface ConsentUIText {
   description: string;
   acceptAll: string;
   declineAll: string;
-  customize: string;
+  customise: string;
   savePreferences: string;
   settingsHeading: string;
   /** Label shown on the "always on" badge for required categories */

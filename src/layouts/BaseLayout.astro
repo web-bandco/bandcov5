@@ -60,8 +60,8 @@ if (includeOrgSchema) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href={siteConfig.branding.favicon.svg} />
+    <!-- Dynamic Favicon (ID added for the script below to target) -->
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="/bncofavicon-light.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content={siteConfig.branding.colors.themeColor} />
 
@@ -100,6 +100,30 @@ if (includeOrgSchema) {
           document.documentElement.classList.remove('dark');
         }
       })();
+    </script>
+
+    <!-- Dynamic Favicon Script -->
+    <script is:inline>
+      function initDynamicFavicon() {
+        const favicon = document.getElementById('dynamic-favicon');
+        if (!favicon) return;
+
+        const updateFavicon = () => {
+          const isDark = document.documentElement.classList.contains('dark');
+          favicon.href = isDark ? '/bncofavicon-dark.png' : '/bncofavicon-light.png';
+        };
+
+        // 1. Set immediately
+        updateFavicon();
+
+        // 2. Watch for theme toggles
+        const observer = new MutationObserver(updateFavicon);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      }
+
+      // Run on initial load and handle Astro's View Transitions
+      initDynamicFavicon();
+      document.addEventListener('astro:after-swap', initDynamicFavicon);
     </script>
   </head>
 

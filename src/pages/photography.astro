@@ -1,13 +1,7 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
-import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 import Badge from '@/components/ui/data-display/Badge/Badge.astro';
-import Button from '@/components/ui/form/Button/Button.astro';
-import Input from '@/components/ui/form/Input/Input.astro';
-import Textarea from '@/components/ui/form/Textarea/Textarea.astro';
-import Card from '@/components/ui/data-display/Card/Card.astro';
 import { Hero } from '@/components/hero';
-import siteConfig from '@/config/site.config';
 import CTA from '@/components/landing/CTA.astro';
 import { ImageCarousel } from '@/components/ui/content/ImageCarousel';
 
@@ -47,8 +41,6 @@ import londonnhmskeletonImg from '../assets/images/holidays/london/nhmskeleton.j
 import londonswanImg from '../assets/images/holidays/london/swanlondon.jpg';
 import londonvictoriatheatreImg from '../assets/images/holidays/london/victoriatheatre.jpg';
 
-
-
 const rawRecentPhotos = [
   { img: cowImg, alt: "A black and white cow stood in a grassy field, framed by the evening sun." },
   { img: ducklingsImg, alt: "Two ducklings side by side in a pond." },
@@ -57,8 +49,9 @@ const rawRecentPhotos = [
 
 const recentPhotos = await Promise.all(
   rawRecentPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
+    // OPTIMIZATION: Switched to AVIF and dropped thumb quality to 60, full to 80
+    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
+    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
     
     return { 
       src: thumb.src,       
@@ -79,8 +72,8 @@ const rawMoreCatPhotos = [
 
 const moreCatPhotos = await Promise.all(
   rawMoreCatPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
+    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
+    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
     
     return { 
       src: thumb.src,       
@@ -106,8 +99,8 @@ const rawPraguePhotos = [
 
 const praguePhotos = await Promise.all(
   rawPraguePhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
+    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
+    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
     
     return { 
       src: thumb.src,       
@@ -132,8 +125,8 @@ const rawPefkosRhodesPhotos = [
 
 const pefkosrhodesPhotos = await Promise.all(
   rawPefkosRhodesPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
+    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
+    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
     
     return { 
       src: thumb.src,       
@@ -155,8 +148,8 @@ const rawLondonPhotos = [
 
 const londonPhotos = await Promise.all(
   rawLondonPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
+    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
+    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
     
     return { 
       src: thumb.src,       
@@ -219,7 +212,6 @@ const londonPhotos = await Promise.all(
       <div class="container max-w-6xl">
         <div class="flex flex-col gap-6">
           <div class="text-center lg:text-left mb-8">
-            {/* ACCESSIBILITY FIX: Changed h1 to h2 to maintain strict descending order */}
             <h2 id="holiday-photos-heading" class="text-3xl font-bold text-foreground">Holiday Photos -</h2>
             <p class="text-foreground-muted mt-2">Photos from holidays from around the world.</p>
           </div>

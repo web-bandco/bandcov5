@@ -272,8 +272,9 @@ export function VerticalTabs({
             <Icon
               className={cn(
                 'h-5 w-5 transition-all duration-200',
+                /* ACCESSIBILITY FIX */
                 isActive
-                  ? 'text-brand-600 dark:text-brand-400 scale-105'
+                  ? 'text-brand-700 dark:text-brand-400 scale-105'
                   : 'text-foreground-muted group-hover:text-foreground-secondary'
               )}
               strokeWidth={isActive ? 2.25 : 1.75}
@@ -361,12 +362,12 @@ export function VerticalTabs({
               'border-2 border-border bg-gradient-to-b from-background to-background-secondary',
               'shadow-sm hover:shadow-md hover:border-brand-300/50 dark:hover:border-brand-700/50',
               'transition-all duration-200',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 focus-visible:ring-offset-2',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700/30 focus-visible:ring-offset-2',
               isDropdownOpen && 'shadow-md border-brand-300/50 dark:border-brand-700/50'
             )}
           >
             {ActiveIcon && (
-              <ActiveIcon className="h-5 w-5 text-brand-500 shrink-0" strokeWidth={2} />
+              <ActiveIcon className="h-5 w-5 text-brand-700 dark:text-brand-400 shrink-0" strokeWidth={2} />
             )}
             <div className="flex-1 min-w-0 text-left">
               <span className="font-semibold text-foreground block">
@@ -492,9 +493,10 @@ export function VerticalTabs({
                 <span
                   className={cn(
                     'font-display flex items-center gap-2 text-base font-bold',
+                    /* ACCESSIBILITY FIX: Changed text-brand-600 to text-brand-700 */
                     isActive
-                      ? 'text-brand-600 dark:text-brand-400'
-                      : 'text-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400'
+                      ? 'text-brand-700 dark:text-brand-400'
+                      : 'text-foreground group-hover:text-brand-700 dark:group-hover:text-brand-400'
                   )}
                 >
                   {Icon && (
@@ -502,8 +504,8 @@ export function VerticalTabs({
                       className={cn(
                         'h-5 w-5',
                         isActive
-                          ? 'text-brand-500'
-                          : 'text-foreground-subtle group-hover:text-brand-500'
+                          ? 'text-brand-700 dark:text-brand-400'
+                          : 'text-foreground-subtle group-hover:text-brand-700 dark:group-hover:text-brand-400'
                       )}
                       strokeWidth={2}
                     />

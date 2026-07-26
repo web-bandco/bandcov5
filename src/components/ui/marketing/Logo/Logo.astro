@@ -76,7 +76,7 @@ const targetWidth = widthMap[size] || widthMap.md;
       fetchpriority={fetchpriority}
       class:list={[sizeClass]}
     />
-  ) : (
+) : (
     <Fragment>
       <Image
         src={lightLogo}
@@ -97,6 +97,7 @@ const targetWidth = widthMap[size] || widthMap.md;
         format="avif"
         quality={60}
         loading={loading}
+        fetchpriority={fetchpriority}
         class:list={[sizeClass, 'hidden dark:block']}
         aria-hidden="true"
       />

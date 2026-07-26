@@ -68,7 +68,7 @@ const defaultTab = tabs.find(t => t.id === defaultValue);
           <Icon
             name={defaultTab.icon}
             size="md"
-            class="text-brand-500 shrink-0"
+            class="text-brand-700 dark:text-brand-400 shrink-0"
             data-vtab-trigger-icon
           />
         )}
@@ -147,7 +147,8 @@ const defaultTab = tabs.find(t => t.id === defaultValue);
                     size="md"
                     class={cn(
                       'vtab-icon transition-all duration-200',
-                      isActive ? 'text-brand-600 dark:text-brand-400 scale-105' : 'text-foreground-muted group-hover:text-foreground-secondary'
+                      /* ACCESSIBILITY FIX: Changed text-brand-600 to text-brand-700 */
+                      isActive ? 'text-brand-700 dark:text-brand-400 scale-105' : 'text-foreground-muted group-hover:text-foreground-secondary'
                     )}
                   />
                 </div>
@@ -263,7 +264,8 @@ const defaultTab = tabs.find(t => t.id === defaultValue);
                     size="md"
                     class={cn(
                       'vtab-icon transition-all duration-200',
-                      isActive ? 'text-brand-600 dark:text-brand-400 scale-105' : 'text-foreground-muted group-hover:text-foreground-secondary'
+                      /* ACCESSIBILITY FIX: Changed text-brand-600 to text-brand-700 */
+                      isActive ? 'text-brand-700 dark:text-brand-400 scale-105' : 'text-foreground-muted group-hover:text-foreground-secondary'
                     )}
                   />
                 </div>
@@ -357,9 +359,10 @@ const defaultTab = tabs.find(t => t.id === defaultValue);
             <span
               class={cn(
                 'font-display flex items-center gap-2 text-base font-bold',
+                /* ACCESSIBILITY FIX: Changed text-brand-600 to text-brand-700 */
                 isActive
-                  ? 'text-brand-600 dark:text-brand-400'
-                  : 'text-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400'
+                  ? 'text-brand-700 dark:text-brand-400'
+                  : 'text-foreground group-hover:text-brand-700 dark:group-hover:text-brand-400'
               )}
               data-vtab-label
             >
@@ -369,8 +372,8 @@ const defaultTab = tabs.find(t => t.id === defaultValue);
                   size="md"
                   class={cn(
                     isActive
-                      ? 'text-brand-500'
-                      : 'text-foreground-subtle group-hover:text-brand-500'
+                      ? 'text-brand-700 dark:text-brand-400'
+                      : 'text-foreground-subtle group-hover:text-brand-700 dark:group-hover:text-brand-400'
                   )}
                   data-vtab-icon
                 />
@@ -525,10 +528,11 @@ const defaultTab = tabs.find(t => t.id === defaultValue);
           // Update icon
           if (icon) {
             if (isActive) {
-              icon.classList.add('text-brand-600', 'dark:text-brand-400', 'scale-105');
+              /* ACCESSIBILITY FIX */
+              icon.classList.add('text-brand-700', 'dark:text-brand-400', 'scale-105');
               icon.classList.remove('text-foreground-muted');
             } else {
-              icon.classList.remove('text-brand-600', 'dark:text-brand-400', 'scale-105');
+              icon.classList.remove('text-brand-700', 'dark:text-brand-400', 'scale-105');
               icon.classList.add('text-foreground-muted');
             }
           }
@@ -601,10 +605,11 @@ const defaultTab = tabs.find(t => t.id === defaultValue);
           const label = trigger.querySelector('[data-vtab-label]');
           if (label) {
             if (isActive) {
-              label.classList.add('text-brand-600', 'dark:text-brand-400');
+              /* ACCESSIBILITY FIX */
+              label.classList.add('text-brand-700', 'dark:text-brand-400');
               label.classList.remove('text-foreground');
             } else {
-              label.classList.remove('text-brand-600', 'dark:text-brand-400');
+              label.classList.remove('text-brand-700', 'dark:text-brand-400');
               label.classList.add('text-foreground');
             }
           }
@@ -613,10 +618,11 @@ const defaultTab = tabs.find(t => t.id === defaultValue);
           const icon = trigger.querySelector('[data-vtab-icon]');
           if (icon) {
             if (isActive) {
-              icon.classList.add('text-brand-500');
+              /* ACCESSIBILITY FIX */
+              icon.classList.add('text-brand-700', 'dark:text-brand-400');
               icon.classList.remove('text-foreground-subtle');
             } else {
-              icon.classList.remove('text-brand-500');
+              icon.classList.remove('text-brand-700', 'dark:text-brand-400');
               icon.classList.add('text-foreground-subtle');
             }
           }

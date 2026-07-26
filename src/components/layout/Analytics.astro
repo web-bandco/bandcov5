@@ -263,3 +263,29 @@ const analyticsDataJson = JSON.stringify({
     })();
   </script>
 )}
+{/* ── Astro View Transitions Listener ── */}
+{hasGa && (
+  <script is:inline>
+    (function(){
+      document.addEventListener('astro:page-load', () => {
+        const dataEl = document.getElementById('analytics-data');
+        if (!dataEl || !window.dataLayer) return; // <-- Added the safety check here!
+        
+        const d = JSON.parse(dataEl.textContent);
+        
+        // eslint-disable-next-line prefer-rest-params
+        function gtag(){window.dataLayer.push(arguments);}
+        
+        // If strict mode is on, verify we have consent before pushing the virtual page view
+        const isStrict = d.categoryDefaults && d.analyticsCategoryKey;
+        const hasConsent = window.__consentState?.categories?.[d.analyticsCategoryKey];
+        
+        if (!isStrict || hasConsent) {
+          gtag('config', d.gaId, {
+            page_path: window.location.pathname,
+          });
+        }
+      });
+    })();
+  </script>
+)}

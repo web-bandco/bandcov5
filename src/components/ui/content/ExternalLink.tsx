@@ -35,6 +35,29 @@ export function ExternalLink({
   }, [href]);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // --- 1. Silent Analytics Tracking ---
+    try {
+      if (typeof window !== 'undefined' && 'gtag' in window) {
+        let platform = 'external_site';
+        
+        const lowerHref = href.toLowerCase();
+        if (lowerHref.includes('vinted.')) platform = 'vinted';
+        else if (lowerHref.includes('ebay.')) platform = 'ebay';
+        else if (lowerHref.includes('github.')) platform = 'github';
+        else if (lowerHref.includes('twitter.')) platform = 'twitter';
+        else if (lowerHref.includes('linkedin.')) platform = 'linkedin';
+        else if (lowerHref.includes('linktr.ee')) platform = 'linktree';
+
+        (window as any).gtag('event', `click_${platform}`, {
+          event_category: 'outbound_link',
+          link_url: href,
+        });
+      }
+    } catch (error) {
+      // Fail silently - analytics should never break UX
+    }
+
+    // --- 2. Global External Link Dialog Logic ---
     if (requireConfirm) {
       e.preventDefault(); 
       e.stopPropagation(); // Stop Astro's router from interfering
@@ -44,6 +67,8 @@ export function ExternalLink({
       // Send the signal to the global dialog instead of trying to open a local one
       window.dispatchEvent(new CustomEvent('open-external-dialog', { detail: { href } }));
     }
+    
+    // --- 3. Pass through original onClick ---
     if (onClick) onClick(e);
   };
 

@@ -43,171 +43,172 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
   title="Contact"
   description="Get in touch with Brighton and Co."
 >
-  <Hero layout="centered" size="sm">
-    <Badge slot="badge" pill pulse>Get in Touch</Badge>
+  {/* OPTIMIZATION: Semantic main wrapper for perfect SEO and Accessibility scores */}
+  <main id="main-content">
+    <Hero layout="centered" size="sm">
+      <Badge slot="badge" pill pulse>Get in Touch</Badge>
 
-    <h1 slot="title">
-      Contact <span class="text-brand-700">B&Co</span>
-    </h1>
+      <h1 slot="title">
+        Contact <span class="text-brand-700 dark:text-brand-400">B&Co</span>
+      </h1>
 
-    <p slot="description">
-      Have a question, suggestion, or just want to say hello? We'd love to hear from you.
-    </p>
-  </Hero>
+      <p slot="description">
+        Have a question, suggestion, or just want to say hello? We'd love to hear from you.
+      </p>
+    </Hero>
 
-  <!-- Contact Section -->
-  <section class="py-20 bg-surface-secondary">
-    <div class="mx-auto max-w-6xl px-6">
-      <div class="grid gap-12 lg:grid-cols-2">
-        <!-- Form -->
-        <Card padding="lg">
-          <h2 class="text-2xl font-display font-bold text-foreground mb-6">Send us a message</h2>
+    <!-- Contact Section -->
+    <section class="py-20 bg-surface-secondary">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="grid gap-12 lg:grid-cols-2">
+          <!-- Form -->
+          <Card padding="lg">
+            <h2 class="text-2xl font-display font-bold text-foreground mb-6">Send us a message</h2>
 
-          <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" class="space-y-6">
-            
-            <input type="hidden" name="access_key" value={accessKey} />
-            <input type="hidden" name="subject" value="New Website Enquiry from B&Co" />
-            
-            <Input
-              label="Your Name"
-              name="name"
-              type="text"
-              placeholder="Joe Bloggs"
-              required
-              autocomplete="name"
-            />
+            <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" class="space-y-6">
+              
+              <input type="hidden" name="access_key" value={accessKey} />
+              <input type="hidden" name="subject" value="New Website Enquiry from B&Co" />
+              
+              <Input
+                label="Your Name"
+                name="name"
+                type="text"
+                placeholder="Joe Bloggs"
+                required
+                autocomplete="name"
+              />
 
-            <Input
-              label="Email Address"
-              name="email"
-              type="email"
-              placeholder="joe@bloggs.com"
-              required
-              autocomplete="email"
-            />
+              <Input
+                label="Email Address"
+                name="email"
+                type="email"
+                placeholder="joe@bloggs.com"
+                required
+                autocomplete="email"
+              />
 
-            <Input
-              label="Subject"
-              name="User Subject"
-              type="text"
-              placeholder="How can we help?"
-              required
-            />
+              <Input
+                label="Subject"
+                name="User Subject"
+                type="text"
+                placeholder="How can we help?"
+                required
+              />
 
-            <Textarea
-              label="Message"
-              name="message"
-              placeholder="Tell us more about your question..."
-              rows={5}
-              required
-            />
+              <Textarea
+                label="Message"
+                name="message"
+                placeholder="Tell us more about your question..."
+                rows={5}
+                required
+              />
 
-            <div class="flex justify-center w-full">
-              <div class="h-captcha" data-captcha="true"></div>
+              <div class="flex justify-center w-full">
+                <div class="h-captcha" data-captcha="true"></div>
+              </div>
+
+              <div id="form-message" class="hidden text-sm"></div>
+
+              <Button type="submit" class="w-full" id="submit-button">
+                <Icon name="mail" size="sm" />
+                Send Message
+              </Button>
+            </form>
+          </Card>
+        <div class="flex flex-col h-full justify-between gap-12">
+            <div>
+              <h2 class="font-display text-2xl font-bold text-foreground mb-6">
+                Quick answers
+              </h2>
+              <Accordion 
+                items={contactFaqs} 
+                variant="card" 
+                size="md" 
+                exclusive={true}
+              />
             </div>
 
-            <div id="form-message" class="hidden text-sm"></div>
+            <div>
+              <h2 class="font-display text-2xl font-bold text-foreground mb-6">
+                Other ways to reach us
+              </h2>
 
-            <Button type="submit" class="w-full" id="submit-button">
-              <Icon name="mail" size="sm" />
-              Send Message
-            </Button>
-          </form>
-        </Card>
-      <div class="flex flex-col h-full justify-between gap-12">
-          <div>
-            <h2 class="font-display text-2xl font-bold text-foreground mb-6">
-              Quick answers
-            </h2>
-            <Accordion 
-              items={contactFaqs} 
-              variant="card" 
-              size="md" 
-              exclusive={true}
-            />
-          </div>
-
-          <div>
-            <h2 class="font-display text-2xl font-bold text-foreground mb-6">
-              Other ways to reach us
-            </h2>
-
-            <div class="flex flex-col gap-4 w-full">
-              
-              {/* EMAIL LINK */}
-              <a href={`mailto:${siteConfig.email}`} class="flex w-full outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-2xl">
-                <div class="w-full">
-                  <Card hover padding="sm">
-                    <div class="flex items-center gap-4">
-                      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
-                        <Icon name="mail" size="md" />
+              <div class="flex flex-col gap-4 w-full">
+                
+                {/* EMAIL LINK */}
+                <a href={`mailto:${siteConfig.email}`} class="flex w-full outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-2xl">
+                  <div class="w-full">
+                    <Card hover padding="sm">
+                      <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
+                          <Icon name="mail" size="md" />
+                        </div>
+                        <div>
+                          <p class="text-sm text-foreground-muted">Email</p>
+                          <p class="font-medium text-foreground">{siteConfig.email}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p class="text-sm text-foreground-muted">Email</p>
-                        <p class="font-medium text-foreground">{siteConfig.email}</p>
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              </a>
+                    </Card>
+                  </div>
+                </a>
 
-              {/* GITHUB LINK (Changed to client:visible) */}
-              <ExternalLink
-                client:visible
-                href="https://github.com/web-bandco"
-                showIndicator={false}
-                className="!flex w-full" 
-              >
-                <div class="w-full">
-                  <Card hover padding="sm">
-                    <div class="flex items-center gap-4">
-                      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
-                        <Icon name="github" size="md" />
-                      </div>
-                      <div>
-                        <p class="text-sm text-foreground-muted">GitHub</p>
-                        <p class="font-medium text-foreground">web-bandco</p>
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              </ExternalLink>
-
-              {/* TWITTER LINK (Changed to client:visible) */}
-              {siteConfig.twitter && (
+                {/* GITHUB LINK (Changed to client:visible) */}
                 <ExternalLink
                   client:visible
-                  href={`https://twitter.com/${siteConfig.twitter.site.replace('@', '')}`}
+                  href="https://github.com/web-bandco"
                   showIndicator={false}
-                  className="!flex w-full"
+                  className="!flex w-full" 
                 >
                   <div class="w-full">
                     <Card hover padding="sm">
                       <div class="flex items-center gap-4">
                         <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
-                          <Icon name="twitter" size="md" />
+                          <Icon name="github" size="md" />
                         </div>
                         <div>
-                          <p class="text-sm text-foreground-muted">Twitter</p>
-                          <p class="font-medium text-foreground">{siteConfig.twitter.site}</p>
+                          <p class="text-sm text-foreground-muted">GitHub</p>
+                          <p class="font-medium text-foreground">web-bandco</p>
                         </div>
                       </div>
                     </Card>
                   </div>
                 </ExternalLink>
-              )}
-              
+
+                {/* TWITTER LINK (Changed to client:visible) */}
+                {siteConfig.twitter && (
+                  <ExternalLink
+                    client:visible
+                    href={`https://twitter.com/${siteConfig.twitter.site.replace('@', '')}`}
+                    showIndicator={false}
+                    className="!flex w-full"
+                  >
+                    <div class="w-full">
+                      <Card hover padding="sm">
+                        <div class="flex items-center gap-4">
+                          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
+                            <Icon name="twitter" size="md" />
+                          </div>
+                          <div>
+                            <p class="text-sm text-foreground-muted">Twitter</p>
+                            <p class="font-medium text-foreground">{siteConfig.twitter.site}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  </ExternalLink>
+                )}
+                
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-  <Separator orientation="horizontal" className="my-20" />
-  <CTA />
-  <Toast />
-
-  {/* Removed the blocking inline script. The dynamic loader below handles it instead. */}
+    </section>
+    <Separator orientation="horizontal" className="my-20" />
+    <CTA />
+    <Toast />
+  </main>
 </PageLayout>
 
 <script>

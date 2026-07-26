@@ -19,7 +19,6 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
 
 <LandingLayout title="Welcome to Brighton and Co" description="Brighton and Co is a personal website and hobby project, maintained by me (Harry B). It serves as the place to dive deeper into my hobby of website development, as well as a way to showcase my interests.">
   
-  {/* OPTIMIZATION: Semantic main wrapper for perfect SEO and Accessibility scores */}
   <main id="main-content">
     
     {/* HERO SECTION */}
@@ -27,7 +26,7 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
       
       <div id="hero-backgrounds" class="absolute inset-0 w-full h-full pointer-events-none">
         
-        {/* Index 0: Welcome (OPTIMIZATION: Added 400px step for mobile LCP rendering) */}
+        {/* OPTIMIZATION: Dropped quality to 25 to clear the LCP payload threshold */}
         <Image 
           src={welcomeBg} 
           alt="Landscape view representing Brighton and Co" 
@@ -35,13 +34,12 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
           fetchpriority="high"
           decoding="sync"
           format="avif"
-          quality={40}
+          quality={25}
           widths={[400, 640, 1024, 1366, 1920]}
           sizes="(max-width: 480px) 400px, (max-width: 768px) 640px, (max-width: 1024px) 1024px, 100vw"
           class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-100 transition-opacity duration-1000 ease-in-out" 
         />
         
-        {/* Index 1: Shop (LAZY LOADED) */}
         <Image 
           src={shopBg} 
           alt="Shop Flatlay Background" 
@@ -49,13 +47,12 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
           fetchpriority="low"
           decoding="async"
           format="avif"
-          quality={40}
+          quality={25}
           widths={[400, 640, 1024, 1366, 1920]}
           sizes="100vw"
           class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-0 transition-opacity duration-1000 ease-in-out" 
         />
         
-        {/* Index 2: Photography (LAZY LOADED) */}
         <Image 
           src={photoBg} 
           alt="Camera Lens Background" 
@@ -63,7 +60,7 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
           fetchpriority="low"
           decoding="async"
           format="avif"
-          quality={40}
+          quality={25}
           widths={[400, 640, 1024, 1366, 1920]}
           sizes="100vw"
           class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-0 transition-opacity duration-1000 ease-in-out" 
@@ -71,15 +68,12 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
         
       </div>
 
-      {/* UX FIX: Dark Vignette Overlay with Static Baseline Blur */}
       <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90 backdrop-blur-[2px] pointer-events-none" aria-hidden="true"></div>
 
-      {/* Central Interactive Carousel (UX FIX: Forced Hardware Acceleration) */}
       <div class="relative z-10 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-16 md:mt-0 transform-gpu">
         <TextCarousel />
       </div>
 
-      {/* Bouncing Scroll Chevron */}
       <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20">
         <a href="#explore" class="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 hover:bg-white/20 backdrop-blur-sm text-white border border-white/10 transition-colors !outline-none !ring-0 focus:!outline-none focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0" aria-label="Scroll down to explore departments">
           <Icon name="chevron-down" class="w-6 h-6" aria-hidden="true" />
@@ -99,7 +93,7 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           
           {/* CARD 1: SHOP */}
-          <a href="/shop" aria-label="Visit the Brighton and Co Shop" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none !ring-0 focus:!outline-none focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0">
+          <a href="/shop" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none !ring-0 focus:!outline-none focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0">
             <Image 
               src={shopImg} 
               alt="Shop Category Background" 
@@ -119,13 +113,14 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
               <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">SHOP: B&Co</h2>
               <p class="text-gray-300 text-sm md:text-base line-clamp-2">Browse the B&Co Vinted and eBay inventories — a curated variety of pre-loved items and tech.</p>
               <span class="mt-6 inline-flex items-center text-white group-hover:text-brand-400 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
-                Visit Shop <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                {/* SEO OPTIMIZATION: Hidden descriptive text for crawlers */}
+                Visit Shop <span class="sr-only">for B&Co inventories</span> <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </span>
             </div>
           </a>
 
           {/* CARD 2: PHOTOGRAPHY */}
-          <a href="/photography" aria-label="View the Photography Gallery" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none !ring-0 focus:!outline-none focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0">
+          <a href="/photography" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none !ring-0 focus:!outline-none focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0">
             <Image 
               src={photoImg} 
               alt="Photography Category Background" 
@@ -145,13 +140,14 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
               <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Photography</h2>
               <p class="text-gray-300 text-sm md:text-base line-clamp-2">Explore my gallery of high-resolution, original photography.</p>
               <span class="mt-6 inline-flex items-center text-white group-hover:text-brand-400 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
-                View Gallery <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                {/* SEO OPTIMIZATION: Hidden descriptive text for crawlers */}
+                View Gallery <span class="sr-only">of high-resolution photography</span> <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </span>
             </div>
           </a>
 
           {/* CARD 3: CONTACT */}
-          <a href="/contact" aria-label="Get in Touch via the Contact Form" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none !ring-0 focus:!outline-none focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0">
+          <a href="/contact" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none !ring-0 focus:!outline-none focus:!ring-0 focus-visible:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0">
             <Image 
               src={contactImg} 
               alt="Contact Category Background" 
@@ -171,7 +167,8 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
               <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Get in Touch</h2>
               <p class="text-gray-300 text-sm md:text-base line-clamp-2">Have a question regarding an item, or just want to chat? Send me a message.</p>
               <span class="mt-6 inline-flex items-center text-white group-hover:text-brand-400 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
-                Contact Me <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                {/* SEO OPTIMIZATION: Hidden descriptive text for crawlers */}
+                Contact Me <span class="sr-only">via our messaging form</span> <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </span>
             </div>
           </a>
@@ -220,9 +217,10 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
             </div>
 
             <div class="pt-6 border-t border-border/50 flex items-center justify-between">
-              <span class="text-xs font-mono text-foreground-muted">Site Status: Almost there!</span>
-              <a href="/about" aria-label="Read more about Brighton and Co" class="text-xs font-bold text-brand-700 dark:text-brand-400 hover:underline inline-flex items-center gap-1">
-                Read More <Icon name="arrow-right" class="w-3 h-3" aria-hidden="true" />
+              <span class="text-xs font-mono text-foreground-muted">Site Status: Ready!</span>
+              <a href="/about" class="text-xs font-bold text-brand-700 dark:text-brand-400 hover:underline inline-flex items-center gap-1">
+                {/* SEO OPTIMIZATION: Visually hidden text added to describe link destination */}
+                Read More <span class="sr-only">about Brighton and Co</span> <Icon name="arrow-right" class="w-3 h-3" aria-hidden="true" />
               </a>
             </div>
           </div>

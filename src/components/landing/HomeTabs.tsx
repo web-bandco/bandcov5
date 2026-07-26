@@ -69,7 +69,7 @@ export function HomeTabs() {
             As such, this site is not a commercial project, nor monetised in any way for any commercial purpose or gain.
           </CardContent>
           <CardContent className={`text-sm ${descClass}`}>
-            You can find out more about the site on the <a href="/about" className="text-brand-500 hover:underline">About page</a>.
+            You can find out more about the site on the <a href="/about" className="text-brand-700 hover:underline">About page</a>.
           </CardContent>
         </Card>
       </TabsContent>
@@ -79,7 +79,7 @@ export function HomeTabs() {
           <CardHeader>
             <CardTitle className={titleClass}>Contact</CardTitle>
             <CardDescription className={descClass}>
-              You can use the contact form on the <a href="/contact" className="text-brand-500 hover:underline">Contact page</a> if you have any questions or suggestions.
+              You can use the contact form on the <a href="/contact" className="text-brand-700 hover:underline">Contact page</a> if you have any questions or suggestions.
             </CardDescription>
           </CardHeader>
           <CardContent className={`text-sm ${descClass}`}>

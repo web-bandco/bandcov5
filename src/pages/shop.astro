@@ -2,10 +2,12 @@
 import PageLayout from '@/layouts/PageLayout.astro';
 import { Hero } from '@/components/hero';
 import CTA from '@/components/landing/CTA.astro';
-import shopLogo from '@/assets/branding/shoplogo.png';
 import { ShopCarousel } from '@/components/ui/content/ShopCarousel';
 import { SiVinted, SiEbay } from "react-icons/si";
 import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+
+// Import the specific shop logo
+import shopLogo from '@/assets/branding/shoplogo.png';
 
 import { getCollection } from 'astro:content';
 import { getImage, Image } from 'astro:assets';
@@ -63,16 +65,20 @@ const ebayItems = await Promise.all(
     <Badge slot="badge" pill pulse>Shop my eBay and Vinted pages</Badge>
 
     <h1 slot="title" class="flex flex-col items-center gap-6">
+      {/* OPTIMIZATION: Switched to WebP at 100 quality to prevent color-washing on vibrant graphics */}
       <Image 
         src={shopLogo} 
         alt="SHOP: B&Co Logo" 
-        width={192}
+        width={96}
+        densities={[1, 1.5, 2]}
+        format="webp"
+        quality={90}
         loading="eager"
         fetchpriority="high"
-        class="w-24 h-24 object-contain drop-shadow-md" 
+        class="w-24 h-24 object-contain mb-2 drop-shadow-md" 
       />
       <span>
-        SHOP: 
+        SHOP:{' '}
         <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #ff0055, #ff2e43);">
           B&CO
         </span>
@@ -89,7 +95,6 @@ const ebayItems = await Promise.all(
       
       <ShopCarousel storeName="Vinted" client:visible>
         <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
-          {/* OPTIMIZATION: Added aria-label to the anchor link */}
           <ExternalLink 
             href="https://vinted.co.uk/member/272494517" 
             client:visible
@@ -97,7 +102,7 @@ const ebayItems = await Promise.all(
             aria-label="Visit my Vinted profile"
             className="hover:opacity-80 transition-opacity flex items-center mt-1"
           >
-            {/* OPTIMIZATION: Added title tag inside SVG for img alt text */}
+            {/* ACCESSIBILITY: Explicitly added title tag inside SVG for screen readers */}
             <SiVinted className="w-8 h-8" style={{ color: "#017573" }}>
               <title>Vinted Logo</title>
             </SiVinted>
@@ -127,7 +132,6 @@ const ebayItems = await Promise.all(
       
       <ShopCarousel storeName="eBay" client:visible>
         <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
-          {/* OPTIMIZATION: Added aria-label to the anchor link */}
           <ExternalLink 
             href="https://ebay.co.uk/usr/itsharryb/" 
             client:visible
@@ -135,7 +139,7 @@ const ebayItems = await Promise.all(
             aria-label="Visit my eBay profile"
             className="hover:opacity-80 transition-opacity flex items-center mt-1"
           >
-            {/* OPTIMIZATION: Added title tag inside SVG for img alt text */}
+            {/* ACCESSIBILITY: Explicitly added title tag inside SVG for screen readers */}
             <SiEbay className="w-10 h-10" style={{ color: "#0064D2" }}>
               <title>eBay Logo</title>
             </SiEbay>

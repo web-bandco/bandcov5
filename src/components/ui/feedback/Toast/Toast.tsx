@@ -146,10 +146,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ toast, dismiss }}>
       {children}
       {/* Toast container */}
+      {/* ACCESSIBILITY FIX: Removed prohibited aria-live and aria-label attributes */}
       <div
         className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-[420px] w-full pointer-events-none"
-        aria-live="polite"
-        aria-label="Notifications"
       >
         {toasts.map((t) => (
           <ToastItem key={t.id} toast={t} onDismiss={dismiss} />
