@@ -1,10 +1,10 @@
 ---
-// src/pages/404.astro
 import LandingLayout from '@/layouts/LandingLayout.astro';
 import Button from '@/components/ui/form/Button/Button.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import { getImage } from 'astro:assets';
 
-// Import all memoji assets statically
+// 1. Import all memoji assets statically
 import confused from '@/assets/images/404-memoji/confused-memoji.png';
 import dazed from '@/assets/images/404-memoji/dazed-memoji.png';
 import facepalm from '@/assets/images/404-memoji/facepalm-memoji.png';
@@ -15,9 +15,14 @@ import sneeze from '@/assets/images/404-memoji/sneeze-memoji.png';
 
 const rawMemojis = [confused, dazed, facepalm, sadface, shocked, shrugbody, sneeze];
 
-// Bypass the memory-intensive getImage step for the build.
-// This simply maps the imported PNGs directly to their static URLs.
-const optimizedMemojis = rawMemojis.map(img => img.src);
+// 2. Pre-process them into highly optimized, lightweight AVIF URLs during the build step
+const optimizedMemojis = await Promise.all(
+  rawMemojis.map(async (img) => {
+    // Bumped width to 256px to ensure the larger memoji stays crisp on retina screens
+    const opt = await getImage({ src: img, format: 'avif', width: 256, quality: 80 });
+    return opt.src;
+  })
+);
 ---
 
 <LandingLayout
