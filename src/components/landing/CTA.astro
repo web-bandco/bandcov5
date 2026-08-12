@@ -3,32 +3,69 @@ import CTASection from '@/components/ui/marketing/CTA/CTA.astro';
 import Button from '@/components/ui/form/Button/Button.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 import Logo from '@/components/ui/marketing/Logo/Logo.astro';
-import { ExternalLink } from '@/components/ui/content/ExternalLink';
 ---
 
 <CTASection id="cta" variant="default" size="md" maxWidth="lg">
   <Logo slot="logo" size="2xl" class="mx-auto" />
 
   <h2 slot="heading">
-    Explore more of: <span class="text-brand-700">Brighton and Co</span>
+    Explore more of <span class="text-brand-700">Brighton and Co</span>
   </h2>
 
   <p slot="description">
-    Brighton and Co Version 5 - by Harry B.
+    Discover the latest items from the Shop - or look at some photography.
   </p>
 
   <Fragment slot="actions">
-    <ExternalLink
-      client:load
-      href="https://astro.build/themes/details/velocity/"
-      showIndicator={false}
-      className="inline-block"
-    >
-      <Button variant="outline" size="lg" class="pointer-events-none">
-        <Icon name="book" size="md" />
-        Velocity
-      </Button>
-    </ExternalLink>
+    {/* Primary Action - Solid Button */}
+    <Button href="/shop" size="lg" id="cta-shop-btn">
+      <Icon name="handbag" size="sm" />
+      Browse the Shop
+    </Button>
     
+    {/* Secondary Action - Outline Button */}
+    <Button href="/photography" variant="outline" size="lg" id="cta-photo-btn">
+      <Icon name="camera" size="sm" />
+      View Photography
+    </Button>
   </Fragment>
 </CTASection>
+
+<script>
+  function initCTATracking() {
+    const shopBtn = document.getElementById('cta-shop-btn');
+    const photoBtn = document.getElementById('cta-photo-btn');
+
+    // Helper function to send the event safely
+    const trackCTAClick = (buttonName: string, destinationUrl: string) => {
+      if (typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'cta_click', {
+          event_category: 'Navigation',
+          event_label: buttonName,
+          link_url: destinationUrl,
+          section: 'Bottom CTA'
+        });
+      } else if ((window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'cta_click',
+          button_name: buttonName,
+          link_url: destinationUrl,
+          section: 'Bottom CTA'
+        });
+      }
+    };
+
+    // Attach listeners if the buttons exist on the current page
+    if (shopBtn) {
+      shopBtn.addEventListener('click', () => trackCTAClick('Browse the Shop', '/shop'));
+    }
+
+    if (photoBtn) {
+      photoBtn.addEventListener('click', () => trackCTAClick('View Photography', '/photography'));
+    }
+  }
+
+  // Run on initial load and re-run after Astro View Transitions
+  initCTATracking();
+  document.addEventListener('astro:after-swap', initCTATracking);
+</script>

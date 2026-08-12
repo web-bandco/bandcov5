@@ -151,7 +151,7 @@ if (includeOrgSchema) {
       showCopyright={false}
     >
       {/* COLUMN 1: Logo & Tagline (Injected via slots) */}
-      <a href="/" slot="logo" class="block mb-2">
+      <a href="/" slot="logo" class="block mb-2" data-analytics-nav="Footer" data-nav-label="Logo Home Link">
         <Image src={lightLogo} alt="Brighton and Co" width={300} class="h-10 w-auto dark:hidden" />
         <Image src={darkLogo} alt="Brighton and Co" width={300} class="h-10 w-auto hidden dark:block" />
       </a>
@@ -166,11 +166,11 @@ if (includeOrgSchema) {
         <div class="space-y-[var(--space-stack-md)]">
           <h3 class="font-semibold text-sm text-foreground">Quick Links</h3>
           <ul class="space-y-2">
-            <li><a href="/about" class="text-sm text-foreground-muted hover:text-foreground transition-colors">About</a></li>
-            <li><a href="/shop" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Shop</a></li>
-            <li><a href="/blog" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Blog</a></li>
-            <li><a href="/photography" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Photography</a></li>
-            <li><a href="/contact" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Contact</a></li>
+            <li><a href="/about" data-analytics-nav="Footer" data-nav-label="About" class="text-sm text-foreground-muted hover:text-foreground transition-colors">About</a></li>
+            <li><a href="/shop" data-analytics-nav="Footer" data-nav-label="Shop" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Shop</a></li>
+            <li><a href="/blog" data-analytics-nav="Footer" data-nav-label="Blog" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Blog</a></li>
+            <li><a href="/photography" data-analytics-nav="Footer" data-nav-label="Photography" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Photography</a></li>
+            <li><a href="/contact" data-analytics-nav="Footer" data-nav-label="Contact" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Contact</a></li>
           </ul>
         </div>
 
@@ -178,24 +178,23 @@ if (includeOrgSchema) {
         <div class="space-y-[var(--space-stack-md)]">
           <h3 class="font-semibold text-sm text-foreground">Connect</h3>
           <ul class="space-y-2">
-            {/* FIXED: Replaced standard <a> tags with our custom ExternalLink components */}
             <li>
-              <ExternalLink client:load disableHover={true} href="https://twitter.com/itsharryb_" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
+              <ExternalLink data-analytics-nav="Footer" data-nav-label="Twitter" client:load disableHover={true} href="https://twitter.com/itsharryb_" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
                 <Icon name="twitter" size="sm" class="group-hover:text-brand-500 transition-colors" /> Twitter
               </ExternalLink>
             </li>
             <li>
-              <ExternalLink client:load disableHover={true} href="https://github.com/web-bandco" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
+              <ExternalLink data-analytics-nav="Footer" data-nav-label="GitHub" client:load disableHover={true} href="https://github.com/web-bandco" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
                 <Icon name="github" size="sm" class="group-hover:text-brand-500 transition-colors" /> GitHub
               </ExternalLink>
             </li>
             <li>
-              <ExternalLink client:load disableHover={true} href="https://www.linkedin.com/in/harry-brighton/" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
+              <ExternalLink data-analytics-nav="Footer" data-nav-label="LinkedIn" client:load disableHover={true} href="https://www.linkedin.com/in/harry-brighton/" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
                 <Icon name="linkedin" size="sm" class="group-hover:text-brand-500 transition-colors" /> LinkedIn
               </ExternalLink>
             </li>
             <li>
-              <ExternalLink client:load disableHover={true} href="https://linktr.ee/brightonandco" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
+              <ExternalLink data-analytics-nav="Footer" data-nav-label="Linktree" client:load disableHover={true} href="https://linktr.ee/brightonandco" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
                 <Icon name="brand-linktree" size="sm" class="group-hover:text-brand-500 transition-colors" /> Linktree
               </ExternalLink>
             </li>
@@ -213,11 +212,13 @@ if (includeOrgSchema) {
            </div>
             {/* Terms and Conditions & Cookie Preferences links */}
             <div class="pt-2 mt-2 border-t border-border/50 flex flex-col items-start gap-1">
-              <a href="/terms-and-conditions" class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
+              <a href="/terms-and-conditions" data-analytics-nav="Footer" data-nav-label="Terms and Conditions" class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
                 Terms & Conditions
               </a>
               <button 
                 type="button" 
+                data-analytics-nav="Footer" 
+                data-nav-label="Cookie Preferences"
                 onclick="window.openConsentSettings && window.openConsentSettings()" 
                 class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1 cursor-pointer"
               >
@@ -236,5 +237,54 @@ if (includeOrgSchema) {
     {/* ADDED transition:persist to keep the dialog alive across all page navigations */}
     <GlobalExternalLinkDialog client:idle transition:persist="global-external-link-dialog" />
     <ConsentBanner />
+
+    {/* ── GLOBAL NAVIGATION TRACKING SCRIPT ── */}
+    <script>
+      function initGlobalNavTracking() {
+        // Find all links across the entire DOM tagged with data-analytics-nav
+        const navLinks = document.querySelectorAll('[data-analytics-nav]');
+
+        navLinks.forEach(link => {
+          // Clone and replace to strip out any existing listeners from previous view transitions
+          link.replaceWith(link.cloneNode(true));
+        });
+
+        // Re-select after cloning to attach the fresh event listener
+        const refreshedLinks = document.querySelectorAll('[data-analytics-nav]');
+        
+        refreshedLinks.forEach(link => {
+          link.addEventListener('click', () => {
+            const section = link.getAttribute('data-analytics-nav') || 'Unknown Section';
+            const label = link.getAttribute('data-nav-label') || 'Unknown Link';
+            
+            // Handle standard hrefs and button targets
+            const destination = link.getAttribute('href') || 'Button/Action';
+
+            // Fire the GA4 Event safely
+            if (typeof (window as any).gtag === 'function') {
+              (window as any).gtag('event', 'site_navigation', {
+                event_category: 'Site Routing',
+                event_label: label,
+                link_url: destination,
+                ui_section: section,
+                source_page: window.location.pathname
+              });
+            } else if ((window as any).dataLayer) {
+              (window as any).dataLayer.push({
+                event: 'site_navigation',
+                event_label: label,
+                link_url: destination,
+                ui_section: section,
+                source_page: window.location.pathname
+              });
+            }
+          });
+        });
+      }
+
+      // Initialize on first load, and re-bind after Astro view transitions
+      initGlobalNavTracking();
+      document.addEventListener('astro:after-swap', initGlobalNavTracking);
+    </script>
   </body>
 </html>

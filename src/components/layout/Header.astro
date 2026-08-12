@@ -166,7 +166,7 @@ const buttonId = `${menuId}-button`;
         (hasLogoSlot ? (
           <slot name="logo" />
         ) : (
-          <a href="/" class="flex items-center gap-2">
+          <a href="/" data-analytics-nav="Desktop Header" data-nav-label="Logo Home Link" class="flex items-center gap-2">
             <Logo 
               size={size === 'lg' ? 'md' : 'sm'} 
               forceDark={isInvert} 
@@ -201,6 +201,8 @@ const buttonId = `${menuId}-button`;
             {navItems.map(({ label, href }) => (
               <a
                 href={href.startsWith('#') && !isLandingPage ? `/${href}` : href}
+                data-analytics-nav="Desktop Header"
+                data-nav-label={label}
                 class={cn(
                   'nav-link relative z-10 inline-flex items-center w-fit rounded-md px-4 py-2 text-sm',
                   'transition-colors duration-200',
@@ -242,6 +244,8 @@ const buttonId = `${menuId}-button`;
                 target={action.target}
                 aria-label={action.label}
                 class={isFloating ? 'hdr-invert-text' : undefined}
+                data-analytics-nav="Desktop Header Actions"
+                data-nav-label={action.label || action.icon}
               >
                 <Icon name={action.icon} size="sm" />
                 {!action.iconOnly && action.label}
@@ -254,6 +258,8 @@ const buttonId = `${menuId}-button`;
                 href={ctaHref}
                 target="_blank"
                 class={isFloating ? 'hdr-invert-cta rounded-full' : undefined}
+                data-analytics-nav="Desktop Header Actions"
+                data-nav-label={cta.label || 'Header CTA'}
               >
                 {cta.label}
               </Button>
@@ -334,6 +340,8 @@ const buttonId = `${menuId}-button`;
             {navItems.map(({ label, href }) => (
               <a
                 href={href.startsWith('#') && !isLandingPage ? `/${href}` : href}
+                data-analytics-nav="Mobile Menu"
+                data-nav-label={label}
                 class={cn(
                   /* INCREASED padding-y, padding-x, and text size for massive tap targets */
                   'mobile-nav-link relative z-10 inline-flex w-fit rounded-md px-5 py-3.5 text-base',
@@ -350,7 +358,13 @@ const buttonId = `${menuId}-button`;
 
             {showCta && (
               <div class="border-border mt-4 border-t pt-4 relative z-10 w-full">
-                <Button fullWidth href={ctaHref} target="_blank">
+                <Button 
+                  fullWidth 
+                  href={ctaHref} 
+                  target="_blank" 
+                  data-analytics-nav="Mobile Menu" 
+                  data-nav-label={cta.label || 'Mobile CTA'}
+                >
                   {cta.label}
                 </Button>
               </div>

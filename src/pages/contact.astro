@@ -275,6 +275,22 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
         if (data.success) {
           button.innerHTML = `${checkSVG} Sent!`;
           button.classList.add('!bg-green-600', '!text-white', '!opacity-100');
+          
+          // ── GA4 ANALYTICS EVENT TRIGGER ──
+          if (typeof (window as any).gtag === 'function') {
+            (window as any).gtag('event', 'generate_lead', {
+              event_category: 'Contact',
+              event_label: 'Contact Form Submission',
+              form_name: 'contact_form',
+            });
+          } else if ((window as any).dataLayer) {
+            (window as any).dataLayer.push({
+              event: 'generate_lead',
+              form_name: 'contact_form',
+            });
+          }
+          // ---------------------------------
+
           form.reset();
           
           if ((window as any).hcaptcha) {
