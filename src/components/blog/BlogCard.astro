@@ -50,7 +50,12 @@ const readingTime = Math.max(1, Math.ceil(estimatedWords / wordsPerMinute));
     </div>
   )}
 
-  <a href={href} class="block">
+  <a 
+    href={href} 
+    class="block"
+    data-analytics-nav="Blog Card"
+    data-nav-label={title}
+  >
     {image && (
       <div class="mb-4 overflow-hidden rounded-md">
         <Image

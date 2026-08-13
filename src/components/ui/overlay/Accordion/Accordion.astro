@@ -40,6 +40,8 @@ const groupName = exclusive ? `accordion-${Math.random().toString(36).slice(2, 9
       name={groupName}
     >
       <summary
+        data-track-ui="Accordion Expand"
+        data-track-label={item.title}
         class={cn(
           accordionTriggerVariants({ size }),
           'cursor-pointer list-none [&::-webkit-details-marker]:hidden',

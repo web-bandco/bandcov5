@@ -75,6 +75,17 @@ interface ShopCarouselProps {
   children?: React.ReactNode; 
 }
 
+// ── GA4 TRACKING HELPER ──
+const trackEvent = (eventName: string, params: Record<string, any>) => {
+  if (typeof window === 'undefined') return;
+  if (typeof (window as any).gtag === 'function') {
+    (window as any).gtag('event', eventName, params);
+  } else if ((window as any).dataLayer) {
+    (window as any).dataLayer.push({ event: eventName, ...params });
+  }
+};
+// -------------------------
+
 function FilterSection({ title, children }: { title: string, children: React.ReactNode }) {
   const [isOpen, setIsOpen] = React.useState(true);
   
@@ -96,7 +107,6 @@ function FilterSection({ title, children }: { title: string, children: React.Rea
   );
 }
 
-// OPTIMIZATION: Passed down a prioritized prop so only the very first visible card eagerly loads its image
 function ProductCard({ product, storeName, gradientStyle, isPriority }: { product: Product, storeName: string, gradientStyle: React.CSSProperties, isPriority?: boolean }) {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [isMounted, setIsMounted] = React.useState(false);
@@ -192,6 +202,17 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
     });
   }
 
+  const handleBuyClick = () => {
+    trackEvent('shop_item_click', {
+      event_category: 'Outbound Commerce',
+      event_label: `${storeName} - ${product.title}`,
+      item_name: product.title,
+      link_url: product.url,
+      store_platform: storeName,
+      ui_section: 'Product Card'
+    });
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <div className="card bg-surface-primary shadow-sm hover:shadow-lg transition-shadow border border-border flex flex-col group overflow-hidden rounded-2xl transform-gpu h-full">
@@ -203,7 +224,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
         >
           {product.images.map((imgObj, i) => {
             const isLoaded = loadedImages[`card-${i}`];
-            // OPTIMIZATION: Only eagerly load the VERY FIRST image of the VERY FIRST card.
             const shouldEagerLoad = isPriority && i === 0;
 
             return (
@@ -269,7 +289,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
             </div>
 
             <div className="shrink-0 pt-0.5">
-              {/* ACCESSIBILITY: Updated text color to 700 to pass contrast ratio checks */}
               <span className="font-bold whitespace-nowrap text-brand-700 dark:text-brand-400 text-lg">{product.price}</span>
             </div>
           </div>
@@ -308,12 +327,11 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
             </div>
           </div>
           
-          <div className="card-actions justify-end mt-5">
+          <div className="card-actions justify-end mt-5" onClickCapture={handleBuyClick}>
             <ExternalLink 
               href={product.url}
               requireConfirm={true} 
               showIndicator={true}
-              /* ACCESSIBILITY: Explicitly name the item being bought for screen readers */
               aria-label={`Buy ${product.title} on ${storeName}`}
               className="btn border-none rounded-xl text-white w-full opacity-90 hover:opacity-100 hover:scale-[1.02] transition-all shadow-sm flex justify-center items-center"
               style={gradientStyle}
@@ -355,7 +373,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="m9 18 6-6-6-6"/></svg>
           </button>
 
-          {/* UX OPTIMIZATION: Full-screen click-to-close backdrop layer behind the carousel */}
           <div 
             className="absolute inset-0 z-0 cursor-pointer"
             onClick={() => setIsOpen(false)}
@@ -381,12 +398,10 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
                 return (
                   <CarouselItem key={i} className="flex h-[100dvh] flex-col items-center justify-center pl-0 relative">
                     
-                    {/* UX OPTIMIZATION: Inner backdrop covering entire CarouselItem to catch missed mobile taps */}
                     <div 
                       className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
                       onClick={() => setIsOpen(false)} 
                       onPointerDown={(e) => {
-                        // Let touches fall through on mobile so swipe gestures still work
                         if (e.pointerType === 'mouse') e.stopPropagation()
                       }} 
                     />
@@ -512,6 +527,7 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
     setSelectedCategories([]);
     setSelectedSizes([]);
     setSelectedConditions([]);
+    trackEvent('use_filter', { filter_action: 'clear_all', store_platform: storeName });
   };
 
   const filteredAndSortedProducts = React.useMemo(() => {
@@ -544,7 +560,7 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
 
   const gradientStyle = { background: 'linear-gradient(135deg, #ff0055, #ff2e43)' };
 
-  const FilterCheckbox = ({ label, isChecked, onChange, count }: { label: string, isChecked: boolean, onChange: (checked: boolean) => void, count: number }) => {
+  const FilterCheckbox = ({ label, isChecked, onChange, count, filterType }: { label: string, isChecked: boolean, onChange: (checked: boolean) => void, count: number, filterType: string }) => {
     const isDisabled = count === 0 && !isChecked;
     
     return (
@@ -555,7 +571,16 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
               type="checkbox"
               className="peer sr-only"
               checked={isChecked}
-              onChange={(e) => onChange(e.target.checked)}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                onChange(checked);
+                trackEvent('use_filter', {
+                  filter_type: filterType,
+                  filter_value: label,
+                  filter_action: checked ? 'add' : 'remove',
+                  store_platform: storeName
+                });
+              }}
               disabled={isDisabled}
             />
             <div className="absolute inset-0 bg-brand-500 rounded opacity-0 peer-checked:opacity-100 transition-opacity flex items-center justify-center">
@@ -663,7 +688,6 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
               
               <SheetHeader className="p-6 border-b border-border text-left">
                 <div className="mb-1">
-                  {/* ACCESSIBILITY: Updated badge text color to 700 to pass contrast checks */}
                   <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-widest bg-brand-500/10 text-brand-700 dark:text-brand-400">
                     SHOP: B&CO - {storeName.toUpperCase()}
                   </span>
@@ -676,8 +700,13 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
                 
                 <div className="md:hidden">
                   <FilterSection title="Sort By">
-                    <Select value={sortOption} onValueChange={setSortOption}>
-                      {/* ACCESSIBILITY: Explicit aria-label for screen readers */}
+                    <Select 
+                      value={sortOption} 
+                      onValueChange={(val) => {
+                        setSortOption(val);
+                        trackEvent('sort_inventory', { sort_value: val, store_platform: storeName });
+                      }}
+                    >
                       <SelectTrigger aria-label="Sort products" className="w-full bg-surface-primary border-border text-foreground !h-11 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring">
                         <SelectValue placeholder="Newest First" />
                       </SelectTrigger>
@@ -703,6 +732,7 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
                       <FilterCheckbox 
                         key={cat} 
                         label={cat} 
+                        filterType="Category"
                         count={getCategoryCount(cat)}
                         isChecked={selectedCategories.includes(cat)}
                         onChange={(checked) => {
@@ -720,6 +750,7 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
                       <FilterCheckbox 
                         key={size} 
                         label={size} 
+                        filterType="Size"
                         count={getSizeCount(size)}
                         isChecked={selectedSizes.includes(size)}
                         onChange={(checked) => {
@@ -737,6 +768,7 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
                       <FilterCheckbox 
                         key={cond} 
                         label={cond} 
+                        filterType="Condition"
                         count={getConditionCount(cond)}
                         isChecked={selectedConditions.includes(cond)}
                         onChange={(checked) => {
@@ -767,8 +799,13 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
           </Sheet>
 
           <div className="hidden md:block relative shrink-0 w-[240px]">
-            <Select value={sortOption} onValueChange={setSortOption}>
-              {/* ACCESSIBILITY: Explicit aria-label for screen readers */}
+            <Select 
+              value={sortOption} 
+              onValueChange={(val) => {
+                setSortOption(val);
+                trackEvent('sort_inventory', { sort_value: val, store_platform: storeName });
+              }}
+            >
               <SelectTrigger aria-label="Sort products" className="w-full !h-11 px-4 bg-surface-primary border-border text-foreground rounded-xl shadow-sm hover:shadow-md transition-all font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <div className="flex items-center gap-2 overflow-hidden">
                   <span className="text-foreground-muted font-normal shrink-0">Sort by:</span>
@@ -817,7 +854,6 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
           className="w-full px-4 md:px-0 group [&_.overflow-hidden]:rounded-2xl relative"
         >
           <CarouselContent className="-ml-4 items-start">
-            {/* OPTIMIZATION: Passed the 'isPriority' prop down to ONLY the first item in the list */}
             {filteredAndSortedProducts.map((product, index) => (
               <CarouselItem key={product.id} className="pl-4 basis-[85%] sm:basis-[60%] md:basis-1/2 lg:basis-1/3">
                 <div className="p-1">

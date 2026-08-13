@@ -163,7 +163,29 @@ const optimizedMemojis = await Promise.all(
     }
   }
 
+  function init404Tracking() {
+    if (typeof (window as any).gtag === 'function') {
+      (window as any).gtag('event', 'exception', {
+        description: '404 Error: ' + window.location.pathname,
+        fatal: false,
+        broken_url: window.location.href,
+        referrer: document.referrer || 'Direct/Unknown'
+      });
+    } else if ((window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: '404_error',
+        broken_url: window.location.href,
+        referrer: document.referrer || 'Direct/Unknown'
+      });
+    }
+  }
+
   // Run on initial load and handle Astro's View Transitions
   injectRandomMemoji();
-  document.addEventListener('astro:after-swap', injectRandomMemoji);
+  init404Tracking();
+  
+  document.addEventListener('astro:after-swap', () => {
+    injectRandomMemoji();
+    init404Tracking();
+  });
 </script>

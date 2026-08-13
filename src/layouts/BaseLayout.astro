@@ -241,26 +241,20 @@ if (includeOrgSchema) {
     {/* ── GLOBAL NAVIGATION TRACKING SCRIPT ── */}
     <script>
       function initGlobalNavTracking() {
-        // Find all links across the entire DOM tagged with data-analytics-nav
         const navLinks = document.querySelectorAll('[data-analytics-nav]');
 
         navLinks.forEach(link => {
-          // Clone and replace to strip out any existing listeners from previous view transitions
           link.replaceWith(link.cloneNode(true));
         });
 
-        // Re-select after cloning to attach the fresh event listener
         const refreshedLinks = document.querySelectorAll('[data-analytics-nav]');
         
         refreshedLinks.forEach(link => {
           link.addEventListener('click', () => {
             const section = link.getAttribute('data-analytics-nav') || 'Unknown Section';
             const label = link.getAttribute('data-nav-label') || 'Unknown Link';
-            
-            // Handle standard hrefs and button targets
             const destination = link.getAttribute('href') || 'Button/Action';
 
-            // Fire the GA4 Event safely
             if (typeof (window as any).gtag === 'function') {
               (window as any).gtag('event', 'site_navigation', {
                 event_category: 'Site Routing',
@@ -282,9 +276,43 @@ if (includeOrgSchema) {
         });
       }
 
-      // Initialize on first load, and re-bind after Astro view transitions
       initGlobalNavTracking();
       document.addEventListener('astro:after-swap', initGlobalNavTracking);
+    </script>
+
+    {/* ── UNIVERSAL UI INTERACTION TRACKER ── */}
+    <script>
+      function initUniversalUITracking() {
+        const handleUIClick = (e: MouseEvent) => {
+          const target = (e.target as HTMLElement).closest('[data-track-ui]');
+          if (!target) return;
+
+          const interactionType = target.getAttribute('data-track-ui') || 'Unknown Interaction';
+          const label = target.getAttribute('data-track-label') || (target.textContent || '').trim().substring(0, 50);
+
+          if (typeof (window as any).gtag === 'function') {
+            (window as any).gtag('event', 'ui_interaction', {
+              event_category: 'UI Engagement',
+              ui_action: interactionType,
+              ui_label: label,
+              source_page: window.location.pathname
+            });
+          } else if ((window as any).dataLayer) {
+            (window as any).dataLayer.push({
+              event: 'ui_interaction',
+              ui_action: interactionType,
+              ui_label: label,
+              source_page: window.location.pathname
+            });
+          }
+        };
+
+        document.removeEventListener('click', handleUIClick);
+        document.addEventListener('click', handleUIClick, { passive: true });
+      }
+
+      initUniversalUITracking();
+      document.addEventListener('astro:after-swap', initUniversalUITracking);
     </script>
   </body>
 </html>

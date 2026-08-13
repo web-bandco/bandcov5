@@ -2,16 +2,10 @@
 import type { ImageMetadata } from 'astro';
 import BaseLayout from './BaseLayout.astro';
 import Header from '@/components/layout/Header.astro';
-import Footer from '@/components/layout/Footer.astro';
 import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import ArticleHero from '@/components/blog/ArticleHero.astro';
 import ShareButtons from '@/components/blog/ShareButtons.astro';
 import RelatedPosts from '@/components/blog/RelatedPosts.astro';
-import Icon from '@/components/ui/primitives/Icon/Icon.astro';
-import packageData from '../../package.json';
-import lightLogo from '@/assets/branding/logo-full.png';
-import darkLogo from '@/assets/branding/logo-full-dark.png';
-
 
 interface Props {
   title: string;
@@ -91,7 +85,8 @@ const fullUrl = new URL(Astro.url.pathname, Astro.site).toString();
     imageAlt={imageAlt}
   />
 
-  <article class={`py-12 ${image ? 'pt-24' : ''}`}>
+  {/* ADDED: id="article-content" for scroll tracking */}
+  <article id="article-content" class={`py-12 ${image ? 'pt-24' : ''}`}>
     <div class="mx-auto max-w-4xl px-6">
       <!-- Breadcrumbs -->
       <Breadcrumbs items={breadcrumbs} class="mb-8" />
@@ -109,6 +104,8 @@ const fullUrl = new URL(Astro.url.pathname, Astro.site).toString();
           <!-- Back link -->
           <a
             href="/blog"
+            data-analytics-nav="Article Footer"
+            data-nav-label="Back to Blog"
             class="text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300 inline-flex items-center gap-2 text-sm font-medium transition-colors"
           >
             <svg
@@ -141,80 +138,62 @@ const fullUrl = new URL(Astro.url.pathname, Astro.site).toString();
     )
   }
 
-<Footer 
-  slot="footer" 
-  layout="columns"
-  columns={4} 
-  background="secondary" 
-  showSocial={false} 
-  showCopyright={false}
->
-  {/* COLUMN 1: Logo & Tagline (Injected via slots) */}
-  <a href="/" slot="logo" class="block mb-2">
-    <img src={lightLogo.src} alt="Brighton and Co" class="h-10 w-auto dark:hidden" />
-    <img src={darkLogo.src} alt="Brighton and Co" class="h-10 w-auto hidden dark:block" />
-  </a>
-  <span slot="tagline" class="block leading-relaxed">
-    Brighton and Co - showcasing personal projects, photography and other things.
-  </span>
-
-  {/* COLUMNS 2, 3 & 4 (Injected via the 'columns' slot to override default linkGroups) */}
-  <Fragment slot="columns">
-    
-    {/* Column 2: Quick Links */}
-    <div class="space-y-[var(--space-stack-md)]">
-      <h3 class="font-semibold text-sm text-foreground">Quick Links</h3>
-      <ul class="space-y-2">
-        <li><a href="/about" class="text-sm text-foreground-muted hover:text-foreground transition-colors">About</a></li>
-        <li><a href="/shop" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Shop</a></li>
-        <li><a href="/blog" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Blog</a></li>
-        <li><a href="/photography" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Photography</a></li>
-        <li><a href="/contact" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Contact</a></li>
-      </ul>
-    </div>
-
-    {/* Column 3: Social Links */}
-    <div class="space-y-[var(--space-stack-md)]">
-      <h3 class="font-semibold text-sm text-foreground">Connect</h3>
-      <ul class="space-y-2">
-        <li>
-          <a href="https://twitter.com/itsharryb_" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-            <Icon name="twitter" size="sm" class="group-hover:text-brand-500 transition-colors" /> Twitter
-          </a>
-        </li>
-        <li>
-          <a href="https://github.com/web-bandco" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-            <Icon name="github" size="sm" class="group-hover:text-brand-500 transition-colors" /> GitHub
-          </a>
-        </li>
-        <li>
-          <a href="https://www.linkedin.com/in/harry-brighton/" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-            <Icon name="linkedin" size="sm" class="group-hover:text-brand-500 transition-colors" /> LinkedIn
-          </a>
-        </li>
-        <li>
-          <a href="https://linktr.ee/brightonandco" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-            <Icon name="brand-linktree" size="sm" class="group-hover:text-brand-500 transition-colors" /> Linktree
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    {/* Column 4: Site Info & Meta */}
-    <div class="space-y-[var(--space-stack-md)]">
-      <h3 class="font-semibold text-sm text-foreground">Site Info</h3>
-      <div class="space-y-2 text-sm text-foreground-muted">
-        <p>Version: <span class="font-mono bg-surface-secondary px-1.5 py-0.5 rounded-md border border-border">v{packageData.version}</span></p>
-        <div class="pt-1 space-y-1">
-          <p>&copy; {new Date().getFullYear()} Brighton and Co.</p>
-          <p>All rights reserved.</p>
-        </div>
-      </div>
-    </div>
-    
-  </Fragment>
-
-  {/* OVERRIDE: Hide the bottom bar since we moved copyright to Column 4 */}
-  <div slot="bottom" class="hidden"></div>
-</Footer>
+  {/* REMOVED the hardcoded <Footer> here so BaseLayout handles it globally */}
 </BaseLayout>
+
+{/* ── ARTICLE SCROLL TRACKING SCRIPT ── */}
+<script>
+  function initScrollTracking() {
+    const article = document.getElementById('article-content');
+    if (!article) return;
+
+    let tracked50 = false;
+    let tracked90 = false;
+
+    const checkScroll = () => {
+      // Calculate how far down the article the user has scrolled
+      const articleRect = article.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // If the top of the article is below the screen, they haven't started reading
+      if (articleRect.top > windowHeight) return;
+
+      const scrolledDistance = windowHeight - articleRect.top;
+      const totalHeight = articleRect.height;
+      const scrollPercentage = (scrolledDistance / totalHeight) * 100;
+
+      const fireEvent = (depth: string) => {
+        if (typeof (window as any).gtag === 'function') {
+          (window as any).gtag('event', 'article_scroll', {
+            event_category: 'Content Engagement',
+            scroll_depth: depth,
+            article_title: document.title
+          });
+        } else if ((window as any).dataLayer) {
+          (window as any).dataLayer.push({
+            event: 'article_scroll',
+            scroll_depth: depth,
+            article_title: document.title
+          });
+        }
+      };
+
+      if (scrollPercentage >= 50 && !tracked50) {
+        tracked50 = true;
+        fireEvent('50%');
+      }
+
+      if (scrollPercentage >= 90 && !tracked90) {
+        tracked90 = true;
+        fireEvent('90%');
+      }
+    };
+
+    window.addEventListener('scroll', checkScroll, { passive: true });
+    // Check initially in case it's a very short article
+    checkScroll();
+  }
+
+  initScrollTracking();
+  document.addEventListener('astro:after-swap', initScrollTracking);
+</script>

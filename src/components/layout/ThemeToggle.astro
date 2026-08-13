@@ -11,6 +11,8 @@ const { class: className } = Astro.props;
 <button
   type="button"
   id="theme-toggle"
+  data-track-ui="Theme Toggle"
+  data-track-label="Dark/Light Mode Switch"
   class={cn(
     'inline-flex items-center justify-center rounded-md p-2',
     'text-muted-foreground hover:text-foreground hover:bg-secondary',

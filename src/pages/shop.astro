@@ -101,6 +101,8 @@ const ebayItems = await Promise.all(
             showIndicator={false}
             aria-label="Visit my Vinted profile"
             className="hover:opacity-80 transition-opacity flex items-center mt-1"
+            data-analytics-nav="Vinted Storefront"
+            data-nav-label="Vinted Logo Link"
           >
             {/* ACCESSIBILITY: Explicitly added title tag inside SVG for screen readers */}
             <SiVinted className="w-8 h-8" style={{ color: "#017573" }}>
@@ -118,6 +120,8 @@ const ebayItems = await Promise.all(
             showIndicator={false}
             className="text-sm font-medium hover:underline" 
             style={{ color: "#ff0055" }}
+            data-analytics-nav="Vinted Storefront"
+            data-nav-label="Vinted Text Link"
           >
             View full Vinted profile &rarr;
           </ExternalLink>
@@ -138,6 +142,8 @@ const ebayItems = await Promise.all(
             showIndicator={false}
             aria-label="Visit my eBay profile"
             className="hover:opacity-80 transition-opacity flex items-center mt-1"
+            data-analytics-nav="eBay Storefront"
+            data-nav-label="eBay Logo Link"
           >
             {/* ACCESSIBILITY: Explicitly added title tag inside SVG for screen readers */}
             <SiEbay className="w-10 h-10" style={{ color: "#0064D2" }}>
@@ -155,6 +161,8 @@ const ebayItems = await Promise.all(
             showIndicator={false}
             className="text-sm font-medium hover:underline" 
             style={{ color: "#ff0055" }}
+            data-analytics-nav="eBay Storefront"
+            data-nav-label="eBay Text Link"
           >
             View full eBay profile &rarr;
           </ExternalLink>

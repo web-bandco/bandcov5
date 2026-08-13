@@ -122,7 +122,8 @@ const getPostUrl = (postId: string) => {
     <h2 slot="heading">Subscribe</h2>
     <p slot="description">Get the latest articles and updates delivered to your inbox.</p>
 
-    <form class="mx-auto flex max-w-md flex-col items-center gap-4 sm:flex-row">
+    {/* ADDED: id="newsletter-form" for analytics tracking */}
+    <form id="newsletter-form" class="mx-auto flex max-w-md flex-col items-center gap-4 sm:flex-row">
       <Input
         type="email"
         placeholder="Enter your email"
@@ -139,3 +140,27 @@ const getPostUrl = (postId: string) => {
 
   <CTA />
 </PageLayout>
+
+<script>
+  function initNewsletterTracking() {
+    const form = document.getElementById('newsletter-form');
+    if (!form) return;
+
+    form.addEventListener('submit', () => {
+      if (typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'sign_up', {
+          method: 'Blog Footer Form',
+          event_category: 'Engagement',
+        });
+      } else if ((window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'sign_up',
+          method: 'Blog Footer Form'
+        });
+      }
+    });
+  }
+
+  initNewsletterTracking();
+  document.addEventListener('astro:after-swap', initNewsletterTracking);
+</script>

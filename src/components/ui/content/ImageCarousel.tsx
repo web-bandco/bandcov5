@@ -26,9 +26,21 @@ export interface CarouselImage {
 
 interface ImageCarouselProps {
   images: CarouselImage[];
+  galleryName?: string;
 }
 
-export function ImageCarousel({ images }: ImageCarouselProps) {
+// ── GA4 TRACKING HELPER ──
+const trackEvent = (eventName: string, params: Record<string, any>) => {
+  if (typeof window === 'undefined') return;
+  if (typeof (window as any).gtag === 'function') {
+    (window as any).gtag('event', eventName, params);
+  } else if ((window as any).dataLayer) {
+    (window as any).dataLayer.push({ event: eventName, ...params });
+  }
+};
+// -------------------------
+
+export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }: ImageCarouselProps) {
   const [mainApi, setMainApi] = React.useState<CarouselApi>()
   const [dialogApi, setDialogApi] = React.useState<CarouselApi>()
   
@@ -111,6 +123,15 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
       getActiveWindow(index, images.length).forEach(i => next.add(i));
       return next;
     });
+
+    // ── GA4 TRACKING TRIGGER ──
+    trackEvent('photo_lightbox_open', {
+      event_category: 'Photography',
+      event_label: images[index].alt || `Image ${index + 1}`,
+      gallery_name: galleryName,
+      ui_section: 'Image Carousel'
+    });
+    // --------------------------
   }
 
   const handleGridImageLoad = (key: string) => {
@@ -174,6 +195,8 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
         
         <button 
           onClick={() => mainApi?.scrollPrev()}
+          data-track-ui="Carousel Navigation"
+          data-track-label="Main Prev Arrow Clicked"
           className="absolute left-4 top-1/2 -translate-y-1/2 hidden md:flex w-12 h-12 bg-background/80 hover:bg-background border-none shadow-sm opacity-0 transition-opacity duration-300 delay-500 group-hover:opacity-100 group-hover:delay-0 group-focus-within:opacity-100 group-focus-within:delay-0 rounded-full items-center justify-center text-foreground z-10 cursor-pointer outline-none"
           aria-label="Previous slide"
         >
@@ -182,6 +205,8 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
 
         <button 
           onClick={() => mainApi?.scrollNext()}
+          data-track-ui="Carousel Navigation"
+          data-track-label="Main Next Arrow Clicked"
           className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:flex w-12 h-12 bg-background/80 hover:bg-background border-none shadow-sm opacity-0 transition-opacity duration-300 delay-500 group-hover:opacity-100 group-hover:delay-0 group-focus-within:opacity-100 group-focus-within:delay-0 rounded-full items-center justify-center text-foreground z-10 cursor-pointer outline-none"
           aria-label="Next slide"
         >
@@ -197,6 +222,8 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
 
         <button 
           onClick={() => setIsOpen(false)}
+          data-track-ui="Lightbox Controls"
+          data-track-label="Close Button Clicked"
           className="absolute top-4 right-4 md:top-6 md:right-6 z-[100] p-3 rounded-full bg-background/60 hover:bg-background backdrop-blur-md transition-all text-foreground outline-none shadow-md cursor-pointer"
           aria-label="Close Lightbox"
         >
@@ -205,6 +232,8 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
 
         <button 
           onClick={() => dialogApi?.scrollPrev()}
+          data-track-ui="Lightbox Controls"
+          data-track-label="Lightbox Prev Arrow Clicked"
           className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-[100] hidden md:flex w-14 h-14 bg-background/60 hover:bg-background border-none shadow-md backdrop-blur-md rounded-full items-center justify-center text-foreground outline-none transition-all cursor-pointer"
           aria-label="Previous image"
         >
@@ -213,6 +242,8 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
 
         <button 
           onClick={() => dialogApi?.scrollNext()}
+          data-track-ui="Lightbox Controls"
+          data-track-label="Lightbox Next Arrow Clicked"
           className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-[100] hidden md:flex w-14 h-14 bg-background/60 hover:bg-background border-none shadow-md backdrop-blur-md rounded-full items-center justify-center text-foreground outline-none transition-all cursor-pointer"
           aria-label="Next image"
         >

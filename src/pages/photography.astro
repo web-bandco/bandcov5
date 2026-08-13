@@ -190,14 +190,14 @@ const londonPhotos = await Promise.all(
             <p class="text-foreground-muted mt-4 text-lg">Some of my favourite photos I've taken recently.</p>
           </div>
           <div class="w-full lg:w-3/5">
-            <ImageCarousel images={recentPhotos} client:visible />
+            <ImageCarousel images={recentPhotos} galleryName="Recent Photos" client:visible />
           </div>
         </div>
 
         {/* ROW 2: Carousel Left, Text Right */}
         <div class="flex flex-col-reverse lg:flex-row items-center gap-8 lg:gap-16">
           <div class="w-full lg:w-3/5">
-            <ImageCarousel images={moreCatPhotos} client:visible />
+            <ImageCarousel images={moreCatPhotos} galleryName="More Cat Photos" client:visible />
           </div>
           <div class="w-full lg:w-2/5 text-center lg:text-right">
             <h2 class="text-3xl md:text-4xl font-bold text-foreground">Some More Cat Photos</h2>
@@ -224,7 +224,7 @@ const londonPhotos = await Promise.all(
                 <h3 class="text-xl font-bold text-foreground">Prague</h3>
                 <p class="text-foreground-muted">Czech Republic, 2024.</p>
               </div>
-              <ImageCarousel images={praguePhotos} client:visible />
+              <ImageCarousel images={praguePhotos} galleryName="Prague" client:visible />
             </div>
             
             {/* 2. Pefkos/Rhodes */}
@@ -233,7 +233,7 @@ const londonPhotos = await Promise.all(
                 <h3 class="text-xl font-bold text-foreground">Pefkos/Rhodes</h3>
                 <p class="text-foreground-muted">Greece, 2025.</p>
               </div>
-              <ImageCarousel images={pefkosrhodesPhotos} client:visible />
+              <ImageCarousel images={pefkosrhodesPhotos} galleryName="Pefkos/Rhodes" client:visible />
             </div>
             
             {/* 3. London */}
@@ -242,7 +242,7 @@ const londonPhotos = await Promise.all(
                 <h3 class="text-xl font-bold text-foreground">London</h3>
                 <p class="text-foreground-muted">United Kingdom, 2025.</p>
               </div>
-              <ImageCarousel images={londonPhotos} client:visible />
+              <ImageCarousel images={londonPhotos} galleryName="London" client:visible />
             </div>
             
           </div>

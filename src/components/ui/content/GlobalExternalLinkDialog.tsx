@@ -39,13 +39,16 @@ export function GlobalExternalLinkDialog() {
     if (href) window.open(href, '_blank', 'noopener,noreferrer');
   };
 
-  // FIXED: Removed "if (!isOpen) return null;"
   // Returning the Dialog directly prevents Astro from generating a fatal empty island.
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent showCloseButton={false} className="sm:max-w-md z-[100]">
         
-        <DialogClose className="absolute top-3 right-3 z-50 p-2 rounded-full bg-background hover:bg-muted backdrop-blur-md transition-colors duration-200 text-foreground outline-none shadow-sm border border-border cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-500">
+        <DialogClose 
+          data-track-ui="External Link Dialog" 
+          data-track-label="Dismissed (X)"
+          className="absolute top-3 right-3 z-50 p-2 rounded-full bg-background hover:bg-muted backdrop-blur-md transition-colors duration-200 text-foreground outline-none shadow-sm border border-border cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-500"
+        >
           <X className="w-4 h-4 md:w-5 md:h-5" />
           <span className="sr-only">Close</span>
         </DialogClose>
@@ -60,10 +63,21 @@ export function GlobalExternalLinkDialog() {
         </DialogHeader>
         
         <DialogFooter className="mt-6 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between">
-          <Button variant="outline" onClick={() => setIsOpen(false)} className="w-full sm:w-auto">
+          <Button 
+            variant="outline" 
+            onClick={() => setIsOpen(false)} 
+            className="w-full sm:w-auto"
+            data-track-ui="External Link Dialog" 
+            data-track-label="Cancelled"
+          >
             Cancel
           </Button>
-          <Button onClick={handleContinue} className="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white border-none">
+          <Button 
+            onClick={handleContinue} 
+            className="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white border-none"
+            data-track-ui="External Link Dialog" 
+            data-track-label="Proceeded to External Site"
+          >
             Continue to site
           </Button>
         </DialogFooter>
