@@ -1,0 +1,87 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import PageLayout from '@/layouts/PageLayout.astro';
+import { getImage } from 'astro:assets';
+import { Hero } from '@/components/hero';
+import CTA from '@/components/landing/CTA.astro';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import { MasonryGallery } from '@/components/ui/content/MasonryGallery';
+
+export async function getStaticPaths() {
+  const holidays = await getCollection('holidays');
+  return holidays.map(holiday => ({
+    params: { slug: holiday.id },
+    props: { holiday },
+  }));
+}
+
+// Strictly type the incoming props to fix TypeScript errors
+interface Props {
+  holiday: CollectionEntry<'holidays'>;
+}
+
+const { holiday } = Astro.props;
+const { title, location, date, images } = holiday.data;
+
+// Optimize the images via Astro before handing them to React
+const optimizedImages = await Promise.all(
+  images.map(async (img) => {
+    const thumb = await getImage({ src: img.src, format: 'avif', width: 600, quality: 60 });
+    const full = await getImage({ src: img.src, format: 'avif', width: 1600, quality: 80 });
+    
+    return { 
+      src: thumb.src,       
+      fullSrc: full.src,
+      alt: img.alt 
+    };
+  })
+);
+---
+
+<PageLayout 
+  title={`${title} - Photography`} 
+  description={`A collection of high-resolution photographs from ${title}, ${location}.`}
+>
+  <main id="main-content">
+    
+    <Hero layout="centered" size="sm" class="bg-surface-secondary border-b border-border">
+      <Badge slot="badge" pill pulse>Holiday Gallery</Badge>
+
+      <h1 slot="title">
+        {title}
+      </h1>
+
+      <p slot="description" class="flex items-center justify-center gap-2">
+        <Icon name="map-pin" size="sm" class="text-brand-500" />
+        {location} • {date.getFullYear()}
+      </p>
+    </Hero>
+
+    <section class="py-16 md:py-24 bg-background">
+      <div class="mx-auto max-w-7xl px-6">
+        
+        {/* Back Button */}
+        <a 
+          href="/photography" 
+          data-analytics-nav="Gallery Navigation"
+          data-nav-label="Back to Photography"
+          class="inline-flex items-center gap-2 text-sm font-medium text-foreground-muted hover:text-brand-500 transition-colors mb-12"
+        >
+          <Icon name="arrow-left" size="sm" />
+          Back to Photography
+        </a>
+
+        {/* The New React Masonry Gallery component */}
+        <MasonryGallery 
+          images={optimizedImages} 
+          galleryName={title} 
+          client:visible 
+        />
+
+      </div>
+    </section>
+
+    <CTA />
+  </main>
+</PageLayout>

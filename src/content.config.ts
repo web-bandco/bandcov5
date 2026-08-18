@@ -99,6 +99,27 @@ const ebay = defineCollection({
     }),
 });
 
+// ------------------------------------------------------------------
+// PHOTOGRAPHY COLLECTIONS
+// ------------------------------------------------------------------
+
+const holidays = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/holidays' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      location: z.string(),
+      date: z.coerce.date(),
+      coverImage: image(),
+      images: z.array(
+        z.object({
+          src: image(),
+          alt: z.string()
+        })
+      ),
+    }),
+});
+
 export const collections = {
   blog,
   pages,
@@ -106,4 +127,5 @@ export const collections = {
   faqs,
   vinted,
   ebay,
+  holidays,
 };

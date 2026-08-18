@@ -1,0 +1,25 @@
+---
+title: "Prague"
+location: "Czech Republic"
+date: 2024-06-01
+coverImage: "../../assets/images/holidays/prague/praguebuilding1.jpg"
+images:
+  - src: "../../assets/images/holidays/prague/goldceiling.jpg"
+    alt: "Gold ceiling in a Prague museum, with a circular sky light."
+  - src: "../../assets/images/holidays/prague/praguebuilding1.jpg"
+    alt: "A closer look at the domed roof of a building in Prague."
+  - src: "../../assets/images/holidays/prague/praguemeerkat.jpg"
+    alt: "A single Meerkat stood on their back legs in Prague."
+  - src: "../../assets/images/holidays/prague/r2d2prague.jpg"
+    alt: "R2D2 in Prague."
+  - src: "../../assets/images/holidays/prague/staircase.jpg"
+    alt: "Staircase in a Prague museum."
+  - src: "../../assets/images/holidays/prague/viewofprague1.jpg"
+    alt: "View of some classic Prague architecture."
+  - src: "../../assets/images/holidays/prague/praguemuseum.jpg"
+    alt: "A view of the exterior of the main museum in Prague."
+  - src: "../../assets/images/holidays/prague/pragueriver.jpg"
+    alt: "A closer up photo of a river in Prague."
+  - src: "../../assets/images/holidays/prague/praguetram1.jpg"
+    alt: "A classic tram going down a street in Prague."
+---

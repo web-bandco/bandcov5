@@ -6,7 +6,9 @@ import CTA from '@/components/landing/CTA.astro';
 import { ImageCarousel } from '@/components/ui/content/ImageCarousel';
 
 import { Image, getImage } from 'astro:assets';
+import { getCollection } from 'astro:content';
 
+// KEEPING RECENT & CAT PHOTOS HARDCODED FOR NOW
 import cowImg from '../assets/images/recent/cow.jpg';
 import ducklingsImg from '../assets/images/recent/ducklings.jpg';
 import longhaircatImg from '../assets/images/recent/longhaircat.jpg';
@@ -16,31 +18,6 @@ import luna2Img from '../assets/images/more-cats/luna2.jpg';
 import penny2Img from '../assets/images/more-cats/penny2.jpg';
 import poppy3Img from '../assets/images/more-cats/poppy3.jpg';
 
-import praguegoldceilingImg from '../assets/images/holidays/prague/goldceiling.jpg';
-import praguebuilding1Img from '../assets/images/holidays/prague/praguebuilding1.jpg';
-import praguemeerkatImg from '../assets/images/holidays/prague/praguemeerkat.jpg';
-import praguemuseumImg from '../assets/images/holidays/prague/praguemuseum.jpg';
-import pragueriverImg from '../assets/images/holidays/prague/pragueriver.jpg';
-import praguetramImg from '../assets/images/holidays/prague/praguetram1.jpg';
-import praguer2d2Img from '../assets/images/holidays/prague/r2d2prague.jpg';
-import praguestaircaseImg from '../assets/images/holidays/prague/staircase.jpg';
-import pragueviewImg from '../assets/images/holidays/prague/viewofprague1.jpg';
-
-import pefkosrhodesrock1Img from '../assets/images/holidays/pefkos-rhodes/lindosrock1.jpg';
-import pefkosrhodesrock2Img from '../assets/images/holidays/pefkos-rhodes/lindosrock2.jpg';
-import pefkosrhodesbeach1Img from '../assets/images/holidays/pefkos-rhodes/pefkosbeachview1.jpg';
-import pefkosrhodescats1Img from '../assets/images/holidays/pefkos-rhodes/pefkosrhodescats1.jpg';
-import pefkosrhodescats2Img from '../assets/images/holidays/pefkos-rhodes/pefkosrhodescats2.jpg';
-import pefkosrhodescats3Img from '../assets/images/holidays/pefkos-rhodes/pefkosrhodescats3.jpg';
-import pefkosrhodesarchImg from '../assets/images/holidays/pefkos-rhodes/rhodesoldtownarch.jpg';
-import pefkosrhodesstreetImg from '../assets/images/holidays/pefkos-rhodes/rhodesoldtownstreet.jpg';
-
-import londoniwmImg from '../assets/images/holidays/london/IWMLondon.jpg';
-import londonskylineImg from '../assets/images/holidays/london/londonskyline.jpg';
-import londonnhmskeletonImg from '../assets/images/holidays/london/nhmskeleton.jpg';
-import londonswanImg from '../assets/images/holidays/london/swanlondon.jpg';
-import londonvictoriatheatreImg from '../assets/images/holidays/london/victoriatheatre.jpg';
-
 const rawRecentPhotos = [
   { img: cowImg, alt: "A black and white cow stood in a grassy field, framed by the evening sun." },
   { img: ducklingsImg, alt: "Two ducklings side by side in a pond." },
@@ -49,7 +26,6 @@ const rawRecentPhotos = [
 
 const recentPhotos = await Promise.all(
   rawRecentPhotos.map(async (photo) => {
-    // OPTIMIZATION: Switched to AVIF and dropped thumb quality to 60, full to 80
     const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
     const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
     
@@ -85,86 +61,18 @@ const moreCatPhotos = await Promise.all(
   })
 );
 
-const rawPraguePhotos = [
-  { img: praguegoldceilingImg, alt: "Gold ceiling in a Prague museum, with a circular sky light." },
-  { img: praguebuilding1Img, alt: "A closer look at the domed roof of a building in Prague." },
-  { img: praguemeerkatImg, alt: "A single Meerkat stood on their back legs in Prague." },
-  { img: praguer2d2Img, alt: "R2D2 in Prague." },
-  { img: praguestaircaseImg, alt: "Staircase in a Prague museum." },
-  { img: pragueviewImg, alt: "View of some classic Prague architecture." },
-  { img: praguemuseumImg, alt: "A view of the exterior of the main museum in Prague." },
-  { img: pragueriverImg, alt: "A closer up photo of a river in Prague." },
-  { img: praguetramImg, alt: "A classic tram going down a street in Prague." },
-];
+// FETCH DYNAMIC HOLIDAYS FROM CONTENT COLLECTIONS
+const allHolidays = await getCollection('holidays');
 
-const praguePhotos = await Promise.all(
-  rawPraguePhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
-    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
-    
-    return { 
-      src: thumb.src,       
-      fullSrc: full.src,
-      width: full.attributes.width,
-      height: full.attributes.height,    
-      alt: photo.alt 
-    };
-  })
-);
-
-const rawPefkosRhodesPhotos = [
-  { img: pefkosrhodesrock1Img, alt: "Gold ceiling in a Prague museum, with a circular sky light." },
-  { img: pefkosrhodesrock2Img, alt: "A closer look at the domed roof of a building in Prague." },
-  { img: pefkosrhodesbeach1Img, alt: "A single Meerkat stood on their back legs in Prague." },
-  { img: pefkosrhodescats1Img, alt: "R2D2 in Prague." },
-  { img: pefkosrhodescats2Img, alt: "Staircase in a Prague museum." },
-  { img: pefkosrhodescats3Img, alt: "View of some classic Prague architecture." },
-  { img: pefkosrhodesarchImg, alt: "A view of the exterior of the main museum in Prague." },
-  { img: pefkosrhodesstreetImg, alt: "A classic tram going down a street in Prague." },
-];
-
-const pefkosrhodesPhotos = await Promise.all(
-  rawPefkosRhodesPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
-    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
-    
-    return { 
-      src: thumb.src,       
-      fullSrc: full.src,
-      width: full.attributes.width,
-      height: full.attributes.height,    
-      alt: photo.alt 
-    };
-  })
-);
-
-const rawLondonPhotos = [
-  { img: londoniwmImg, alt: "Gold ceiling in a Prague museum, with a circular sky light." },
-  { img: londonskylineImg, alt: "A closer look at the domed roof of a building in Prague." },
-  { img: londonnhmskeletonImg, alt: "A single Meerkat stood on their back legs in Prague." },
-  { img: londonswanImg, alt: "R2D2 in Prague." },
-  { img: londonvictoriatheatreImg, alt: "Staircase in a Prague museum." },
-];
-
-const londonPhotos = await Promise.all(
-  rawLondonPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
-    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
-    
-    return { 
-      src: thumb.src,       
-      fullSrc: full.src,
-      width: full.attributes.width,
-      height: full.attributes.height,    
-      alt: photo.alt 
-    };
-  })
+// Sort newest holidays first based on the frontmatter date
+const sortedHolidays = allHolidays.sort((a, b) => 
+  b.data.date.valueOf() - a.data.date.valueOf()
 );
 ---
 
 <PageLayout
   title="Photography"
-  description="Add your description here"
+  description="A selection of high-resolution original photography from Harry B."
 >
   <main id="main-content">
     <!-- Hero Section -->
@@ -208,44 +116,48 @@ const londonPhotos = await Promise.all(
       </div>
     </section>  
 
-    <section class="py-16 bg-background border-y border-border" aria-labelledby="holiday-photos-heading">
+    {/* DYNAMIC HOLIDAY GRID SECTION */}
+    <section class="py-16 md:py-24 bg-background border-y border-border" aria-labelledby="holiday-photos-heading">
       <div class="container max-w-6xl">
         <div class="flex flex-col gap-6">
+          
           <div class="text-center lg:text-left mb-8">
-            <h2 id="holiday-photos-heading" class="text-3xl font-bold text-foreground">Holiday Photos -</h2>
-            <p class="text-foreground-muted mt-2">Photos from holidays from around the world.</p>
+            <h2 id="holiday-photos-heading" class="text-3xl md:text-4xl font-bold text-foreground">Holiday Galleries</h2>
+            <p class="text-foreground-muted mt-4 text-lg">Select a destination below to view the full gallery.</p>
           </div>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-            
-            {/* 1. Prague */}
-            <div>
-              <div class="mb-4">
-                <h3 class="text-xl font-bold text-foreground">Prague</h3>
-                <p class="text-foreground-muted">Czech Republic, 2024.</p>
-              </div>
-              <ImageCarousel images={praguePhotos} galleryName="Prague" client:visible />
+          {sortedHolidays.length > 0 ? (
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {sortedHolidays.map(holiday => (
+                <a 
+                  href={`/photography/${holiday.id}`} 
+                  data-analytics-nav="Holiday Grid" 
+                  data-nav-label={holiday.data.title}
+                  class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                >
+                  <Image 
+                    src={holiday.data.coverImage} 
+                    alt={holiday.data.title}
+                    width={800}
+                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <div class="relative z-10 p-8 flex flex-col items-start translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                    <h3 class="text-3xl font-bold text-white mb-2 tracking-tight drop-shadow-md">{holiday.data.title}</h3>
+                    <p class="text-gray-300 font-medium">
+                      {holiday.data.location} • {holiday.data.date.getFullYear()}
+                    </p>
+                  </div>
+                </a>
+              ))}
             </div>
-            
-            {/* 2. Pefkos/Rhodes */}
-            <div>
-              <div class="mb-4">
-                <h3 class="text-xl font-bold text-foreground">Pefkos/Rhodes</h3>
-                <p class="text-foreground-muted">Greece, 2025.</p>
-              </div>
-              <ImageCarousel images={pefkosrhodesPhotos} galleryName="Pefkos/Rhodes" client:visible />
+          ) : (
+            <div class="w-full py-12 text-center border border-dashed border-border rounded-2xl bg-surface-secondary">
+              <p class="text-foreground-muted">No holiday galleries have been added yet.</p>
             </div>
-            
-            {/* 3. London */}
-            <div>
-              <div class="mb-4">
-                <h3 class="text-xl font-bold text-foreground">London</h3>
-                <p class="text-foreground-muted">United Kingdom, 2025.</p>
-              </div>
-              <ImageCarousel images={londonPhotos} galleryName="London" client:visible />
-            </div>
-            
-          </div>
+          )}
+          
         </div>
       </div>
     </section>
