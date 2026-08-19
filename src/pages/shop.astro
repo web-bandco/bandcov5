@@ -5,56 +5,11 @@ import CTA from '@/components/landing/CTA.astro';
 import { ShopCarousel } from '@/components/ui/content/ShopCarousel';
 import { SiVinted, SiEbay } from "react-icons/si";
 import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import Button from '@/components/ui/form/Button/Button.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 
-// Import the specific shop logo
+import { Image } from 'astro:assets';
 import shopLogo from '@/assets/branding/shoplogo.png';
-
-import { getCollection } from 'astro:content';
-import { getImage, Image } from 'astro:assets';
-import { ExternalLink } from '@/components/ui/content/ExternalLink';
-
-const rawVintedItems = await getCollection('vinted');
-const rawEbayItems = await getCollection('ebay');
-
-const vintedItems = await Promise.all(
-  rawVintedItems
-    .filter(item => item.data.status === 'For Sale')
-    .map(async (item) => {
-      const optimizedImages = await Promise.all(
-        item.data.images.map(async (img) => {
-          const thumb = await getImage({ src: img, format: 'webp', width: 600, quality: 80 });
-          const full = await getImage({ src: img, format: 'webp', width: 1600, quality: 90 });
-          
-          return { thumb: thumb.src, full: full.src };
-        })
-      );
-      return {
-        ...item.data,
-        id: item.id,
-        images: optimizedImages 
-      };
-    })
-);
-
-const ebayItems = await Promise.all(
-  rawEbayItems
-    .filter(item => item.data.status === 'For Sale')
-    .map(async (item) => {
-      const optimizedImages = await Promise.all(
-        item.data.images.map(async (img) => {
-          const thumb = await getImage({ src: img, format: 'webp', width: 600, quality: 80 });
-          const full = await getImage({ src: img, format: 'webp', width: 1600, quality: 90 });
-          
-          return { thumb: thumb.src, full: full.src };
-        })
-      );
-      return {
-        ...item.data,
-        id: item.id,
-        images: optimizedImages
-      };
-    })
-);
 ---
 
 <PageLayout
@@ -65,7 +20,6 @@ const ebayItems = await Promise.all(
     <Badge slot="badge" pill pulse>Shop my eBay and Vinted pages</Badge>
 
     <h1 slot="title" class="flex flex-col items-center gap-6">
-      {/* OPTIMIZATION: Switched to WebP at 100 quality to prevent color-washing on vibrant graphics */}
       <Image 
         src={shopLogo} 
         alt="SHOP: B&Co Logo" 
@@ -94,37 +48,32 @@ const ebayItems = await Promise.all(
     <div class="container max-w-6xl space-y-10">
       
       <ShopCarousel storeName="Vinted" client:visible>
-        <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
-          <ExternalLink 
-            href="https://vinted.co.uk/member/272494517" 
-            client:visible
-            showIndicator={false}
-            aria-label="Visit my Vinted profile"
-            className="hover:opacity-80 transition-opacity flex items-center mt-1"
-            data-analytics-nav="Vinted Storefront"
-            data-nav-label="Vinted Logo Link"
+        <div class="flex flex-col items-start gap-4">
+          <a 
+            href="/shop/vinted" 
+            class="group inline-block outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg"
+            data-analytics-nav="Shop Section Header" 
+            data-nav-label="Vinted Store Title Link"
           >
-            {/* ACCESSIBILITY: Explicitly added title tag inside SVG for screen readers */}
-            <SiVinted className="w-8 h-8" style={{ color: "#017573" }}>
-              <title>Vinted Logo</title>
-            </SiVinted>
-          </ExternalLink>
-          Vinted Highlights
-        </h2>
-        
-        <div class="mt-2 text-foreground-muted flex flex-wrap items-center gap-1.5">
-          <span>A selection of items from the SHOP: B&Co Vinted -</span>
-          <ExternalLink 
-            href="https://vinted.co.uk/member/272494517" 
-            client:visible
-            showIndicator={false}
-            className="text-sm font-medium hover:underline" 
-            style={{ color: "#ff0055" }}
-            data-analytics-nav="Vinted Storefront"
-            data-nav-label="Vinted Text Link"
+            <h2 class="text-3xl md:text-4xl font-bold text-foreground group-hover:text-brand-500 transition-colors flex items-center gap-3">
+              <SiVinted className="w-8 h-8 md:w-10 md:h-10 shrink-0" style={{ color: "#017573" }}>
+                <title>Vinted Logo</title>
+              </SiVinted>
+              Vinted Highlights
+            </h2>
+          </a>
+          
+          <Button 
+            href="/shop/vinted" 
+            variant="outline" 
+            size="sm" 
+            class="w-fit"
+            data-analytics-nav="Shop Section Header" 
+            data-nav-label="View all Vinted Button"
           >
-            View full Vinted profile &rarr;
-          </ExternalLink>
+            View the Vinted Store
+            <Icon name="arrow-right" size="sm" />
+          </Button>
         </div>
       </ShopCarousel>
 
@@ -135,37 +84,32 @@ const ebayItems = await Promise.all(
     <div class="container max-w-6xl space-y-10">
       
       <ShopCarousel storeName="eBay" client:visible>
-        <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
-          <ExternalLink 
-            href="https://ebay.co.uk/usr/itsharryb/" 
-            client:visible
-            showIndicator={false}
-            aria-label="Visit my eBay profile"
-            className="hover:opacity-80 transition-opacity flex items-center mt-1"
-            data-analytics-nav="eBay Storefront"
-            data-nav-label="eBay Logo Link"
+        <div class="flex flex-col items-start gap-4">
+          <a 
+            href="/shop/ebay" 
+            class="group inline-block outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg"
+            data-analytics-nav="Shop Section Header" 
+            data-nav-label="eBay Store Title Link"
           >
-            {/* ACCESSIBILITY: Explicitly added title tag inside SVG for screen readers */}
-            <SiEbay className="w-10 h-10" style={{ color: "#0064D2" }}>
-              <title>eBay Logo</title>
-            </SiEbay>
-          </ExternalLink>
-          eBay Highlights
-        </h2>
-        
-        <div class="mt-2 text-foreground-muted flex flex-wrap items-center gap-1.5">
-          <span>A selection of items from the SHOP: B&Co eBay -</span>
-          <ExternalLink 
-            href="https://ebay.co.uk/usr/itsharryb/" 
-            client:visible
-            showIndicator={false}
-            className="text-sm font-medium hover:underline" 
-            style={{ color: "#ff0055" }}
-            data-analytics-nav="eBay Storefront"
-            data-nav-label="eBay Text Link"
+            <h2 class="text-3xl md:text-4xl font-bold text-foreground group-hover:text-brand-500 transition-colors flex items-center gap-3">
+              <SiEbay className="w-10 h-10 md:w-12 md:h-12 shrink-0" style={{ color: "#0064D2" }}>
+                <title>eBay Logo</title>
+              </SiEbay>
+              eBay Highlights
+            </h2>
+          </a>
+          
+          <Button 
+            href="/shop/ebay" 
+            variant="outline" 
+            size="sm" 
+            class="w-fit"
+            data-analytics-nav="Shop Section Header" 
+            data-nav-label="View all eBay Button"
           >
-            View full eBay profile &rarr;
-          </ExternalLink>
+            View the eBay Store
+            <Icon name="arrow-right" size="sm" />
+          </Button>
         </div>
       </ShopCarousel>
 

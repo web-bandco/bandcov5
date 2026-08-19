@@ -112,9 +112,8 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
   const [isMounted, setIsMounted] = React.useState(false);
   const [loadedImages, setLoadedImages] = React.useState<Record<string, boolean>>({});
   
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [showToggle, setShowToggle] = React.useState(false);
-  const textRef = React.useRef<HTMLParagraphElement>(null);
+  // NEW: Accordion Toggle State
+  const [isDetailsExpanded, setIsDetailsExpanded] = React.useState(false);
 
   const [isTitleExpanded, setIsTitleExpanded] = React.useState(false);
   const [showTitleToggle, setShowTitleToggle] = React.useState(false);
@@ -130,10 +129,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
 
   React.useEffect(() => {
     const checkTruncation = () => {
-      if (textRef.current && !isExpanded) {
-        const isTruncated = textRef.current.scrollHeight > textRef.current.clientHeight + 2;
-        setShowToggle(isTruncated);
-      }
       if (titleRef.current && !isTitleExpanded) {
         const isTruncated = titleRef.current.scrollHeight > titleRef.current.clientHeight + 2;
         setShowTitleToggle(isTruncated);
@@ -142,7 +137,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
     checkTruncation();
     window.addEventListener('resize', checkTruncation);
     return () => window.removeEventListener('resize', checkTruncation);
-  }, [product.description, product.title, isExpanded, isTitleExpanded]);
+  }, [product.title, isTitleExpanded]);
 
   const handleImageLoad = (key: string) => {
     setLoadedImages((prev) => ({ ...prev, [key]: true }));
@@ -218,7 +213,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
       <div className="card bg-surface-primary shadow-sm hover:shadow-lg transition-shadow border border-border flex flex-col group overflow-hidden rounded-2xl transform-gpu h-full">
         
         <figure 
-          className="relative z-10 w-full aspect-[3/4] overflow-hidden bg-surface-secondary cursor-pointer shadow-lg"
+          className="relative z-10 w-full aspect-[3/4] overflow-hidden bg-surface-secondary cursor-pointer shadow-lg shrink-0"
           onMouseLeave={() => setActiveIndex(0)}
           onClick={handleDialogOpen}
         >
@@ -236,9 +231,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
                   alt={`${product.title} - Image ${i + 1}`} 
                   onLoad={() => handleImageLoad(`card-${i}`)}
                   className={`absolute inset-0 object-cover w-full h-full transition-opacity duration-300 z-0 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  style={{
-                    zIndex: activeIndex === i ? 0 : -10
-                  }}
+                  style={{ zIndex: activeIndex === i ? 0 : -10 }}
                   loading={shouldEagerLoad ? "eager" : "lazy"} 
                   decoding="async"
                 />
@@ -248,19 +241,14 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
 
           <div className="absolute inset-0 z-10 hidden md:flex">
             {product.images.map((_, i) => (
-              <div 
-                key={i} 
-                className="flex-1 h-full"
-                onMouseEnter={() => setActiveIndex(i)}
-              />
+              <div key={i} className="flex-1 h-full" onMouseEnter={() => setActiveIndex(i)} />
             ))}
           </div>
         </figure>
 
         <div className="card-body p-5 flex flex-col flex-grow">
           
-          <div className="flex items-start justify-between gap-3 mb-2 min-h-[3.5rem]">
-            
+          <div className="flex items-start justify-between gap-3 mb-2">
             <div className="relative flex-1 min-w-0">
               <h2
                 ref={titleRef}
@@ -293,41 +281,36 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
             </div>
           </div>
 
-          <div className="flex flex-col gap-0.5 mb-3 text-sm text-foreground h-[2.5rem] justify-start">
-            {product.condition && (
-              <span><span className="font-semibold opacity-80">Condition:</span> {product.condition}</span>
-            )}
-            {product.size && (
-              <span><span className="font-semibold opacity-80">Size:</span> {product.size}</span>
-            )}
-          </div>
+          {/* THE NEW ACCORDION DETAILS SECTION */}
+          <div className="flex flex-col w-full mt-2 border-t border-border/50 pt-2">
+            <button
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setIsDetailsExpanded(!isDetailsExpanded); 
+              }}
+              className="flex items-center justify-between w-full text-xs font-semibold text-foreground hover:text-brand-500 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm py-1"
+            >
+              <span>Item Details</span>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDetailsExpanded ? 'rotate-180' : ''}`} />
+            </button>
 
-          <div className="flex-grow flex flex-col items-start w-full">
-            <div className="transition-all duration-200 w-full min-h-[2.5rem]">
-              <p 
-                ref={textRef}
-                className={`text-sm text-foreground-muted whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-2'}`}
-              >
-                {product.description}
-              </p>
-            </div>
-            
-            <div className="h-[1.5rem] mt-1.5 w-full flex items-start">
-              {showToggle && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsExpanded(!isExpanded);
-                  }}
-                  className="text-xs font-semibold text-foreground cursor-pointer hover:underline outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-                >
-                  {isExpanded ? 'Show less' : 'Read more'}
-                </button>
-              )}
+            <div className={`grid transition-all duration-300 ease-in-out ${isDetailsExpanded ? 'grid-rows-[1fr] opacity-100 mt-3' : 'grid-rows-[0fr] opacity-0'}`}>
+              <div className="overflow-hidden flex flex-col gap-3">
+                <div className="flex flex-col gap-0.5 text-xs md:text-sm text-foreground">
+                  {product.condition && <span><span className="font-semibold opacity-80">Condition:</span> {product.condition}</span>}
+                  {product.size && <span><span className="font-semibold opacity-80">Size:</span> {product.size}</span>}
+                </div>
+
+                <div className="max-h-[120px] overflow-y-auto pr-2 pb-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+                  <p className="text-xs md:text-sm text-foreground-muted whitespace-pre-wrap">
+                    {product.description}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
           
-          <div className="card-actions justify-end mt-5" onClickCapture={handleBuyClick}>
+          <div className="card-actions justify-end mt-auto pt-5" onClickCapture={handleBuyClick}>
             <ExternalLink 
               href={product.url}
               requireConfirm={true} 
@@ -336,9 +319,9 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
               className="btn border-none rounded-xl text-white w-full opacity-90 hover:opacity-100 hover:scale-[1.02] transition-all shadow-sm flex justify-center items-center"
               style={gradientStyle}
             >
-            Buy on {storeName}
-          </ExternalLink>
-        </div>
+              Buy on {storeName}
+            </ExternalLink>
+          </div>
         </div>
       </div>
 
@@ -853,10 +836,10 @@ export function ShopCarousel({ storeName, children }: ShopCarouselProps) {
           plugins={[WheelGesturesPlugin()]} 
           className="w-full px-4 md:px-0 group [&_.overflow-hidden]:rounded-2xl relative"
         >
-          <CarouselContent className="-ml-4 items-start">
+          <CarouselContent className="-ml-4 items-stretch">
             {filteredAndSortedProducts.map((product, index) => (
               <CarouselItem key={product.id} className="pl-4 basis-[85%] sm:basis-[60%] md:basis-1/2 lg:basis-1/3">
-                <div className="p-1">
+                <div className="p-1 h-full">
                   <ProductCard product={product} storeName={storeName} gradientStyle={gradientStyle} isPriority={index === 0} />
                 </div>
               </CarouselItem>

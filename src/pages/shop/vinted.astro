@@ -1,0 +1,54 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { Hero } from '@/components/hero';
+import CTA from '@/components/landing/CTA.astro';
+import { ShopGrid } from '@/components/ui/content/ShopGrid';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import { SiVinted } from "react-icons/si";
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Shop', href: '/shop' },
+  { label: 'Vinted Store' },
+];
+---
+
+<PageLayout
+  title="Vinted Store - Shop"
+  description="Browse the complete B&Co inventory available on Vinted."
+>
+  <Hero layout="centered" size="sm" class="bg-surface-secondary border-b border-border">
+    <div slot="badge" class="flex items-center gap-2 px-3 py-1 rounded-full bg-[#017573]/10 text-[#017573] border border-[#017573]/20 text-sm font-semibold">
+      <SiVinted className="w-4 h-4" />
+      SHOP: B&Co
+    </div>
+    <h1 slot="title">Vinted Store</h1>
+    <p slot="description">Browse the current selection of items currently available on the SHOP: B&Co Vinted Store.</p>
+  </Hero>
+
+  <section class="py-16 md:py-24 bg-background">
+    <div class="container max-w-7xl">
+      <ShopGrid storeName="Vinted" client:visible>
+        
+        {/* Passed as children: Align left, opposite the filters */}
+        <div class="flex flex-col items-start gap-4">
+          <Breadcrumbs items={breadcrumbs} />
+          
+          <a 
+            href="/shop" 
+            data-analytics-nav="Store Navigation"
+            data-nav-label="Back to Shop"
+            class="inline-flex items-center gap-2 text-sm font-medium text-foreground-muted hover:text-brand-500 transition-colors"
+          >
+            <Icon name="arrow-left" size="sm" />
+            Back to Shop
+          </a>
+        </div>
+        
+      </ShopGrid>
+    </div>
+  </section>
+
+  <CTA />
+</PageLayout>

@@ -4,6 +4,8 @@ import Badge from '@/components/ui/data-display/Badge/Badge.astro';
 import { Hero } from '@/components/hero';
 import CTA from '@/components/landing/CTA.astro';
 import { ImageCarousel } from '@/components/ui/content/ImageCarousel';
+import Button from '@/components/ui/form/Button/Button.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
@@ -68,6 +70,9 @@ const allHolidays = await getCollection('holidays');
 const sortedHolidays = allHolidays.sort((a, b) => 
   b.data.date.valueOf() - a.data.date.valueOf()
 );
+
+// SLICE TO ONLY SHOW THE 3 MOST RECENT ON THE MAIN PAGE
+const recentHolidays = sortedHolidays.slice(0, 3);
 ---
 
 <PageLayout
@@ -121,16 +126,38 @@ const sortedHolidays = allHolidays.sort((a, b) =>
       <div class="container max-w-6xl">
         <div class="flex flex-col gap-6">
           
-          <div class="text-center lg:text-left mb-8">
-            <h2 id="holiday-photos-heading" class="text-3xl md:text-4xl font-bold text-foreground">Holiday Galleries</h2>
-            <p class="text-foreground-muted mt-4 text-lg">Select a destination below to view the full gallery.</p>
+          <div class="text-center lg:text-left mb-8 flex flex-col items-center lg:items-start">
+            <a 
+              href="/photography/holidays" 
+              class="group inline-block outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg"
+              data-analytics-nav="Holiday Section Header" 
+              data-nav-label="Holiday Galleries Title Link"
+            >
+              <h2 id="holiday-photos-heading" class="text-3xl md:text-4xl font-bold text-foreground group-hover:text-brand-500 transition-colors">
+                Holiday Galleries
+              </h2>
+            </a>
+            
+            <p class="text-foreground-muted mt-2 text-lg">Select a destination below to view the full gallery.</p>
+            
+            <Button 
+              href="/photography/holidays" 
+              variant="outline" 
+              size="sm" 
+              class="mt-5 w-fit"
+              data-analytics-nav="Holiday Section Header" 
+              data-nav-label="View all Holidays Button"
+            >
+              View all Holidays
+              <Icon name="arrow-right" size="sm" />
+            </Button>
           </div>
           
-          {sortedHolidays.length > 0 ? (
+          {recentHolidays.length > 0 ? (
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {sortedHolidays.map(holiday => (
+              {recentHolidays.map(holiday => (
                 <a 
-                  href={`/photography/${holiday.id}`} 
+                  href={`/photography/holidays/${holiday.id}`} 
                   data-analytics-nav="Holiday Grid" 
                   data-nav-label={holiday.data.title}
                   class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
@@ -139,7 +166,7 @@ const sortedHolidays = allHolidays.sort((a, b) =>
                     src={holiday.data.coverImage} 
                     alt={holiday.data.title}
                     width={800}
-                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 bg-surface-secondary"
                   />
                   <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
                   

@@ -7,6 +7,7 @@ import CTA from '@/components/landing/CTA.astro';
 import Badge from '@/components/ui/data-display/Badge/Badge.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 import { MasonryGallery } from '@/components/ui/content/MasonryGallery';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro'; // <-- 1. Add import
 
 export async function getStaticPaths() {
   const holidays = await getCollection('holidays');
@@ -16,7 +17,6 @@ export async function getStaticPaths() {
   }));
 }
 
-// Strictly type the incoming props to fix TypeScript errors
 interface Props {
   holiday: CollectionEntry<'holidays'>;
 }
@@ -24,7 +24,14 @@ interface Props {
 const { holiday } = Astro.props;
 const { title, location, date, images } = holiday.data;
 
-// Optimize the images via Astro before handing them to React
+// 2. Define the dynamic breadcrumb path
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Photography', href: '/photography' },
+  { label: 'Holiday Galleries', href: '/photography/holidays' },
+  { label: title }, // <-- Dynamically grabs "Prague", "London", etc.
+];
+
 const optimizedImages = await Promise.all(
   images.map(async (img) => {
     const thumb = await getImage({ src: img.src, format: 'avif', width: 600, quality: 60 });
@@ -47,11 +54,7 @@ const optimizedImages = await Promise.all(
     
     <Hero layout="centered" size="sm" class="bg-surface-secondary border-b border-border">
       <Badge slot="badge" pill pulse>Holiday Gallery</Badge>
-
-      <h1 slot="title">
-        {title}
-      </h1>
-
+      <h1 slot="title">{title}</h1>
       <p slot="description" class="flex items-center justify-center gap-2">
         <Icon name="map-pin" size="sm" class="text-brand-500" />
         {location} • {date.getFullYear()}
@@ -61,16 +64,21 @@ const optimizedImages = await Promise.all(
     <section class="py-16 md:py-24 bg-background">
       <div class="mx-auto max-w-7xl px-6">
         
+        {/* 3. Drop in the Breadcrumbs component */}
+        <Breadcrumbs items={breadcrumbs} class="mb-8" />
+
         {/* Back Button */}
         <a 
-          href="/photography" 
+          href="/photography/holidays" 
           data-analytics-nav="Gallery Navigation"
-          data-nav-label="Back to Photography"
+          data-nav-label="Back to Holiday Directory"
           class="inline-flex items-center gap-2 text-sm font-medium text-foreground-muted hover:text-brand-500 transition-colors mb-12"
         >
           <Icon name="arrow-left" size="sm" />
-          Back to Photography
+          Back to Holidays
         </a>
+
+        {/* ... Rest of your masonry grid code stays exactly the same ... */}
 
         {/* The New React Masonry Gallery component */}
         <MasonryGallery 
