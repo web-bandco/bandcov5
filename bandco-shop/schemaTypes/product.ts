@@ -54,7 +54,7 @@ export const product = defineType({
       title: 'Category',
       type: 'string',
       options: {
-        list: ['T-Shirts', 'Jackets', 'Trousers', 'Shirts', 'Accessories', 'Tech'],
+        list: ['Accessories', 'Bottoms', 'Jackets', 'Shirts', 'T-Shirts', 'Tech'],
         layout: 'dropdown', 
       },
     }),
