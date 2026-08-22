@@ -7,7 +7,7 @@ import CTA from '@/components/landing/CTA.astro';
 import Badge from '@/components/ui/data-display/Badge/Badge.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 import { MasonryGallery } from '@/components/ui/content/MasonryGallery';
-import Breadcrumbs from '@/components/seo/Breadcrumbs.astro'; // <-- 1. Add import
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 
 export async function getStaticPaths() {
   const holidays = await getCollection('holidays');
@@ -24,12 +24,12 @@ interface Props {
 const { holiday } = Astro.props;
 const { title, location, date, images } = holiday.data;
 
-// 2. Define the dynamic breadcrumb path
+// Define the dynamic breadcrumb path
 const breadcrumbs = [
   { label: 'Home', href: '/' },
   { label: 'Photography', href: '/photography' },
   { label: 'Holiday Galleries', href: '/photography/holidays' },
-  { label: title }, // <-- Dynamically grabs "Prague", "London", etc.
+  { label: title }, 
 ];
 
 const optimizedImages = await Promise.all(
@@ -57,14 +57,14 @@ const optimizedImages = await Promise.all(
       <h1 slot="title">{title}</h1>
       <p slot="description" class="flex items-center justify-center gap-2">
         <Icon name="map-pin" size="sm" class="text-brand-500" />
-        {location} • {date.getFullYear()}
+        {/* UPDATED: Formats date to "August 2025" instead of just "2025" */}
+        {location} • {date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
       </p>
     </Hero>
 
     <section class="py-16 md:py-24 bg-background">
       <div class="mx-auto max-w-7xl px-6">
         
-        {/* 3. Drop in the Breadcrumbs component */}
         <Breadcrumbs items={breadcrumbs} class="mb-8" />
 
         {/* Back Button */}
@@ -77,8 +77,6 @@ const optimizedImages = await Promise.all(
           <Icon name="arrow-left" size="sm" />
           Back to Holidays
         </a>
-
-        {/* ... Rest of your masonry grid code stays exactly the same ... */}
 
         {/* The New React Masonry Gallery component */}
         <MasonryGallery 

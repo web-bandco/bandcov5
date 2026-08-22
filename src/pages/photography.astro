@@ -129,7 +129,7 @@ const recentHolidays = sortedHolidays.slice(0, 3);
           <div class="text-center lg:text-left mb-8 flex flex-col items-center lg:items-start">
             <a 
               href="/photography/holidays" 
-              class="group inline-block outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg"
+              class="group inline-block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
               data-analytics-nav="Holiday Section Header" 
               data-nav-label="Holiday Galleries Title Link"
             >
@@ -160,7 +160,7 @@ const recentHolidays = sortedHolidays.slice(0, 3);
                   href={`/photography/holidays/${holiday.id}`} 
                   data-analytics-nav="Holiday Grid" 
                   data-nav-label={holiday.data.title}
-                  class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Image 
                     src={holiday.data.coverImage} 
@@ -173,7 +173,7 @@ const recentHolidays = sortedHolidays.slice(0, 3);
                   <div class="relative z-10 p-8 flex flex-col items-start translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                     <h3 class="text-3xl font-bold text-white mb-2 tracking-tight drop-shadow-md">{holiday.data.title}</h3>
                     <p class="text-gray-300 font-medium">
-                      {holiday.data.location} • {holiday.data.date.getFullYear()}
+                      {holiday.data.location} • {holiday.data.date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
                     </p>
                   </div>
                 </a>

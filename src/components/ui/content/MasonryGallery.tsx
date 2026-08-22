@@ -202,7 +202,7 @@ export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }
         </button>
 
         <div 
-          className="absolute inset-0 z-0 cursor-pointer"
+          className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
@@ -212,8 +212,8 @@ export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }
           opts={{ 
             align: "center", 
             startIndex: selectedIndex, 
-            loop: true,
-            watchDrag: (root) => window.matchMedia('(max-width: 768px)').matches
+            loop: true
+            // FIX: Removed watchDrag constraint to allow desktop drag/scroll
           }}
           plugins={[WheelGesturesPlugin()]}
           className="w-full h-full flex items-center justify-center max-md:pointer-events-none z-10"
@@ -226,12 +226,10 @@ export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }
               return (
                 <CarouselItem key={index} className="flex h-[100dvh] flex-col items-center justify-center pl-0 relative">
                   
+                  {/* FIX: Let Embla naturally handle pointer events so dragging/swiping natively closes or suppresses clicks */}
                   <div 
                     className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
                     onClick={() => setIsOpen(false)} 
-                    onPointerDown={(e) => {
-                      if (e.pointerType === 'mouse') e.stopPropagation()
-                    }} 
                   />
 
                   <div className="relative w-full h-full p-4 md:p-24 flex items-center justify-center pointer-events-none z-10 md:cursor-pointer" onClick={() => setIsOpen(false)}>
@@ -253,12 +251,8 @@ export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }
                           }
                         }}
                         onClick={(e) => e.stopPropagation()} 
-                        onPointerDown={(e) => {
-                          if (e.pointerType === 'mouse' || window.matchMedia('(min-width: 768px)').matches) {
-                            e.stopPropagation();
-                          }
-                        }}
-                        className={`max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing md:cursor-default z-20 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        draggable={false} // FIX: Prevent native ghost image drag
+                        className={`max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing z-20 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                         decoding="async"
                       />
                     )}

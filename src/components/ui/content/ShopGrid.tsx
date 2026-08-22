@@ -67,7 +67,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
   const [isMounted, setIsMounted] = React.useState(false);
   const [loadedImages, setLoadedImages] = React.useState<Record<string, boolean>>({});
   
-  // New unified details toggle state
   const [isDetailsExpanded, setIsDetailsExpanded] = React.useState(false);
 
   const [isTitleExpanded, setIsTitleExpanded] = React.useState(false);
@@ -155,8 +154,9 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <div className="card bg-surface-primary shadow-sm hover:shadow-lg transition-shadow border border-border flex flex-col group overflow-hidden rounded-2xl transform-gpu h-full">
         
+        {/* FIX: Added rounded-2xl explicitly to the figure */}
         <figure 
-          className="relative z-10 w-full aspect-[3/4] overflow-hidden bg-surface-secondary cursor-pointer shadow-lg shrink-0"
+          className="relative z-10 w-full aspect-[3/4] overflow-hidden rounded-2xl bg-surface-secondary cursor-pointer shadow-lg shrink-0"
           onMouseLeave={() => setActiveIndex(0)}
           onClick={handleDialogOpen}
         >
@@ -192,7 +192,14 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
         <div className="card-body p-4 md:p-5 flex flex-col flex-grow">
           <div className="flex items-start justify-between gap-3 mb-2 min-h-[3.5rem]">
             <div className="relative flex-1 min-w-0">
-              <h2 ref={titleRef} className={`card-title text-foreground text-[1rem] leading-snug break-words ${isTitleExpanded ? 'pb-8' : 'line-clamp-2 pr-8'}`}>
+              <h2 
+                ref={titleRef} 
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setIsDetailsExpanded(!isDetailsExpanded); 
+                }}
+                className={`card-title text-foreground text-[1rem] leading-snug break-words cursor-pointer hover:text-brand-500 transition-colors ${isTitleExpanded ? 'pb-8' : 'line-clamp-2 pr-8'}`}
+              >
                 {product.title}
               </h2>
               {showTitleToggle && (
@@ -210,7 +217,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
             </div>
           </div>
 
-          {/* NEW: Collapsible Details Section */}
           <div className="flex flex-col w-full mt-2 border-t border-border/50 pt-2">
             <button
               onClick={(e) => { e.stopPropagation(); setIsDetailsExpanded(!isDetailsExpanded); }}
@@ -220,8 +226,8 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
               <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDetailsExpanded ? 'rotate-180' : ''}`} />
             </button>
 
-            <div className={`grid transition-all duration-300 ease-in-out ${isDetailsExpanded ? 'grid-rows-[1fr] opacity-100 mt-3' : 'grid-rows-[0fr] opacity-0'}`}>
-                <div className="overflow-hidden flex flex-col gap-3 min-h-0">
+            <div className={`grid transition-all duration-300 ease-in-out ${isDetailsExpanded ? 'grid-rows-[1fr] opacity-100 mt-2 md:mt-3' : 'grid-rows-[0fr] opacity-0'}`}>
+              <div className="overflow-hidden flex flex-col gap-3 min-h-0 py-1">
                 <div className="flex flex-col gap-0.5 text-xs md:text-sm text-foreground">
                   {product.condition && <span><span className="font-semibold opacity-80">Condition:</span> {product.condition}</span>}
                   {product.size && <span><span className="font-semibold opacity-80">Size:</span> {product.size}</span>}
@@ -242,10 +248,11 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
               requireConfirm={true} 
               showIndicator={true}
               aria-label={`Buy ${product.title} on ${storeName}`}
-              className="btn border-none rounded-xl text-white w-full opacity-90 hover:opacity-100 hover:scale-[1.02] transition-all shadow-sm flex justify-center items-center"
+              className="btn border-none rounded-xl text-white w-full opacity-90 hover:opacity-100 hover:scale-[1.02] transition-all shadow-sm flex justify-center items-center gap-2"
               style={gradientStyle}
             >
-              Buy on {storeName}
+              <span className="md:hidden">Buy</span>
+              <span className="hidden md:inline">Buy on {storeName}</span>
             </ExternalLink>
           </div>
         </div>
@@ -392,7 +399,9 @@ export function ShopGrid({ storeName, children }: ShopGridProps) {
     return (
       <div className="w-full flex flex-col">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-4 md:px-0 mb-8"><div className="flex-1">{children}</div></div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 w-full px-4 md:px-0 mt-2">
+        
+        {/* FIX: Updated skeleton mobile columns to grid-cols-1 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 w-full px-4 md:px-0 mt-2">
           {[...Array(8)].map((_, i) => ( <Skeleton key={i} className="w-full aspect-[3/4] rounded-2xl" /> ))}
         </div>
       </div>
@@ -509,7 +518,8 @@ export function ShopGrid({ storeName, children }: ShopGridProps) {
           <p className="text-foreground-muted">Try removing some filters to see more results.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 w-full px-4 md:px-0">
+        /* FIX: Updated active grid mobile columns to grid-cols-1 */
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 w-full px-4 md:px-0">
           {filteredAndSortedProducts.map((product, index) => (
             <div key={product.id} className="h-full">
               <ProductCard product={product} storeName={storeName} gradientStyle={gradientStyle} isPriority={index < 4} />

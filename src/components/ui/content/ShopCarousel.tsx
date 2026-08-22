@@ -112,7 +112,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
   const [isMounted, setIsMounted] = React.useState(false);
   const [loadedImages, setLoadedImages] = React.useState<Record<string, boolean>>({});
   
-  // NEW: Accordion Toggle State
   const [isDetailsExpanded, setIsDetailsExpanded] = React.useState(false);
 
   const [isTitleExpanded, setIsTitleExpanded] = React.useState(false);
@@ -212,8 +211,9 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <div className="card bg-surface-primary shadow-sm hover:shadow-lg transition-shadow border border-border flex flex-col group overflow-hidden rounded-2xl transform-gpu h-full">
         
+        {/* FIX: Added rounded-2xl explicitly to the figure */}
         <figure 
-          className="relative z-10 w-full aspect-[3/4] overflow-hidden bg-surface-secondary cursor-pointer shadow-lg shrink-0"
+          className="relative z-10 w-full aspect-[3/4] overflow-hidden rounded-2xl bg-surface-secondary cursor-pointer shadow-lg shrink-0"
           onMouseLeave={() => setActiveIndex(0)}
           onClick={handleDialogOpen}
         >
@@ -241,18 +241,27 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
 
           <div className="absolute inset-0 z-10 hidden md:flex">
             {product.images.map((_, i) => (
-              <div key={i} className="flex-1 h-full" onMouseEnter={() => setActiveIndex(i)} />
+              <div 
+                key={i} 
+                className="flex-1 h-full"
+                onMouseEnter={() => setActiveIndex(i)}
+              />
             ))}
           </div>
         </figure>
 
-        <div className="card-body p-5 flex flex-col flex-grow">
+        <div className="card-body p-4 md:p-5 flex flex-col flex-grow">
           
-          <div className="flex items-start justify-between gap-3 mb-2">
+          <div className="flex items-start justify-between gap-3 mb-2 min-h-[3.5rem]">
+            
             <div className="relative flex-1 min-w-0">
               <h2
                 ref={titleRef}
-                className={`card-title text-foreground text-lg leading-snug break-words ${isTitleExpanded ? 'pb-8' : 'line-clamp-2 pr-8'}`}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setIsDetailsExpanded(!isDetailsExpanded); 
+                }}
+                className={`card-title text-foreground text-[1rem] leading-snug break-words cursor-pointer hover:text-brand-500 transition-colors ${isTitleExpanded ? 'pb-8' : 'line-clamp-2 pr-8'}`}
               >
                 {product.title}
               </h2>
@@ -281,7 +290,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
             </div>
           </div>
 
-          {/* THE NEW ACCORDION DETAILS SECTION */}
           <div className="flex flex-col w-full mt-2 border-t border-border/50 pt-2">
             <button
               onClick={(e) => { 
@@ -294,8 +302,8 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
               <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDetailsExpanded ? 'rotate-180' : ''}`} />
             </button>
 
-            <div className={`grid transition-all duration-300 ease-in-out ${isDetailsExpanded ? 'grid-rows-[1fr] opacity-100 mt-3' : 'grid-rows-[0fr] opacity-0'}`}>
-              <div className="overflow-hidden flex flex-col gap-3">
+            <div className={`grid transition-all duration-300 ease-in-out ${isDetailsExpanded ? 'grid-rows-[1fr] opacity-100 mt-2 md:mt-3' : 'grid-rows-[0fr] opacity-0'}`}>
+              <div className="overflow-hidden flex flex-col gap-3 min-h-0 py-1">
                 <div className="flex flex-col gap-0.5 text-xs md:text-sm text-foreground">
                   {product.condition && <span><span className="font-semibold opacity-80">Condition:</span> {product.condition}</span>}
                   {product.size && <span><span className="font-semibold opacity-80">Size:</span> {product.size}</span>}
@@ -316,15 +324,17 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
               requireConfirm={true} 
               showIndicator={true}
               aria-label={`Buy ${product.title} on ${storeName}`}
-              className="btn border-none rounded-xl text-white w-full opacity-90 hover:opacity-100 hover:scale-[1.02] transition-all shadow-sm flex justify-center items-center"
+              className="btn border-none rounded-xl text-white w-full opacity-90 hover:opacity-100 hover:scale-[1.02] transition-all shadow-sm flex justify-center items-center gap-2"
               style={gradientStyle}
             >
-              Buy on {storeName}
+              <span className="md:hidden">Buy</span>
+              <span className="hidden md:inline">Buy on {storeName}</span>
             </ExternalLink>
           </div>
         </div>
       </div>
 
+      {/* LIGHTBOX */}
       {isMounted && (
         <DialogContent 
           showCloseButton={false}
@@ -357,7 +367,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
           </button>
 
           <div 
-            className="absolute inset-0 z-0 cursor-pointer"
+            className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
@@ -367,8 +377,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
             opts={{ 
               align: "center", 
               loop: true, 
-              startIndex: activeIndex,
-              watchDrag: (root) => window.matchMedia('(max-width: 768px)').matches
+              startIndex: activeIndex
             }}
             plugins={[WheelGesturesPlugin()]} 
             className="w-full h-full flex items-center justify-center max-md:pointer-events-none z-10"
@@ -415,7 +424,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
                               e.stopPropagation();
                             }
                           }}
-                          className="max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing md:cursor-default z-20 transition-opacity duration-300"
+                          className="max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing z-20 transition-opacity duration-300"
                           style={{ opacity: isLoaded ? 1 : 0 }}
                           decoding="async"
                         />

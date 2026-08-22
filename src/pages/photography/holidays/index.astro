@@ -4,7 +4,7 @@ import Badge from '@/components/ui/data-display/Badge/Badge.astro';
 import { Hero } from '@/components/hero';
 import CTA from '@/components/landing/CTA.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
-import Breadcrumbs from '@/components/seo/Breadcrumbs.astro'; // <-- 1. Add import
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro'; 
 
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
@@ -15,7 +15,6 @@ const sortedHolidays = allHolidays.sort((a, b) =>
   b.data.date.valueOf() - a.data.date.valueOf()
 );
 
-// 2. Define the breadcrumb path
 const breadcrumbs = [
   { label: 'Home', href: '/' },
   { label: 'Photography', href: '/photography' },
@@ -39,7 +38,6 @@ const breadcrumbs = [
     <section class="py-16 md:py-24 bg-background" aria-labelledby="holiday-directory-heading">
       <div class="container max-w-6xl">
         
-        {/* 3. Drop in the Breadcrumbs component */}
         <Breadcrumbs items={breadcrumbs} class="mb-8" />
 
         {/* Back Button */}
@@ -60,7 +58,7 @@ const breadcrumbs = [
                 href={`/photography/holidays/${holiday.id}`} 
                 data-analytics-nav="Holiday Directory Grid" 
                 data-nav-label={holiday.data.title}
-                class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-brand-500 !outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Image 
                   src={holiday.data.coverImage} 
@@ -73,7 +71,7 @@ const breadcrumbs = [
                 <div class="relative z-10 p-8 flex flex-col items-start translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                   <h3 class="text-3xl font-bold text-white mb-2 tracking-tight drop-shadow-md">{holiday.data.title}</h3>
                   <p class="text-gray-300 font-medium">
-                    {holiday.data.location} • {holiday.data.date.getFullYear()}
+                    {holiday.data.location} • {holiday.data.date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
                   </p>
                 </div>
               </a>

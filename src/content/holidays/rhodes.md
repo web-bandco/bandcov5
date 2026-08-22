@@ -1,7 +1,7 @@
 ---
 title: "Pefkos/Rhodes"
 location: "Greece"
-date: 2025-06-01
+date: 2025-06-24
 coverImage: "../../assets/images/holidays/pefkos-rhodes/lindosrock1.jpg"
 images:
   - src: "../../assets/images/holidays/pefkos-rhodes/lindosrock1.jpg"

@@ -1,7 +1,7 @@
 ---
 title: "London"
 location: "United Kingdom"
-date: 2025-08-01
+date: 2025-08-18
 coverImage: "../../assets/images/holidays/london/londonskyline.jpg"
 images:
   - src: "../../assets/images/holidays/london/IWMLondon.jpg"

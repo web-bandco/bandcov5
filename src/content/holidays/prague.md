@@ -1,7 +1,7 @@
 ---
 title: "Prague"
 location: "Czech Republic"
-date: 2024-06-01
+date: 2024-06-23
 coverImage: "../../assets/images/holidays/prague/praguebuilding1.jpg"
 images:
   - src: "../../assets/images/holidays/prague/goldceiling.jpg"

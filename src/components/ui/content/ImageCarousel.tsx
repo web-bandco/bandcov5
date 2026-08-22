@@ -124,14 +124,12 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }:
       return next;
     });
 
-    // ── GA4 TRACKING TRIGGER ──
     trackEvent('photo_lightbox_open', {
       event_category: 'Photography',
       event_label: images[index].alt || `Image ${index + 1}`,
       gallery_name: galleryName,
       ui_section: 'Image Carousel'
     });
-    // --------------------------
   }
 
   const handleGridImageLoad = (key: string) => {
@@ -160,7 +158,6 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }:
               <CarouselItem key={index}>
                 <div className="p-1">
                   <DialogTrigger asChild>
-                    {/* ACCESSIBILITY FIX: Changed <div> to <button type="button"> so DialogTrigger passes valid ARIA props */}
                     <button 
                       type="button"
                       aria-label={`View full image: ${image.alt}`}
@@ -250,9 +247,8 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }:
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="m9 18 6-6-6-6"/></svg>
         </button>
 
-        {/* UX OPTIMIZATION: Full-screen click-to-close backdrop layer behind the carousel */}
         <div 
-          className="absolute inset-0 z-0 cursor-pointer"
+          className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
@@ -262,8 +258,7 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }:
           opts={{ 
             align: "center", 
             startIndex: selectedIndex, 
-            loop: true,
-            watchDrag: (root) => window.matchMedia('(max-width: 768px)').matches
+            loop: true
           }}
           plugins={[WheelGesturesPlugin()]}
           className="w-full h-full flex items-center justify-center max-md:pointer-events-none z-10"
@@ -276,13 +271,9 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }:
               return (
                 <CarouselItem key={index} className="flex h-[100dvh] flex-col items-center justify-center pl-0 relative">
                   
-                  {/* UX OPTIMIZATION: Inner backdrop covering entire CarouselItem to catch missed mobile taps */}
                   <div 
                     className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
                     onClick={() => setIsOpen(false)} 
-                    onPointerDown={(e) => {
-                      if (e.pointerType === 'mouse') e.stopPropagation()
-                    }} 
                   />
 
                   <div className="relative w-full h-full p-4 md:p-24 flex items-center justify-center pointer-events-none z-10 md:cursor-pointer" onClick={() => setIsOpen(false)}>
@@ -304,12 +295,8 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }:
                           }
                         }}
                         onClick={(e) => e.stopPropagation()} 
-                        onPointerDown={(e) => {
-                          if (e.pointerType === 'mouse' || window.matchMedia('(min-width: 768px)').matches) {
-                            e.stopPropagation();
-                          }
-                        }}
-                        className={`max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing md:cursor-default z-20 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        draggable={false}
+                        className={`max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing z-20 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                         decoding="async"
                       />
                     )}
