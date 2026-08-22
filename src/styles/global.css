@@ -908,3 +908,11 @@
     visibility: visible;
   }
 }
+/* Prevent the layout from moving when menus open */
+html {
+  scrollbar-gutter: stable;
+}
+
+body[data-scroll-locked] {
+  padding-right: 0 !important;
+}
