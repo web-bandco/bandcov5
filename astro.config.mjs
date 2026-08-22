@@ -4,8 +4,10 @@ import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
+import robotsTxt from 'astro-robots-txt';
+
 export default defineConfig({
-  site: process.env.SITE_URL || 'https://example.com',
+  site: process.env.SITE_URL || 'https://brightonandco.co.uk',
   build: {
     inlineStylesheets: 'always'
   },
@@ -25,11 +27,7 @@ export default defineConfig({
     },
   },
 
-  integrations: [
-    react(),
-    mdx(),
-    sitemap(),
-  ],
+  integrations: [react(), mdx(), sitemap(), robotsTxt()],
 
   vite: {
     plugins: [tailwindcss()],
