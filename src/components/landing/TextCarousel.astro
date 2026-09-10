@@ -8,7 +8,8 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
 <div id="text-carousel" tabindex="0" class="group relative w-full max-w-4xl mx-auto px-4 sm:px-6 text-center outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-3xl">
   
   {/* The Adaptive Glass Container */}
-  <div class="carousel-container relative overflow-hidden rounded-3xl bg-background/25 dark:bg-background/40 backdrop-blur-xl border border-border shadow-2xl">
+  {/* FIX: Increased opacity to bg-background/80 for better text contrast */}
+  <div class="carousel-container relative overflow-hidden rounded-3xl bg-background/35 dark:bg-background/80 backdrop-blur-xl border border-border shadow-2xl">
     
     {/* Navigation Arrows: Strictly hidden on mobile (<768px) to prevent text overlap, fades in on desktop hover */}
     <button id="prev-btn" aria-label="Previous slide" class="liquid-carousel-btn absolute left-4 top-0 bottom-0 my-auto w-12 h-12 hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 z-30 outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
@@ -23,12 +24,18 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
       
       {/* Slide 1: Welcome */}
       <div class="carousel-slide w-full shrink-0 flex flex-col items-center justify-center px-8 md:px-24 py-12 md:py-16">
+        {/* FIX: Changed text-foreground to text-white */}
         <h2 class="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-sm">
-          Welcome to <span class="text-brand-500">Brighton and Co</span>
+          Welcome to <span class="text-brand-500 dark:text-brand-400">B&Co</span>
         </h2>
         <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
-          A small website maintained as a hobby project, showcasing my personal interests in photography, design, and technology.
+          Brighton and Co is a personal hobby and project made by Harry B, showcasing my photography, interests and more.
         </p>
+        <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
+          Scroll down to find out more about the site and B&Co.
+        </p>
+        {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
+          <span class="sr-only">Brighton and Co website made by Harry B</span>
         <a href="/about" class="liquid-carousel-btn inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
           Learn More <span class="sr-only">about Brighton and Co</span> <Icon name="arrow-right" class="w-4 h-4" />
@@ -37,14 +44,17 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
 
       {/* Slide 2: Shop */}
       <div class="carousel-slide w-full shrink-0 flex flex-col items-center justify-center px-8 md:px-24 py-12 md:py-16">
+        {/* FIX: Changed text-foreground to text-white */}
         <h2 class="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-sm">
           <span class="text-transparent bg-clip-text" style={gradientStyle}>SHOP</span>: B&Co
         </h2>
         <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
-          Explore a small selection of pre-loved fashion and other items - direct from my Vinted and eBay stores.
+          Browse a selection of high quality pre-loved clothing and technology from SHOP: B&Co Vinted and eBay.
         </p>
         <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
-          All items are in excellent condition, unless otherwise stated - all are packaged and shipped with care.
+          All items are packaged with care and posted securely. 
+          {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
+          <span class="sr-only">All items are in excellent condition and shipped with care</span>
         </p>
         <a href="/shop" class="liquid-carousel-btn inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
@@ -54,11 +64,15 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
 
       {/* Slide 3: Photography */}
       <div class="carousel-slide w-full shrink-0 flex flex-col items-center justify-center px-8 md:px-24 py-12 md:py-16">
+        {/* FIX: Changed text-foreground to text-white */}
         <h2 class="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-sm">
-          My <span class="text-brand-500">Photography</span>
+          My <span class="text-brand-500 dark:text-brand-400">Photography</span>
         </h2>
         <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
-          A dedicated gallery space showcasing my passion for photography, featuring high-resolution landscapes and other moments.
+          Explore a wide range of photography, such as multiple collections of photos from past holidays across Europe.
+        </p>
+        <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
+          And don't forget - plenty of cat photos too.
         </p>
         <a href="/photography" class="liquid-carousel-btn inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
