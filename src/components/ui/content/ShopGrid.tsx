@@ -154,7 +154,6 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <div className="card bg-surface-primary shadow-sm hover:shadow-lg transition-shadow border border-border flex flex-col group overflow-hidden rounded-2xl transform-gpu h-full">
         
-        {/* FIX: Added rounded-2xl explicitly to the figure */}
         <figure 
           className="relative z-10 w-full aspect-[3/4] overflow-hidden rounded-2xl bg-surface-secondary cursor-pointer shadow-lg shrink-0"
           onMouseLeave={() => setActiveIndex(0)}
@@ -267,23 +266,37 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
           <button onClick={() => dialogApi?.scrollNext()} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-[100] hidden md:flex w-14 h-14 bg-background/60 hover:bg-background border-none shadow-md backdrop-blur-md rounded-full items-center justify-center text-foreground outline-none transition-all cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="m9 18 6-6-6-6"/></svg></button>
           <div className="absolute inset-0 z-0 cursor-pointer" onClick={() => setIsOpen(false)} aria-hidden="true" />
 
-          <Carousel setApi={setDialogApi} opts={{ align: "center", loop: true, startIndex: activeIndex, watchDrag: (root) => window.matchMedia('(max-width: 768px)').matches }} plugins={[WheelGesturesPlugin()]} className="w-full h-full flex items-center justify-center max-md:pointer-events-none z-10">
+          {/* FIX: Removed 'watchDrag' parameter which was actively disabling trackpad scrolling on desktop */}
+          <Carousel setApi={setDialogApi} opts={{ align: "center", loop: true, startIndex: activeIndex }} plugins={[WheelGesturesPlugin()]} className="w-full h-full flex items-center justify-center max-md:pointer-events-none z-10">
             <CarouselContent className="h-full ml-0">
               {product.images.map((imgObj, i) => {
                 const shouldLoad = lightboxActiveSlides.has(i);
                 const isLoaded = loadedImages[`lightbox-${i}`];
                 return (
                   <CarouselItem key={i} className="flex h-[100dvh] flex-col items-center justify-center pl-0 relative">
-                    <div className="absolute inset-0 z-0 cursor-pointer pointer-events-auto" onClick={() => setIsOpen(false)} onPointerDown={(e) => { if (e.pointerType === 'mouse') e.stopPropagation() }} />
-                    <div className="relative w-full h-full p-4 md:p-24 flex items-center justify-center pointer-events-none z-10">
+                    
+                    {/* FIX: Removed the onPointerDown blocker here */}
+                    <div className="absolute inset-0 z-0 cursor-pointer pointer-events-auto" onClick={() => setIsOpen(false)} />
+                    
+                    {/* FIX: Added md:cursor-pointer and onClick to wrapper identical to ImageCarousel */}
+                    <div 
+                      className="relative w-full h-full p-4 md:p-24 flex items-center justify-center pointer-events-none z-10 md:cursor-pointer"
+                      onClick={() => setIsOpen(false)}
+                    >
                       {!isLoaded && shouldLoad && (<div className="absolute inset-0 flex items-center justify-center z-10"><Spinner className="w-12 h-12 text-brand-500 animate-spin" /></div>)}
                       {shouldLoad && (
-                        <img src={imgObj.full} alt={`${product.title} - Expanded Image ${i + 1}`} onLoad={() => handleImageLoad(`lightbox-${i}`)}
+                        <img 
+                          src={imgObj.full} 
+                          alt={`${product.title} - Expanded Image ${i + 1}`} 
+                          onLoad={() => handleImageLoad(`lightbox-${i}`)}
                           ref={(img) => { if (img && img.complete && !isLoaded) { handleImageLoad(`lightbox-${i}`); } }}
                           onClick={(e) => { e.stopPropagation(); }}
-                          onPointerDown={(e) => { if (e.pointerType === 'mouse' || window.matchMedia('(min-width: 768px)').matches) { e.stopPropagation(); } }}
-                          className="max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing md:cursor-default z-20 transition-opacity duration-300"
-                          style={{ opacity: isLoaded ? 1 : 0 }} decoding="async" />
+                          /* FIX: Added draggable={false} and removed onPointerDown block */
+                          draggable={false}
+                          className={`max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing z-20 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                          style={{ opacity: isLoaded ? 1 : 0 }} 
+                          decoding="async" 
+                        />
                       )}
                     </div>
                   </CarouselItem>
@@ -400,7 +413,6 @@ export function ShopGrid({ storeName, children }: ShopGridProps) {
       <div className="w-full flex flex-col">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-4 md:px-0 mb-8"><div className="flex-1">{children}</div></div>
         
-        {/* FIX: Updated skeleton mobile columns to grid-cols-1 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 w-full px-4 md:px-0 mt-2">
           {[...Array(8)].map((_, i) => ( <Skeleton key={i} className="w-full aspect-[3/4] rounded-2xl" /> ))}
         </div>
@@ -518,7 +530,6 @@ export function ShopGrid({ storeName, children }: ShopGridProps) {
           <p className="text-foreground-muted">Try removing some filters to see more results.</p>
         </div>
       ) : (
-        /* FIX: Updated active grid mobile columns to grid-cols-1 */
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 w-full px-4 md:px-0">
           {filteredAndSortedProducts.map((product, index) => (
             <div key={product.id} className="h-full">
