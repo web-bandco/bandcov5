@@ -111,8 +111,8 @@
   },
   "allowScripts": {
     "sharp@0.34.5": true,
-    "workerd@1.20260828.1": true,
     "esbuild@0.28.2": true,
-    "esbuild@0.28.1": true
+    "esbuild@0.28.1": true,
+    "workerd@1.20260918.1": true
   }
 }
