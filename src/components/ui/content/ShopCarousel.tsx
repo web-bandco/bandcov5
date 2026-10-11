@@ -420,7 +420,7 @@ function ProductCard({ product, storeName, gradientStyle, isPriority }: { produc
                             e.stopPropagation();
                           }}
                           onPointerDown={(e) => {
-                            if (e.pointerType === 'mouse' || window.matchMedia('(min-width: 768px)').matches) {
+                            if (e.pointerType === 'mouse' || window.matchMedia('(min-width: 1024px)').matches) {
                               e.stopPropagation();
                             }
                           }}

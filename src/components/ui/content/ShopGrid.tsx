@@ -46,11 +46,11 @@ function ProductCard({ product, isPriority }: { product: Product, isPriority?: b
   
   // Track if the viewport is desktop to determine how many images to load
   const [isDesktop, setIsDesktop] = React.useState(
-    typeof window !== "undefined" ? window.innerWidth >= 768 : true
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : true
   );
 
   React.useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);

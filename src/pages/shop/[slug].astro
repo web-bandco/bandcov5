@@ -66,10 +66,12 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
   <section class="py-12 md:py-16 bg-background">
     <div class="container max-w-7xl">
       
-      <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_450px] gap-10 md:gap-16 items-start">
+      {/* Updated to min-[1000px] wrapper to match the new custom breakpoint */}
+      <div class="grid grid-cols-1 min-[1000px]:grid-cols-[1fr_400px] xl:grid-cols-[1fr_450px] gap-10 md:gap-16 items-start">
         
         {/* LEFT COLUMN: Gallery */}
-        <div class="w-full lg:sticky lg:top-24">
+        {/* Updated to min-[1000px] sticky layout */}
+        <div class="w-full min-[1000px]:sticky min-[1000px]:top-24">
           <ProductGallery images={product.images} title={product.title} client:visible />
         </div>
 
@@ -129,7 +131,6 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
                 </div>
               </summary>
               <div class="grid grid-cols-2 gap-y-6 gap-x-4 pt-5 animate-in fade-in duration-300">
-        
                 {product.condition && (
                   <div>
                     <p class="text-sm font-semibold text-foreground mb-1">Condition</p>

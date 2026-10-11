@@ -18,37 +18,46 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
   const [dialogApi, setDialogApi] = React.useState<CarouselApi>();
   const [mainApi, setMainApi] = React.useState<CarouselApi>();
   
-  // Desktop Grid Expansion State
+  const thumbnailsRef = React.useRef<(HTMLButtonElement | null)[]>([]);
+  
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const MAX_GRID_ITEMS = 6; // 3 rows of 2 columns
+  const MAX_GRID_ITEMS = 6;
   const extraImages = images.slice(1);
   const hasMore = extraImages.length > MAX_GRID_ITEMS;
   const visibleExtra = isExpanded ? extraImages : extraImages.slice(0, MAX_GRID_ITEMS);
 
   React.useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile(); // Check immediately on mount
+    // Custom middle-ground breakpoint at 1000px
+    const checkMobile = () => setIsMobile(window.innerWidth < 1000);
+    checkMobile(); 
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Sync Lightbox index
   React.useEffect(() => {
     if (!dialogApi) return;
     dialogApi.on("select", () => setActiveIndex(dialogApi.selectedScrollSnap()));
   }, [dialogApi]);
 
-  // Sync Mobile Main Carousel index
   React.useEffect(() => {
     if (!mainApi) return;
     mainApi.on("select", () => setActiveIndex(mainApi.selectedScrollSnap()));
   }, [mainApi]);
 
-  // Jump to index on Mobile when thumbnails are clicked
   React.useEffect(() => {
     if (!mainApi) return;
     mainApi.scrollTo(activeIndex);
   }, [activeIndex, mainApi]);
+
+  React.useEffect(() => {
+    if (isMobile && thumbnailsRef.current[activeIndex]) {
+      thumbnailsRef.current[activeIndex]?.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest'
+      });
+    }
+  }, [activeIndex, isMobile]);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -71,32 +80,28 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
     <div className="w-full flex flex-col gap-4">
       
       {/* ==========================================
-          MOBILE LAYOUT (< 768px)
-          Main Swipeable Carousel + Mini Thumbnails 
+          MOBILE LAYOUT (< 1000px)
          ========================================== */}
-      <div className="w-full flex flex-col gap-4 md:hidden">
+      <div className="w-full flex flex-col gap-4 min-[1000px]:hidden">
         
-        {/* Main Mobile Image */}
-        <Carousel setApi={setMainApi} opts={{ align: "center" }} plugins={[WheelGesturesPlugin()]} className="w-full bg-surface-secondary rounded-2xl overflow-hidden">
+        <Carousel setApi={setMainApi} opts={{ align: "center", loop: true }} plugins={[WheelGesturesPlugin()]} className="w-full bg-surface-secondary rounded-2xl overflow-hidden">
           <CarouselContent className="ml-0">
             {images.map((img, i) => (
               <CarouselItem key={i} className="pl-0 relative w-full flex items-center justify-center">
-                <img src={img.full} alt={`${title} - ${i + 1}`} className="w-full h-auto max-h-[70vh] object-contain rounded-2xl" loading={i === 0 ? "eager" : "lazy"} />
+                <img src={img.full} alt={`${title} ${i + 1}`} className="w-full aspect-[3/4] object-cover rounded-2xl" loading={i === 0 ? "eager" : "lazy"} />
               </CarouselItem>
             ))}
           </CarouselContent>
         </Carousel>
 
-        {/* Mobile Mini Carousel (Thumbnails) */}
         {images.length > 1 && (
-          // Added snap-x and hidden scrollbars for a clean swiping experience
           <div className="flex flex-row gap-3 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-1">
             {images.map((img, i) => (
               <button
                 key={i}
+                ref={(el) => { thumbnailsRef.current[i] = el; }}
                 onClick={() => handleImageClick(i)}
-                // Increased to w-24 h-24 (96px) and added snap-center
-                className={`relative shrink-0 snap-center w-24 h-24 rounded-xl overflow-hidden border-2 transition-all outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${activeIndex === i ? 'border-brand-500 shadow-md opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                className={`relative shrink-0 snap-center w-28 aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${activeIndex === i ? 'border-brand-500 shadow-md opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}
                 aria-label={`View image ${i + 1}`}
               >
                 <img src={img.thumb} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
@@ -108,21 +113,17 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
 
 
       {/* ==========================================
-          DESKTOP LAYOUT (>= 768px)
-          Main Static Image + Masonry Grid
+          DESKTOP LAYOUT (>= 1000px)
          ========================================== */}
-      <div className="hidden md:flex flex-col gap-4">
+      <div className="hidden min-[1000px]:flex flex-col gap-4">
         
-        {/* Main Desktop Image (Always Image 0) */}
         <div 
           className={`w-full bg-surface-secondary rounded-2xl overflow-hidden transition-transform hover:opacity-95 ${cursorClass}`}
           onClick={() => handleImageClick(0)}
         >
-          {/* Added rounded-2xl directly to the img tag to fix sharp corners */}
-          <img src={images[0].full} alt={`${title} - Main`} className="w-full h-auto object-contain rounded-2xl max-h-[75vh] mx-auto" loading="eager" />
+          <img src={images[0].full} alt={`${title} Main`} className="w-full aspect-[3/4] object-cover rounded-2xl mx-auto" loading="eager" />
         </div>
 
-        {/* Desktop Extra Images Masonry Grid */}
         {extraImages.length > 0 && (
           <div className="relative w-full">
             <div className="grid grid-cols-2 gap-4">
@@ -134,14 +135,12 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
                     className={`w-full bg-surface-secondary rounded-2xl overflow-hidden break-inside-avoid hover:opacity-95 transition-opacity ${cursorClass}`}
                     onClick={() => handleImageClick(actualIndex)}
                   >
-                    {/* Added rounded-2xl directly to the img tag here as well */}
-                    <img src={img.thumb} alt={`${title} - Detail ${actualIndex}`} className="w-full h-auto object-contain rounded-2xl" loading="lazy" />
+                    <img src={img.thumb} alt={`${title} Detail ${actualIndex}`} className="w-full aspect-[3/4] object-cover rounded-2xl" loading="lazy" />
                   </div>
                 )
               })}
             </div>
 
-            {/* LTT Style Fade Overlay for Desktop */}
             {hasMore && !isExpanded && (
               <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-background via-background/90 to-transparent flex items-end justify-center pb-8 pointer-events-none z-20">
                 <button 
@@ -153,7 +152,6 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
               </div>
             )}
 
-            {/* Expanded View Less Button for Desktop */}
             {hasMore && isExpanded && (
               <div className="w-full flex justify-center mt-8">
                 <button 
