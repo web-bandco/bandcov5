@@ -1,0 +1,194 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import CTA from '@/components/landing/CTA.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import { ProductGallery } from '@/components/ui/content/ProductGallery';
+import { sanityClient, urlFor } from '@/lib/sanity';
+import { SiVinted, SiEbay } from "react-icons/si";
+import { Check, ChevronDown, ExternalLink as ExternalLinkIcon } from "lucide-react"; 
+
+// Import your custom global External Link component
+import { ExternalLink } from '@/components/ui/content/ExternalLink';
+import type { Product } from '@/components/ui/content/ShopGrid';
+
+export async function getStaticPaths() {
+  const query = `*[_type == "product" && defined(slug.current)] {
+    "id": _id,
+    "slug": slug.current,
+    title, price, storeName, url, description, condition, size, fit, category, features, materials,
+    images
+  }`;
+  
+  const products: any[] = await sanityClient.fetch(query);
+
+  return products.map((product: any) => {
+    const processedImages = product.images?.map((img: any) => ({
+      full: urlFor(img).width(1600).format('webp').quality(90).url(),
+      thumb: urlFor(img).width(800).format('webp').quality(80).url()
+    })) || [];
+
+    return {
+      params: { slug: product.slug },
+      props: { product: { ...product, images: processedImages } },
+    };
+  });
+}
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Shop', href: '/shop' },
+  { label: product.title },
+];
+
+const isVinted = product.storeName === "Vinted";
+const PlatformIcon = isVinted ? SiVinted : SiEbay;
+const platformColor = isVinted ? "#017573" : "#0064D2";
+const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
+---
+
+<PageLayout
+  title={`${product.title} | Shop B&Co`}
+  description={product.description?.substring(0, 160)}
+  image={product.images[0]?.full} 
+>
+  <div class="bg-surface-secondary border-b border-border py-4">
+    <div class="container max-w-7xl">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+  </div>
+
+  <section class="py-12 md:py-16 bg-background">
+    <div class="container max-w-7xl">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_450px] gap-10 md:gap-16 items-start">
+        
+        {/* LEFT COLUMN: Gallery */}
+        <div class="w-full lg:sticky lg:top-24">
+          <ProductGallery images={product.images} title={product.title} client:visible />
+        </div>
+
+        {/* RIGHT COLUMN: Details */}
+        <div class="flex flex-col space-y-8 w-full">
+          
+          <div class="space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary border border-border text-sm font-semibold">
+              <PlatformIcon className="w-4 h-4" style={{ color: platformColor }} />
+              {product.storeName}
+            </div>
+            
+            <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight tracking-tight">
+              {product.title}
+            </h1>
+            
+            <p class="text-2xl md:text-3xl font-bold text-foreground">{product.price}</p>
+          </div>
+
+          {/* MAIN ACTION BUTTON: Uses your React ExternalLink component */}
+          <ExternalLink 
+            href={product.url}
+            client:load
+            disableHover={true}
+            className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-white font-bold text-lg hover:scale-[1.02] transition-transform shadow-md cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            style={{ backgroundImage: gradientStyle }}
+          >
+            Buy on {product.storeName}
+            <ExternalLinkIcon className="w-5 h-5" />
+          </ExternalLink>
+
+          {/* Product Features List */}
+          {product.features && product.features.length > 0 && (
+            <div class="space-y-4">
+              <h3 class="text-lg font-bold text-foreground">Product features</h3>
+              <ul class="space-y-3">
+                {product.features.map((feature: string) => (
+                  <li class="flex items-start gap-3 text-foreground-muted">
+                    <Check className="w-5 h-5 shrink-0 text-brand-500 mt-0.5" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* HTML Native Accordions */}
+          <div class="border-y border-border divide-y divide-border pt-2 my-8">
+            
+            <details class="group py-5" open>
+              <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-brand-500 [&::-webkit-details-marker]:hidden">
+                Key Details
+                <div class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center group-open:rotate-180 transition-transform duration-300">
+                  <ChevronDown className="w-4 h-4 text-foreground-muted" />
+                </div>
+              </summary>
+              <div class="grid grid-cols-2 gap-y-6 gap-x-4 pt-5 animate-in fade-in duration-300">
+                {product.condition && (
+                  <div>
+                    <p class="text-sm font-semibold text-foreground mb-1">Condition</p>
+                    <p class="text-sm text-foreground-muted">{product.condition}</p>
+                  </div>
+                )}
+                {product.size && (
+                  <div>
+                    <p class="text-sm font-semibold text-foreground mb-1">Size</p>
+                    <p class="text-sm text-foreground-muted">{product.size}</p>
+                  </div>
+                )}
+                {product.fit && (
+                  <div>
+                    <p class="text-sm font-semibold text-foreground mb-1">Fit</p>
+                    <p class="text-sm text-foreground-muted">{product.fit}</p>
+                  </div>
+                )}
+                {product.category && (
+                  <div>
+                    <p class="text-sm font-semibold text-foreground mb-1">Category</p>
+                    <p class="text-sm text-foreground-muted">{product.category}</p>
+                  </div>
+                )}
+              </div>
+            </details>
+
+            {product.description && (
+              <details class="group py-5">
+                <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-brand-500 [&::-webkit-details-marker]:hidden">
+                  Description
+                  <div class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center group-open:rotate-180 transition-transform duration-300">
+                    <ChevronDown className="w-4 h-4 text-foreground-muted" />
+                  </div>
+                </summary>
+                <div class="pt-5 text-base text-foreground-muted leading-relaxed whitespace-pre-wrap animate-in fade-in duration-300">
+                  {product.description}
+                </div>
+              </details>
+            )}
+
+            {product.materials && product.materials.length > 0 && (
+              <details class="group py-5">
+                <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-brand-500 [&::-webkit-details-marker]:hidden">
+                  Materials
+                  <div class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center group-open:rotate-180 transition-transform duration-300">
+                    <ChevronDown className="w-4 h-4 text-foreground-muted" />
+                  </div>
+                </summary>
+                <div class="pt-5 text-base text-foreground-muted animate-in fade-in duration-300">
+                  {product.materials.join(', ')}
+                </div>
+              </details>
+            )}
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <CTA />
+</PageLayout>

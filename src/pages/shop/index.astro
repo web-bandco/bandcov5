@@ -1,0 +1,56 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { Hero } from '@/components/hero';
+import CTA from '@/components/landing/CTA.astro';
+import { ShopGrid } from '@/components/ui/content/ShopGrid';
+import { Image } from 'astro:assets';
+import shopLogo from '@/assets/branding/shoplogo.png';
+---
+
+<PageLayout
+  title="Shop - B&Co"
+  description="Welcome to my digital storefront. Shop the complete pre-loved fashion and tech catalog from Vinted and eBay in one place."
+>
+  <Hero layout="centered" size="sm" class="bg-surface-secondary border-b border-border">
+    <div slot="badge" class="flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 text-brand-700 dark:text-brand-400 border border-brand-500/20 text-sm font-semibold">
+      Digital Storefront
+    </div>
+
+    <h1 slot="title" class="flex flex-col items-center gap-6">
+      <Image 
+        src={shopLogo} 
+        alt="SHOP: B&Co Logo" 
+        width={96}
+        densities={[1, 1.5, 2]}
+        format="webp"
+        quality={90}
+        loading="eager"
+        fetchpriority="high"
+        class="w-24 h-24 object-contain mb-2 drop-shadow-md" 
+      />
+      <span>
+        SHOP:{' '}
+        <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #ff0055, #ff2e43);">
+          B&CO
+        </span>
+      </span>
+    </h1>
+
+    <p slot="description">
+      Welcome to SHOP: B&Co. Below you can browse a selection of quality items sold on both Vinted and eBay.
+    </p>
+  </Hero>
+
+  <section class="py-16 md:py-24 bg-background">
+    <div class="container max-w-7xl">
+      <ShopGrid client:visible>
+        <div>
+          <h2 class="text-2xl font-bold text-foreground">View What's in Store</h2>
+          <p class="text-sm text-foreground-muted mt-1">Browse all available items below</p>
+        </div>
+      </ShopGrid>
+    </div>
+  </section>
+
+  <CTA />
+</PageLayout>
