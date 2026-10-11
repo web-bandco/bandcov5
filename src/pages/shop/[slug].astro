@@ -74,7 +74,7 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
         </div>
 
         {/* RIGHT COLUMN: Details */}
-        <div class="flex flex-col space-y-8 w-full">
+        <div class="flex flex-col space-y-10 w-full">
           
           <div class="space-y-4">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary border border-border text-sm font-semibold">
@@ -89,17 +89,19 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
             <p class="text-2xl md:text-3xl font-bold text-foreground">{product.price}</p>
           </div>
 
-          {/* MAIN ACTION BUTTON: Uses your React ExternalLink component */}
-          <ExternalLink 
-            href={product.url}
-            client:load
-            disableHover={true}
-            className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-white font-bold text-lg hover:scale-[1.02] transition-transform shadow-md cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            style={{ backgroundImage: gradientStyle }}
-          >
-            Buy on {product.storeName}
-            <ExternalLinkIcon className="w-5 h-5" />
-          </ExternalLink>
+          {/* MAIN ACTION BUTTON: Wrapped in a div so Astro's layout engine spaces it correctly */}
+          <div class="w-full">
+            <ExternalLink 
+              href={product.url}
+              client:load
+              disableHover={true}
+              className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-white font-bold text-lg hover:scale-[1.02] transition-transform shadow-md cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              style={{ backgroundImage: gradientStyle }}
+            >
+              Buy on {product.storeName}
+              <ExternalLinkIcon className="w-5 h-5" />
+            </ExternalLink>
+          </div>
 
           {/* Product Features List */}
           {product.features && product.features.length > 0 && (
@@ -116,8 +118,8 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
             </div>
           )}
 
-          {/* HTML Native Accordions */}
-          <div class="border-y border-border divide-y divide-border pt-2 my-8">
+          {/* HTML Native Accordions - Removed 'my-8' to equalize the spacing */}
+          <div class="border-y border-border divide-y divide-border pt-2">
             
             <details class="group py-5" open>
               <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-brand-500 [&::-webkit-details-marker]:hidden">
@@ -127,6 +129,7 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
                 </div>
               </summary>
               <div class="grid grid-cols-2 gap-y-6 gap-x-4 pt-5 animate-in fade-in duration-300">
+        
                 {product.condition && (
                   <div>
                     <p class="text-sm font-semibold text-foreground mb-1">Condition</p>

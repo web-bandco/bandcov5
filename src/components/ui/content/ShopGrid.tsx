@@ -44,8 +44,19 @@ function ProductCard({ product, isPriority }: { product: Product, isPriority?: b
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [loadedImages, setLoadedImages] = React.useState<Record<string, boolean>>({});
   
-  // Limit scrubber to max 3 images
-  const previewImages = product.images.slice(0, 3);
+  // Track if the viewport is desktop to determine how many images to load
+  const [isDesktop, setIsDesktop] = React.useState(
+    typeof window !== "undefined" ? window.innerWidth >= 768 : true
+  );
+
+  React.useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
+  // Limit scrubber to max 3 images on desktop, and strictly 1 image on mobile
+  const previewImages = product.images.slice(0, isDesktop ? 3 : 1);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (previewImages.length <= 1) return;
