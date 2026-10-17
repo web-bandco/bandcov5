@@ -103,7 +103,7 @@ export const product = defineType({
       title: 'Category',
       type: 'string',
       options: {
-        list: ['Accessories', 'Bottoms', 'Jackets', 'Jumpers', 'Polo Shirts', 'Shirts', 'T-Shirts', 'Tech'],
+        list: ['Accessories', 'Bottoms', 'Jackets', 'Jumpers', 'Polo Shirts', 'Pyjamas', 'Shirts', 'T-Shirts', 'Tech'],
         layout: 'dropdown', 
       },
     }),

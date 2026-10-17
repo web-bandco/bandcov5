@@ -74,12 +74,13 @@ const optimizedMemojis = await Promise.all(
 
         <!-- CTAs -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-          <Button href="/" size="lg">
+          {/* Modified: Back button logic handled via ID and JS, Home link updated */}
+          <Button id="go-back-btn" size="lg">
             <Icon name="arrow-left" size="sm" />
-            Back to Home
+            Go Back
           </Button>
-          <Button href="/blog" variant="outline" size="lg">
-            Browse Blog
+          <Button href="/" variant="outline" size="lg">
+            Back to Home
           </Button>
         </div>
 
@@ -180,12 +181,35 @@ const optimizedMemojis = await Promise.all(
     }
   }
 
+  // NEW: Navigation handler for the Go Back button
+  function initGoBackBtn() {
+    const backBtn = document.getElementById('go-back-btn');
+    if (backBtn && !backBtn.dataset.initialized) {
+      backBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Check if there is actual history to go back to (length > 1 or 2 depending on browser quirks)
+        if (window.history.length > 1 && document.referrer.includes(window.location.host)) {
+          window.history.back();
+        } else {
+          // Fallback if they opened a broken link directly in a new tab
+          window.location.href = '/';
+        }
+      });
+      // Mark as initialized so Astro view transitions don't attach duplicate listeners
+      backBtn.dataset.initialized = 'true';
+    }
+  }
+
   // Run on initial load and handle Astro's View Transitions
-  injectRandomMemoji();
-  init404Tracking();
-  
-  document.addEventListener('astro:after-swap', () => {
+  function initAll() {
     injectRandomMemoji();
     init404Tracking();
+    initGoBackBtn();
+  }
+
+  initAll();
+  
+  document.addEventListener('astro:after-swap', () => {
+    initAll();
   });
 </script>
