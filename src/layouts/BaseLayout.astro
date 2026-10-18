@@ -14,10 +14,10 @@ import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 import lightLogo from '@/assets/branding/logo-full.png';
 import darkLogo from '@/assets/branding/logo-full-dark.png';
 import packageData from '../../package.json';
+import { policies } from '@/config/policies.config';
 
-// NEW IMPORTS: The interactive link component and the global dialog
-import { ExternalLink } from '@/components/ui/content/ExternalLink';
-import { GlobalExternalLinkDialog } from '@/components/ui/content/GlobalExternalLinkDialog';
+import ExternalLink from '@/components/ui/content/ExternalLink.astro';
+import ExternalLinkDialog from '@/components/ui/content/ExternalLinkDialog.astro';
 
 interface Props {
   title?: string;
@@ -59,10 +59,13 @@ if (includeOrgSchema) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    
+
+    <!-- Page-specific head content, e.g. resource hints (before the inline CSS so they're seen early) -->
+    <slot name="head" />
 
     <!-- Dynamic Favicon (ID added for the script below to target) -->
-    <link id="dynamic-favicon" rel="icon" type="image/png" href="/bncofavicon-light.png" />
+    <link id="dynamic-favicon" rel="icon" type="image/png" sizes="64x64" href="/bncofavicon-light.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content={siteConfig.branding.colors.themeColor} />
@@ -154,8 +157,8 @@ if (includeOrgSchema) {
     >
       {/* COLUMN 1: Logo & Tagline (Injected via slots) */}
       <a href="/" slot="logo" class="block mb-2" data-analytics-nav="Footer" data-nav-label="Logo Home Link">
-        <Image src={lightLogo} alt="Brighton and Co" width={300} class="h-10 w-auto dark:hidden" />
-        <Image src={darkLogo} alt="Brighton and Co" width={300} class="h-10 w-auto hidden dark:block" />
+        <Image src={lightLogo} alt="Brighton and Co" width={192} class="h-10 w-auto dark:hidden" />
+        <Image src={darkLogo} alt="Brighton and Co" width={192} class="h-10 w-auto hidden dark:block" />
       </a>
       <span slot="tagline" class="block leading-relaxed">
         Brighton and Co - made by Harry B. Showcasing personal projects, hobbies, interests and more.
@@ -181,23 +184,23 @@ if (includeOrgSchema) {
           <h3 class="font-semibold text-sm text-foreground">Connect</h3>
           <ul class="space-y-2">
             <li>
-              <ExternalLink data-analytics-nav="Footer" data-nav-label="Twitter" client:load disableHover={true} href="https://twitter.com/itsharryb_" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-                <Icon name="twitter" size="sm" class="group-hover:text-brand-500 transition-colors" /> Twitter
+              <ExternalLink data-analytics-nav="Footer" data-nav-label="Twitter" disableHover href="https://twitter.com/itsharryb_" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
+                <Icon name="twitter" size="sm" /> Twitter
               </ExternalLink>
             </li>
             <li>
-              <ExternalLink data-analytics-nav="Footer" data-nav-label="GitHub" client:load disableHover={true} href="https://github.com/web-bandco" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-                <Icon name="github" size="sm" class="group-hover:text-brand-500 transition-colors" /> GitHub
+              <ExternalLink data-analytics-nav="Footer" data-nav-label="GitHub" disableHover href="https://github.com/web-bandco" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
+                <Icon name="github" size="sm" /> GitHub
               </ExternalLink>
             </li>
             <li>
-              <ExternalLink data-analytics-nav="Footer" data-nav-label="LinkedIn" client:load disableHover={true} href="https://www.linkedin.com/in/harry-brighton/" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-                <Icon name="linkedin" size="sm" class="group-hover:text-brand-500 transition-colors" /> LinkedIn
+              <ExternalLink data-analytics-nav="Footer" data-nav-label="LinkedIn" disableHover href="https://www.linkedin.com/in/harry-brighton/" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
+                <Icon name="linkedin" size="sm" /> LinkedIn
               </ExternalLink>
             </li>
             <li>
-              <ExternalLink data-analytics-nav="Footer" data-nav-label="Linktree" client:load disableHover={true} href="https://linktr.ee/brightonandco" className="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-                <Icon name="brand-linktree" size="sm" class="group-hover:text-brand-500 transition-colors" /> Linktree
+              <ExternalLink data-analytics-nav="Footer" data-nav-label="Linktree" disableHover href="https://linktr.ee/brightonandco" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
+                <Icon name="brand-linktree" size="sm" /> Linktree
               </ExternalLink>
             </li>
           </ul>
@@ -212,11 +215,13 @@ if (includeOrgSchema) {
               <p>&copy; {new Date().getFullYear()} Brighton and Co.</p>
               <p>All rights reserved.</p>
            </div>
-            {/* Terms and Conditions & Cookie Preferences links */}
+            {/* Policy Hub & Cookie Preferences links */}
             <div class="pt-2 mt-2 border-t border-border/50 flex flex-col items-start gap-1">
-              <a href="/terms-and-conditions" data-analytics-nav="Footer" data-nav-label="Terms and Conditions" class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
-                Terms & Conditions
-              </a>
+              {policies.map((policy) => (
+                <a href={policy.href} data-analytics-nav="Footer" data-nav-label={policy.title} class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
+                  {policy.title}
+                </a>
+              ))}
               <button 
                 type="button" 
                 data-analytics-nav="Footer" 
@@ -236,85 +241,43 @@ if (includeOrgSchema) {
       <div slot="bottom" class="hidden"></div>
     </Footer>
 
-    {/* ADDED transition:persist to keep the dialog alive across all page navigations */}
-    <GlobalExternalLinkDialog client:idle transition:persist="global-external-link-dialog" />
+    <ExternalLinkDialog />
     <ConsentBanner />
 
-    {/* ── GLOBAL NAVIGATION TRACKING SCRIPT ── */}
+    {/* ── NAVIGATION & UI INTERACTION TRACKING ──
+        One document-level listener each, registered once, so they keep working
+        across page navigations without re-binding (or double-counting) */}
     <script>
-      function initGlobalNavTracking() {
-        const navLinks = document.querySelectorAll('[data-analytics-nav]');
+      const sendEvent = (name: string, params: Record<string, string>) => {
+        const w = window as any;
+        if (typeof w.gtag === 'function') w.gtag('event', name, params);
+        else if (w.dataLayer) w.dataLayer.push({ event: name, ...params });
+      };
 
-        navLinks.forEach(link => {
-          link.replaceWith(link.cloneNode(true));
-        });
+      document.addEventListener('click', (e) => {
+        const target = e.target as Element;
 
-        const refreshedLinks = document.querySelectorAll('[data-analytics-nav]');
-        
-        refreshedLinks.forEach(link => {
-          link.addEventListener('click', () => {
-            const section = link.getAttribute('data-analytics-nav') || 'Unknown Section';
-            const label = link.getAttribute('data-nav-label') || 'Unknown Link';
-            const destination = link.getAttribute('href') || 'Button/Action';
-
-            if (typeof (window as any).gtag === 'function') {
-              (window as any).gtag('event', 'site_navigation', {
-                event_category: 'Site Routing',
-                event_label: label,
-                link_url: destination,
-                ui_section: section,
-                source_page: window.location.pathname
-              });
-            } else if ((window as any).dataLayer) {
-              (window as any).dataLayer.push({
-                event: 'site_navigation',
-                event_label: label,
-                link_url: destination,
-                ui_section: section,
-                source_page: window.location.pathname
-              });
-            }
+        const navLink = target.closest('[data-analytics-nav]');
+        if (navLink) {
+          sendEvent('site_navigation', {
+            event_category: 'Site Routing',
+            event_label: navLink.getAttribute('data-nav-label') || 'Unknown Link',
+            link_url: navLink.getAttribute('href') || 'Button/Action',
+            ui_section: navLink.getAttribute('data-analytics-nav') || 'Unknown Section',
+            source_page: window.location.pathname,
           });
-        });
-      }
+        }
 
-      initGlobalNavTracking();
-      document.addEventListener('astro:after-swap', initGlobalNavTracking);
-    </script>
-
-    {/* ── UNIVERSAL UI INTERACTION TRACKER ── */}
-    <script>
-      function initUniversalUITracking() {
-        const handleUIClick = (e: MouseEvent) => {
-          const target = (e.target as HTMLElement).closest('[data-track-ui]');
-          if (!target) return;
-
-          const interactionType = target.getAttribute('data-track-ui') || 'Unknown Interaction';
-          const label = target.getAttribute('data-track-label') || (target.textContent || '').trim().substring(0, 50);
-
-          if (typeof (window as any).gtag === 'function') {
-            (window as any).gtag('event', 'ui_interaction', {
-              event_category: 'UI Engagement',
-              ui_action: interactionType,
-              ui_label: label,
-              source_page: window.location.pathname
-            });
-          } else if ((window as any).dataLayer) {
-            (window as any).dataLayer.push({
-              event: 'ui_interaction',
-              ui_action: interactionType,
-              ui_label: label,
-              source_page: window.location.pathname
-            });
-          }
-        };
-
-        document.removeEventListener('click', handleUIClick);
-        document.addEventListener('click', handleUIClick, { passive: true });
-      }
-
-      initUniversalUITracking();
-      document.addEventListener('astro:after-swap', initUniversalUITracking);
+        const uiTarget = target.closest('[data-track-ui]');
+        if (uiTarget) {
+          sendEvent('ui_interaction', {
+            event_category: 'UI Engagement',
+            ui_action: uiTarget.getAttribute('data-track-ui') || 'Unknown Interaction',
+            ui_label: uiTarget.getAttribute('data-track-label') || (uiTarget.textContent || '').trim().substring(0, 50),
+            source_page: window.location.pathname,
+          });
+        }
+      }, { passive: true });
     </script>
   </body>
 </html>

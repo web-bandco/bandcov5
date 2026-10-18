@@ -3,13 +3,12 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import CTA from '@/components/landing/CTA.astro';
 import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import { ProductGallery } from '@/components/ui/content/ProductGallery';
-import { sanityClient, urlFor } from '@/lib/sanity';
+import { sanityClient, productImage, type ProductImage } from '@/lib/sanity';
 import { SiVinted, SiEbay } from "react-icons/si";
 import { Check, ChevronDown, ExternalLink as ExternalLinkIcon } from "lucide-react"; 
 
 // Import your custom global External Link component
-import { ExternalLink } from '@/components/ui/content/ExternalLink';
-import type { Product } from '@/components/ui/content/ShopGrid';
+import ExternalLink from '@/components/ui/content/ExternalLink.astro';
 
 export async function getStaticPaths() {
   const query = `*[_type == "product" && defined(slug.current)] {
@@ -21,21 +20,19 @@ export async function getStaticPaths() {
   
   const products: any[] = await sanityClient.fetch(query);
 
-  return products.map((product: any) => {
-    const processedImages = product.images?.map((img: any) => ({
-      full: urlFor(img).width(1600).format('webp').quality(90).url(),
-      thumb: urlFor(img).width(800).format('webp').quality(80).url()
-    })) || [];
-
-    return {
-      params: { slug: product.slug },
-      props: { product: { ...product, images: processedImages } },
-    };
-  });
+  return products.map((product: any) => ({
+    params: { slug: product.slug },
+    props: { product: { ...product, images: (product.images || []).map(productImage) } },
+  }));
 }
 
 interface Props {
-  product: Product;
+  product: {
+    title: string; price: string; storeName: 'Vinted' | 'eBay'; url: string;
+    description?: string; condition?: string; size?: string; fit?: string; category?: string;
+    features?: string[]; materials?: string[];
+    images: ProductImage[];
+  };
 }
 
 const { product } = Astro.props;
@@ -53,10 +50,13 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
 ---
 
 <PageLayout
-  title={`${product.title} | Shop B&Co`}
+  title={`${product.title} | Shop`}
   description={product.description?.substring(0, 160)}
-  image={product.images[0]?.full} 
+  image={product.images[0]?.full}
 >
+  {/* Product photos come from Sanity's CDN - connect to it early */}
+  <link slot="head" rel="preconnect" href="https://cdn.sanity.io" />
+
   <div class="bg-surface-secondary border-b border-border py-4">
     <div class="container max-w-7xl">
       <Breadcrumbs items={breadcrumbs} />
@@ -80,7 +80,7 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
           
           <div class="space-y-4">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary border border-border text-sm font-semibold">
-              <PlatformIcon className="w-4 h-4" style={{ color: platformColor }} />
+              <PlatformIcon className="w-4 h-4" style={{ color: platformColor }} aria-hidden="true" />
               {product.storeName}
             </div>
             
@@ -93,11 +93,10 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
 
           {/* MAIN ACTION BUTTON: Wrapped in a div so Astro's layout engine spaces it correctly */}
           <div class="w-full">
-            <ExternalLink 
+            <ExternalLink
               href={product.url}
-              client:load
-              disableHover={true}
-              className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-white font-bold text-lg hover:scale-[1.02] transition-transform shadow-md cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              disableHover
+              class="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-white font-bold text-lg hover-lift shadow-md cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring"
               style={{ backgroundImage: gradientStyle }}
             >
               Buy on {product.storeName}
@@ -108,7 +107,7 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
           {/* Product Features List */}
           {product.features && product.features.length > 0 && (
             <div class="space-y-4">
-              <h3 class="text-lg font-bold text-foreground">Product features</h3>
+              <h2 class="text-lg font-bold text-foreground">Product features</h2>
               <ul class="space-y-3">
                 {product.features.map((feature: string) => (
                   <li class="flex items-start gap-3 text-foreground-muted">

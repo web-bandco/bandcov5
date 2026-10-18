@@ -1,20 +1,21 @@
 ---
-import PageLayout from '@/layouts/PageLayout.astro';
+/**
+ * Terms and Conditions
+ * URL: /about/terms
+ */
+import PolicyLayout from '@/layouts/PolicyLayout.astro';
+import { getPolicy } from '@/config/policies.config';
+import { clause, link, externalLink, cookieSettingsButton, type PolicySection } from '@/lib/policy';
 
-import { Hero } from '@/components/hero';
-import CTA from '@/components/landing/CTA.astro';
-import Accordion from '@/components/ui/overlay/Accordion';
-import Separator from '@/components/ui/layout/Separator';
-
-const webinfo = [
+const sections: PolicySection[] = [
   {
     id:"what-it-is",
     tocLabel: "1. The Site",
     title: "1. What the Brighton and Co site is -",
     content: [
-      "<strong class='text-foreground font-semibold'>1.1</strong> The Brighton and Co site is my own website (Harry Brighton). I solely maintain the website in my own free time.",
-      "<strong class='text-foreground font-semibold'>1.2</strong> When references are subsequently made to 'my', 'myself', 'my own', or something similar, it is referring to me, Harry Brighton.",
-      "<strong class='text-foreground font-semibold'>1.3</strong> When references are subsequently made to 'the Brighton and Co site', 'website', 'site', or something similar, it is referring to <a href='/' class='text-brand-700 font-medium hover:underline'>new.brightonandco.co.uk</a> and to any and all of its constituent pages, unless explicitly stated otherwise."
+      "<strong class='text-foreground font-semibold'>1.1</strong> The Brighton and Co site is a personal website, owned and solely maintained by Harry Brighton as a hobby project.",
+      "<strong class='text-foreground font-semibold'>1.2</strong> When references are subsequently made to 'Brighton and Co', 'B&Co', or something similar, it is referring to Harry Brighton, as the owner and operator of the Brighton and Co site.",
+      "<strong class='text-foreground font-semibold'>1.3</strong> When references are subsequently made to 'the Brighton and Co site', 'website', 'site', or something similar, it is referring to <a href='/' class='text-brand-700 font-medium hover:underline'>brightonandco.co.uk</a> and to any and all of its constituent pages, unless explicitly stated otherwise."
     ],
     defaultOpen: true,
   },
@@ -34,9 +35,9 @@ const webinfo = [
     tocLabel: "3. Services",
     title: "3. Services on the Brighton and Co site -",
     content: [
-      "<strong class='text-foreground font-semibold'>3.1</strong> You can use the Brighton and Co site, specifically the form located on the <a href='/contact' class='text-brand-700 font-medium hover:underline'>Contact page</a> to send messages and enquiries to myself.",
-      "<strong class='text-foreground font-semibold'>3.2</strong> The purpose behind the form is to send formal messages and enquiries, such as to request further information about something pertaining to either myself, or to the website, for example.", 
-      "<strong class='text-foreground font-semibold'>3.3</strong> This method of sending enquiries is managed solely by myself, using Web3Forms - which has its own terms and conditions."
+      "<strong class='text-foreground font-semibold'>3.1</strong> You can use the Brighton and Co site, specifically the form located on the <a href='/contact' class='text-brand-700 font-medium hover:underline'>Contact page</a> to send messages and enquiries to Brighton and Co.",
+      "<strong class='text-foreground font-semibold'>3.2</strong> The purpose behind the form is to send formal messages and enquiries, such as to request further information about something pertaining to either Brighton and Co, or to the website, for example.", 
+      "<strong class='text-foreground font-semibold'>3.3</strong> This method of sending enquiries is managed solely by Brighton and Co, using Web3Forms - which has its own terms and conditions."
     ],
   },
   {
@@ -44,7 +45,7 @@ const webinfo = [
     tocLabel: "4. Linking to the Site",
     title: "4. Linking to the Brighton and Co site -",
     content: [
-      "<strong class='text-foreground font-semibold'>4.1</strong> Links to the Brighton and Co site are not permitted unless permission has been sought and granted by myself in advance.",
+      "<strong class='text-foreground font-semibold'>4.1</strong> Links to the Brighton and Co site are not permitted unless permission has been sought and granted by Brighton and Co in advance.",
       "<strong class='text-foreground font-semibold'>4.2</strong> If you would like to have a link on your own website, and/or on social media, please use the form on the <a href='/contact' class='text-brand-700 font-medium hover:underline'>Contact page</a> to request permission.",
       "<strong class='text-foreground font-semibold'>4.3</strong> Until and unless permission has been expressly granted for linking to the Brighton and Co site and/or to any of its constituent pages, and/or associated sites, please understand that you are not permitted to link to any or all of this website whatsoever."
     ],
@@ -56,10 +57,10 @@ const webinfo = [
     content: [
       "<strong class='text-foreground font-semibold'>5.1</strong> The Brighton and Co site may link to other third-party websites. Brighton and Co does not control nor have any responsibility over the contents of such third-party links.",
       "<strong class='text-foreground font-semibold'>5.2</strong> Links to external websites are signified with some of the following - a special icon, a hover effect, and/or a dialogue warning - visually demonstrating that they link to a site that is external to the Brighton and Co site.",
-      "<strong class='text-foreground font-semibold'>5.3</strong> Thus, I, nor Brighton and Co is responsible for:",
+      "<strong class='text-foreground font-semibold'>5.3</strong> Thus, Brighton and Co is not responsible for:",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>5.3.1</strong> <span>the protection of any information you give to these websites, or</span></div>",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>5.3.2</strong> <span>any loss or damage that may come from your use of these websites, or any other websites they link to.</span></div>",
-      "<strong class='text-foreground font-semibold'>5.4</strong> You agree to release myself from any claims or disputes that may come from using these websites.",
+      "<strong class='text-foreground font-semibold'>5.4</strong> You agree to release Brighton and Co from any claims or disputes that may come from using these websites.",
       "<strong class='text-foreground font-semibold'>5.5</strong> You are encouraged and should read all terms and conditions, privacy policies and end user licences that relate to these websites before you use them."
     ],
   },
@@ -68,7 +69,7 @@ const webinfo = [
     tocLabel: "6. Using Content",
     title: "6. Using content from and/or on the Brighton and Co site -",
     content: [
-      "<strong class='text-foreground font-semibold'>6.1</strong> Most - if not all photos on web.brightonandco.co.uk are taken by myself and thus I consider myself to be the sole owner of these images.",
+      "<strong class='text-foreground font-semibold'>6.1</strong> Most - if not all - photos on the Brighton and Co site are taken by Brighton and Co, which is the sole owner of these images.",
       "<strong class='text-foreground font-semibold'>6.2</strong> Thus permission is not granted for the following:",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.1</strong> <span>to use,</span></div>",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.2</strong> <span>to copy,</span></div>",
@@ -77,8 +78,8 @@ const webinfo = [
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.5</strong> <span>to reproduce, or,</span></div>",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>6.2.6</strong> <span>to process or use for any purposes for AI, such as training or modelling.</span></div>",
       "<strong class='text-foreground font-semibold'>6.3</strong> Unless and/or until permission is granted expressly for one or any or multiple of the above mentioned purposes, you are strictly prohibited from using or obtaining any of these such images for any above mentioned or similar purposes.",
-      "<strong class='text-foreground font-semibold'>6.4</strong> If you would like to obtain permission to use or obtain any images from myself for any of these above purposes - excluding AI training/modelling expressly, please use the form on the <a href='/contact' class='text-brand-700 font-medium hover:underline'>Contact page</a>.",
-      "<strong class='text-foreground font-semibold'>6.5</strong> If you attempt to use AI for the purposes of training, modelling, and/or other such similar purposes, you agree that you may be indemnified for any and all potential reasonable costs and damages that may be sought on the basis of breach of contract, due to violating the terms and conditions of this website.",
+      "<strong class='text-foreground font-semibold'>6.4</strong> If you would like to obtain permission to use or obtain any images from Brighton and Co for any of these above purposes - excluding AI training/modelling expressly, please use the form on the <a href='/contact' class='text-brand-700 font-medium hover:underline'>Contact page</a>.",
+      "<strong class='text-foreground font-semibold'>6.5</strong> If you attempt to use AI for the purposes of training, modelling, and/or other such similar purposes, you agree that you may be liable for any and all potential reasonable costs and damages that may be sought on the basis of breach of contract, due to violating the terms and conditions of this website.",
     ],
   },
   {
@@ -100,8 +101,9 @@ const webinfo = [
     tocLabel: "8. Your Information",
     title: "8. Information about you and when you visit the Brighton and Co site -",
     content: [
-      "<strong class='text-foreground font-semibold'>8.1</strong> When you visit the Brighton and Co site, information may be collected about you and your visit by <a href='https://policies.google.com/technologies/cookies?hl=en-GB' class='group relative inline-flex items-center gap-1 text-brand-700 font-medium hover:underline cursor-pointer' onclick='event.preventDefault(); window.dispatchEvent(new CustomEvent(&quot;open-external-dialog&quot;, { detail: { href: this.href } }))'>Google<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='opacity-60 relative top-[1px]'><path d='M15 3h6v6'/><path d='M10 14 21 3'/><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/></svg><span class='absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:md:block w-auto whitespace-nowrap p-3 bg-background border border-border shadow-md rounded-md z-50 text-sm text-foreground font-normal cursor-default pointer-events-none'>Opens an external site: <strong class='text-foreground font-semibold'>policies.google.com</strong></span></a>, according to their own privacy policies.",
-      "<strong class='text-foreground font-semibold'>8.2</strong> By visiting the Brighton and Co site - including potentially any of its constituent pages - you agree to the collection of such information according to the terms and conditions of Brighton and Co and Google.",
+      clause('8.1', `When you visit the Brighton and Co site, some information about you and your visit may be collected. What is collected, why, and your rights over it are explained in full in the ${link('/about/privacy', 'Privacy Policy')}.`),
+      clause('8.2', `Analytics cookies are only used if you consent to them through the cookie banner. Simply visiting or using the Brighton and Co site does not mean that you have consented to them. You can change your choice at any time using ${cookieSettingsButton('Terms and Conditions')}, which is also found in the footer of every page.`),
+      clause('8.3', `Some information is collected by third parties, such as ${externalLink('https://policies.google.com/technologies/cookies?hl=en-GB', 'Google')}, which also handle it under their own privacy policies.`),
     ],
   },
   {
@@ -116,7 +118,7 @@ const webinfo = [
       "<strong class='text-foreground font-semibold'>9.5</strong> You must not attack the Brighton and Co site in any way, such as for example:",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>9.5.1</strong> <span>via a denial-of-service attack, or</span></div>", 
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>9.5.2</strong> <span>via a distributed denial-of-service attack.</span></div>",
-      "<strong class='text-foreground font-semibold'>9.6</strong> Any attack(s) and/or attempt(s) to gain unauthorised access to the Brighton and Co site may be reported to the relevant law enforcement authorities, where information about you will be shared with them. You may also be personally indemnified for any and all potential reasonable costs resulting from such actions.",
+      "<strong class='text-foreground font-semibold'>9.6</strong> Any attack(s) and/or attempt(s) to gain unauthorised access to the Brighton and Co site may be reported to the relevant law enforcement authorities, where information about you will be shared with them. You may also be held personally liable for any and all potential reasonable costs resulting from such actions.",
     ],
   },
   {
@@ -168,7 +170,7 @@ const webinfo = [
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>13.4.2</strong> <span>any loss or damage caused by civil wrongs ('tort', including negligence), breach of contract, or otherwise,</span></div>",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>13.4.3</strong> <span>the use of the Brighton and Co site and any websites that are linked to or from it, and/or</span></div>",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>13.4.4</strong> <span>the inability to use the Brighton and Co site and/or any websites that are linked to or from it.</span></div>",
-      "<strong class='text-foreground font-semibold'>13.5</strong> This applies if the loss or damage was foreseeable, arose in the normal course of things or you advised us that it might happen.",
+      "<strong class='text-foreground font-semibold'>13.5</strong> This applies if the loss or damage was foreseeable, arose in the normal course of things or you advised Brighton and Co that it might happen.",
       "<strong class='text-foreground font-semibold'>13.6</strong> This includes (but is not limited to) the loss of your:",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>13.6.1</strong> <span>income or revenue,</span></div>",
       "<div class='ml-6 md:ml-8 flex items-start gap-2'><strong class='text-foreground font-semibold shrink-0'>13.6.2</strong> <span>salary, benefits, or other payments,</span></div>",
@@ -190,190 +192,8 @@ const webinfo = [
 ]
 ---
 
-<PageLayout
-  title="Terms and Conditions"
-  description="Site Terms and Conditions"
->
-  <Hero layout="centered" size="md">
-    <h1 slot="title">
-      Terms and Conditions
-    </h1>
-    <p slot="description">
-      The terms and conditions for using the Brighton and Co website.
-    </p>
-  </Hero>
-
-  <section class="py-20 bg-secondary">
-    <div class="container">
-      <h1 class="text-2xl font-bold text-foreground mb-6">Table of Contents:</h1>
-      
-      <div class="relative w-full">
-        {/* FIXED: Replaced pb-4 with py-4 to make top/bottom padding symmetrical. Replaced rounded-2xl with rounded-3xl to ensure the curve is large enough to perfectly intersect both the top and bottom edges of the tabs. */}
-        <nav 
-          id="toc-nav"
-          class="flex overflow-x-auto gap-3 py-4 rounded-3xl cursor-grab active:cursor-grabbing" 
-          aria-label="Table of Contents"
-        >
-          {webinfo.map((item) => (
-            <a 
-              href={`#${item.id}`} 
-              class="toc-link min-w-[160px] md:min-w-[200px] flex items-center justify-center text-center px-4 py-3 bg-background border border-border shadow-sm rounded-xl text-sm font-medium text-foreground-muted hover:text-foreground hover:border-foreground hover:bg-surface-secondary transition-all"
-            >
-              {item.tocLabel}
-            </a>
-          ))}
-        </nav>
-      </div>
-    </div>
-  </section>
-
-  <section class="py-12 md:py-16">
-      <div class="container max-w-3xl">
-        <div class="text-center mb-10">
-          <h2 class="text-3xl font-bold text-foreground">Brighton and Co Terms and Conditions:</h2>
-          <p class="text-foreground-muted mt-2">Please read all the terms and conditions for using the site carefully.</p>
-        </div>
-        
-        <Accordion 
-         items={webinfo} 
-         variant="card" 
-         size="lg" 
-         exclusive={true}
-      />
-    </div>
-  </section>
-
-  <div class="container">
-    <div class="mb-10">
-    <p class="text-foreground-muted mt-2">Originally published: 20/06/2026.</p>
-    <p class="text-foreground-muted mt-2">Last updated: 20/06/2026.</p>
-    <p class="text-foreground-muted mt-2">Terms and Conditions version: 1.0.0.</p>
-    </div>
-  </div>
-
-  <Separator orientation="horizontal" class="my-20" />
-  <CTA />
-</PageLayout>
-
-<style>
-  html {
-    scroll-behavior: smooth;
-  }
-  
-  :global(details[id]) {
-    scroll-margin-top: 6rem;
-  }
-
-  /* --- MOBILE: Hide scrollbar for a cleaner swipe experience --- */
-  @media (max-width: 767px) {
-    #toc-nav {
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
-    }
-    #toc-nav::-webkit-scrollbar {
-      display: none; /* Chrome, Safari and Opera */
-    }
-  }
-
-  /* --- DESKTOP: Custom elegant scrollbar --- */
-  @media (min-width: 768px) {
-    #toc-nav {
-      /* FIXED: Changed to auto so Firefox generates a thicker, more standard scrollbar */
-      scrollbar-width: auto; 
-      scrollbar-color: rgba(150, 150, 150, 0.4) transparent;
-    }
-    
-    #toc-nav::-webkit-scrollbar {
-      /* FIXED: Increased from 8px to 12px for better clickability */
-      height: 12px; 
-    }
-    
-    #toc-nav::-webkit-scrollbar-track {
-      background: transparent; 
-      border-radius: 12px;
-    }
-    
-    #toc-nav::-webkit-scrollbar-thumb {
-      background-color: rgba(150, 150, 150, 0.4); 
-      border-radius: 12px;
-    }
-    
-    #toc-nav::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(150, 150, 150, 0.6); 
-    }
-  }
-</style>
-
-<script>
-  function initTOC() {
-    const slider = document.getElementById('toc-nav');
-    if (!slider) return;
-
-    // --- 1. DRAG TO SCROLL LOGIC ---
-    let isDown = false;
-    let startX: number;
-    let scrollLeft: number;
-    let isDragging = false; 
-
-    slider.addEventListener('mousedown', (e) => {
-      isDown = true;
-      isDragging = false;
-      startX = e.pageX - slider.offsetLeft;
-      scrollLeft = slider.scrollLeft;
-    });
-
-    slider.addEventListener('mouseleave', () => { isDown = false; });
-    slider.addEventListener('mouseup', () => { isDown = false; });
-
-    slider.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      
-      const x = e.pageX - slider.offsetLeft;
-      // If they move the mouse more than 5 pixels, consider it a drag (not a click)
-      if (Math.abs(x - startX) > 5) {
-        isDragging = true;
-      }
-      
-      const walk = (x - startX) * 2; // Scroll speed multiplier
-      slider.scrollLeft = scrollLeft - walk;
-    });
-
-    // --- 2. JUMP & AUTO-OPEN LOGIC ---
-    const tocLinks = document.querySelectorAll('.toc-link');
-    
-    tocLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        // If the user was dragging the menu, prevent the link from firing
-        if (isDragging) {
-          e.preventDefault();
-          return;
-        }
-
-        const href = link.getAttribute('href');
-        if (!href) return;
-        
-        const targetId = href.substring(1);
-        const detailsEl = document.getElementById(targetId);
-
-        // If we found the accordion section
-        if (detailsEl && detailsEl.tagName === 'DETAILS') {
-          const groupName = detailsEl.getAttribute('name');
-          
-          // If it's an exclusive accordion, close all others in the same group
-          if (groupName) {
-            const allDetails = document.querySelectorAll(`details[name="${groupName}"]`);
-            allDetails.forEach(d => d.removeAttribute('open'));
-          }
-          
-          // Open the specific section the user clicked
-          detailsEl.setAttribute('open', '');
-        }
-      });
-    });
-  }
-
-  // Initialize on first load, and re-initialize after Astro view transitions
-  initTOC();
-  document.addEventListener('astro:page-load', initTOC);
-</script>
+<PolicyLayout
+  policy={getPolicy('terms')}
+  intro="The terms and conditions for using the Brighton and Co website."
+  sections={sections}
+/>

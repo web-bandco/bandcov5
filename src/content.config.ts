@@ -62,42 +62,7 @@ const faqs = defineCollection({
   }),
 });
 
-// ------------------------------------------------------------------
-// SHOP COLLECTIONS (Vinted & eBay)
-// ------------------------------------------------------------------
-
-const vinted = defineCollection({
-  loader: glob({ pattern: '**/*.json', base: './src/content/vinted' }),
-  schema: ({ image }) =>
-    z.object({
-      sku: z.string().regex(/^SBCV-\d+$/, "SKU must match formatting: SBCV-101"),
-      title: z.string(),
-      price: z.string(),
-      condition: z.enum(["New with tags", "New without tags", "Very good", "Good", "Satisfactory"]),
-      size: z.string(),
-      description: z.string(),
-      images: z.array(image()),
-      url: z.string().url(),
-      status: z.enum(["For Sale", "Sold"]).default("For Sale"),
-      listedDate: z.string().optional(),
-    }),
-});
-
-const ebay = defineCollection({
-  loader: glob({ pattern: '**/*.json', base: './src/content/ebay' }),
-  schema: ({ image }) =>
-    z.object({
-      sku: z.string().regex(/^SBCE-\d+[A-Za-z]?$/, "SKU must match formatting: SBCE-201 or SBCE-102A"),
-      title: z.string(),
-      price: z.string(),
-      condition: z.string(),
-      description: z.string(),
-      images: z.array(image()),
-      url: z.string().url(),
-      status: z.enum(["For Sale", "Sold"]).default("For Sale"),
-      listedDate: z.string().optional(),
-    }),
-});
+// Shop products are managed in Sanity (see src/lib/sanity.ts)
 
 // ------------------------------------------------------------------
 // PHOTOGRAPHY COLLECTIONS
@@ -125,7 +90,5 @@ export const collections = {
   pages,
   authors,
   faqs,
-  vinted,
-  ebay,
   holidays,
 };

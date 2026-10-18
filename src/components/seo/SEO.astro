@@ -1,5 +1,7 @@
 ---
 import siteConfig from '@/config/site.config';
+import { cleanPath } from '@/lib/url';
+import { getOgPages } from '@/lib/og-pages';
 
 interface Props {
   title?: string;
@@ -28,16 +30,18 @@ const {
 
 const pageTitle = title ? `${title} — ${siteConfig.name}` : siteConfig.name;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const path = cleanPath(Astro.url);
+const canonicalURL = new URL(path, Astro.site);
 
 // Process image - use dynamic OG image if no custom image provided
 let ogImage: string;
 if (image) {
   ogImage = image.startsWith('http') ? image : new URL(image, Astro.site).toString();
 } else {
-  // Generate dynamic OG image path based on current URL
-  const pathname = Astro.url.pathname.replace(/^\/|\/$/g, '') || 'index';
-  ogImage = new URL(`/og/${pathname}.png`, Astro.site).toString();
+  // This page's generated image (see src/lib/og-pages.ts), or the homepage image if it has none
+  const slug = path === '/' ? 'index' : path.slice(1);
+  const generated = new Set((await getOgPages()).map((page) => page.slug));
+  ogImage = new URL(`/og/${generated.has(slug) ? slug : 'index'}.png`, Astro.site).toString();
 }
 
 const robotsContent = [noindex ? 'noindex' : 'index', nofollow ? 'nofollow' : 'follow'].join(', ');
@@ -53,8 +57,8 @@ const locale = rawLocale.includes('_') || rawLocale.includes('-')
   ? rawLocale.replace('-', '_')
   : (localeMap[rawLocale] || `${rawLocale}_${rawLocale.toUpperCase()}`);
 
-// Determine OG image metadata — only emit width/height/type for the auto-generated fallback
-const isGeneratedOgImage = !image;
+// Determine OG image metadata — only emit width/height/type for generated (1200x630) images
+const isGeneratedOgImage = !image || image.startsWith('/og/');
 const extToMime: Record<string, string> = {
   '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
   '.webp': 'image/webp', '.gif': 'image/gif', '.svg': 'image/svg+xml',

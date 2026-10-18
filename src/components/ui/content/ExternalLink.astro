@@ -1,0 +1,54 @@
+---
+/**
+ * ExternalLink
+ * A link to another site. Clicks are tracked and open the "Leaving B&Co"
+ * dialog (ExternalLinkDialog) - no client-side framework needed.
+ */
+import type { HTMLAttributes } from 'astro/types';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import { cn } from '@/lib/cn';
+
+interface Props extends HTMLAttributes<'a'> {
+  href: string;
+  /** Show the small external-link icon after the text */
+  showIndicator?: boolean;
+  /** Ask for confirmation before leaving the site */
+  requireConfirm?: boolean;
+  /** Hide the "Opens an external site" tooltip */
+  disableHover?: boolean;
+}
+
+const {
+  href,
+  showIndicator = false,
+  requireConfirm = true,
+  disableHover = false,
+  class: className,
+  ...attrs
+} = Astro.props;
+
+const domain = (() => {
+  try {
+    return new URL(href).hostname.replace('www.', '');
+  } catch {
+    return 'an external site';
+  }
+})();
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  data-external-link={requireConfirm ? '' : 'direct'}
+  class={cn('inline-flex items-center gap-1', !disableHover && 'group/ext relative', className)}
+  {...attrs}
+>
+  <slot />
+  {showIndicator && <Icon name="external-link" class="w-3.5 h-3.5 opacity-60 relative top-[1px]" />}
+  {!disableHover && (
+    <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden md:group-hover/ext:block w-auto whitespace-nowrap p-3 bg-background border border-border shadow-md rounded-md z-50 text-sm text-foreground font-normal pointer-events-none">
+      Opens an external site: <strong class="font-semibold">{domain}</strong>
+    </span>
+  )}
+</a>

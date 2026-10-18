@@ -40,7 +40,7 @@ export async function GET(context: APIContext) {
 
   const items = sortedPosts
     .map((post) => {
-      const link = `${siteUrl}/blog/${getSlug(post.id)}/`;
+      const link = `${siteUrl}/blog/${getSlug(post.id)}`;
       const categories = post.data.tags
         .map((tag) => `<category>${escapeXml(tag)}</category>`)
         .join('\n        ');

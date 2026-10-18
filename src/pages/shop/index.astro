@@ -5,12 +5,30 @@ import CTA from '@/components/landing/CTA.astro';
 import { ShopGrid } from '@/components/ui/content/ShopGrid';
 import { Image } from 'astro:assets';
 import shopLogo from '@/assets/branding/shoplogo.png';
+import { sanityClient, cardImage } from '@/lib/sanity';
+
+// Products are fetched at build time (like the product pages), so the grid is
+// in the page HTML and no Sanity code is sent to the browser.
+const results: any[] = await sanityClient.fetch(`*[_type == "product" && defined(slug.current)] {
+  "id": _id,
+  "slug": slug.current,
+  "createdAt": _createdAt,
+  title, price, storeName, category, size,
+  "images": images[0...3]
+}`);
+
+const products = results.map((product) => ({
+  ...product,
+  images: (product.images || []).map(cardImage),
+}));
 ---
 
 <PageLayout
-  title="Shop - B&Co"
+  title="Shop"
   description="Welcome to my digital storefront. Shop the complete pre-loved fashion and tech catalog from Vinted and eBay in one place."
 >
+  {/* Product photos come from Sanity's CDN - connect to it early */}
+  <link slot="head" rel="preconnect" href="https://cdn.sanity.io" />
   <Hero layout="centered" size="sm" class="bg-surface-secondary border-b border-border">
     <div slot="badge" class="flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 text-brand-700 dark:text-brand-400 border border-brand-500/20 text-sm font-semibold">
       New items just added!  
@@ -43,7 +61,7 @@ import shopLogo from '@/assets/branding/shoplogo.png';
 
   <section class="py-16 md:py-24 bg-background">
     <div class="container max-w-7xl">
-      <ShopGrid client:visible>
+      <ShopGrid products={products} client:visible>
         <div>
           <h2 class="text-2xl font-bold text-foreground">View What's in Store</h2>
           <p class="text-sm text-foreground-muted mt-1">Browse all available items below</p>

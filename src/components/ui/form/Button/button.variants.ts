@@ -4,7 +4,6 @@ export const buttonVariants = cva(
   [
     'inline-flex items-center justify-center gap-2',
     'font-medium rounded-md',
-    'transition-all duration-150 ease-out',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     'disabled:pointer-events-none disabled:opacity-50',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
@@ -12,17 +11,19 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
+        // Solid and outline buttons lift on hover (see .hover-lift in global.css)
         primary:
-          'bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98]',
+          'bg-foreground text-background hover-lift active:scale-[0.98]',
         secondary:
-          'bg-secondary text-secondary-foreground border border-border hover:bg-secondary-hover hover:border-border-strong active:scale-[0.98]',
+          'bg-secondary text-secondary-foreground border border-border hover-lift active:scale-[0.98]',
         outline:
-          'border border-border bg-transparent text-foreground hover:bg-secondary hover:border-border-strong active:scale-[0.98]',
+          'border border-border bg-transparent text-foreground hover-lift active:scale-[0.98]',
+        // Text-style buttons keep a neutral colour change
         ghost:
-          'text-foreground-secondary hover:text-foreground hover:bg-secondary active:scale-[0.98]',
-        link: 'text-foreground-secondary hover:text-foreground underline-offset-4 hover:underline',
+          'transition-colors duration-150 ease-out text-foreground-secondary hover:text-foreground hover:bg-secondary active:scale-[0.98]',
+        link: 'transition-colors duration-150 ease-out text-foreground-secondary hover:text-foreground underline-offset-4 hover:underline',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:scale-[0.98]',
+          'bg-destructive text-destructive-foreground hover-lift active:scale-[0.98]',
       },
       size: {
         sm: 'h-8 px-3 text-xs [&_svg]:h-4 [&_svg]:w-4',

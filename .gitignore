@@ -9,6 +9,9 @@ dist/
 # Astro
 .astro/
 
+# Cloudflare Wrangler local state (cache from `wrangler dev`)
+.wrangler/
+
 # Environment variables
 .env
 .env.local

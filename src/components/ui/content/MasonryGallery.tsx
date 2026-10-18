@@ -13,14 +13,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/shadcn/dialog"
-import { Skeleton } from "@/components/ui/shadcn/skeleton"
 import { Spinner } from "@/components/ui/shadcn/spinner"
 
 export interface GalleryImage {
   src: string;
+  srcset?: string;
   fullSrc: string;
+  width?: number;
+  height?: number;
   alt: string;
 }
+
+// Column width: 1 column on mobile, 2 from sm, 3 from lg (capped by max-w-7xl), minus page padding
+const GRID_SIZES = "(min-width: 1280px) 400px, (min-width: 1024px) calc(33vw - 32px), (min-width: 640px) calc(50vw - 36px), calc(100vw - 48px)";
 
 interface MasonryGalleryProps {
   images: GalleryImage[];
@@ -42,8 +47,7 @@ export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }
   const [dialogApi, setDialogApi] = React.useState<CarouselApi>()
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedIndex, setSelectedIndex] = React.useState(0)
-  
-  const [gridLoadedImages, setGridLoadedImages] = React.useState<Record<string, boolean>>({})
+
   const [lightboxLoadedImages, setLightboxLoadedImages] = React.useState<Record<string, boolean>>({})
 
   const getActiveWindow = React.useCallback((currentIndex: number, total: number) => {
@@ -113,10 +117,6 @@ export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }
     });
   }
 
-  const handleGridImageLoad = (key: string) => {
-    setGridLoadedImages((prev) => ({ ...prev, [key]: true }));
-  };
-
   const handleLightboxImageLoad = (key: string) => {
     setLightboxLoadedImages((prev) => ({ ...prev, [key]: true }));
   };
@@ -127,36 +127,27 @@ export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }
       {/* THE MASONRY GRID */}
       <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
         {images.map((image, index) => {
-          const isLoaded = gridLoadedImages[`grid-${index}`];
-          
           return (
-            <div key={index} className="break-inside-avoid mb-6 relative group rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-border/50 bg-surface-secondary min-h-[200px]">
+            <div key={index} className="break-inside-avoid mb-6 relative rounded-2xl overflow-hidden shadow-sm hover-lift border border-border/50 bg-surface-secondary">
               <DialogTrigger asChild>
-                <button 
+                <button
                   type="button"
                   aria-label={`View full image: ${image.alt}`}
                   onClick={() => handleImageClick(index)}
                   className="w-full h-full block p-0 m-0 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-500 text-left relative"
                 >
-                  {!isLoaded && (
-                    <Skeleton className="absolute inset-0 w-full h-full rounded-none z-10" />
-                  )}
-                  
-                  <img 
-                    src={image.src} 
-                    alt={image.alt} 
-                    onLoad={() => handleGridImageLoad(`grid-${index}`)}
-                    ref={(img) => {
-                      if (img && img.complete && !isLoaded) {
-                        handleGridImageLoad(`grid-${index}`);
-                      }
-                    }}
-                    className={`w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  <img
+                    src={image.src}
+                    srcSet={image.srcset}
+                    sizes={GRID_SIZES}
+                    width={image.width}
+                    height={image.height}
+                    alt={image.alt}
+                    className="w-full h-auto object-cover"
                     decoding="async"
-                    loading="lazy"
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : undefined}
                   />
-                  
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 </button>
               </DialogTrigger>
             </div>

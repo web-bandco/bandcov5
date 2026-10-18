@@ -2,15 +2,10 @@
 /**
  * LandingLayout
  * Layout wrapper for landing-style pages (marketing, demo, showcase)
- * Uses Header + Footer with landing-specific configuration
+ * Uses the inverted Header; the footer comes from BaseLayout
  */
 import BaseLayout from './BaseLayout.astro';
 import Header from '@/components/layout/Header.astro';
-import Footer from '@/components/layout/Footer.astro';
-import Icon from '@/components/ui/primitives/Icon/Icon.astro';
-import lightLogo from '@/assets/branding/logo-full.png';
-import darkLogo from '@/assets/branding/logo-full-dark.png';
-import packageData from '../../package.json';
 
 interface Props {
   title?: string;
@@ -47,7 +42,7 @@ const {
     position="fixed"
     size="lg"
     showCta={false}
-    colorScheme="invert" 
+    colorScheme="invert"
     extraNav={[]}
     actions={[
       {
@@ -61,81 +56,4 @@ const {
   />
 
   <slot />
-
-  <Footer 
-  slot="footer" 
-  layout="columns"
-  columns={4} 
-  background="secondary" 
-  showSocial={false} 
-  showCopyright={false}
->
-  {/* COLUMN 1: Logo & Tagline (Injected via slots) */}
-  <a href="/" slot="logo" class="block mb-2">
-    <img src={lightLogo.src} alt="Brighton and Co" class="h-10 w-auto dark:hidden" />
-    <img src={darkLogo.src} alt="Brighton and Co" class="h-10 w-auto hidden dark:block" />
-  </a>
-  <span slot="tagline" class="block leading-relaxed">
-    Brighton and Co - showcasing personal projects, photography and other things.
-  </span>
-
-  {/* COLUMNS 2, 3 & 4 (Injected via the 'columns' slot to override default linkGroups) */}
-  <Fragment slot="columns">
-    
-    {/* Column 2: Quick Links */}
-    <div class="space-y-[var(--space-stack-md)]">
-      <h3 class="font-semibold text-sm text-foreground">Quick Links</h3>
-      <ul class="space-y-2">
-        <li><a href="/about" class="text-sm text-foreground-muted hover:text-foreground transition-colors">About</a></li>
-        <li><a href="/shop" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Shop</a></li>
-        <li><a href="/blog" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Blog</a></li>
-        <li><a href="/photography" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Photography</a></li>
-        <li><a href="/contact" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Contact</a></li>
-      </ul>
-    </div>
-
-    {/* Column 3: Social Links */}
-    <div class="space-y-[var(--space-stack-md)]">
-      <h3 class="font-semibold text-sm text-foreground">Connect</h3>
-      <ul class="space-y-2">
-        <li>
-          <a href="https://twitter.com/itsharryb_" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-            <Icon name="twitter" size="sm" class="group-hover:text-brand-500 transition-colors" /> Twitter
-          </a>
-        </li>
-        <li>
-          <a href="https://github.com/ItsHarryB" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-            <Icon name="github" size="sm" class="group-hover:text-brand-500 transition-colors" /> GitHub
-          </a>
-        </li>
-        <li>
-          <a href="https://www.linkedin.com/in/harry-brighton/" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-            <Icon name="linkedin" size="sm" class="group-hover:text-brand-500 transition-colors" /> LinkedIn
-          </a>
-        </li>
-        <li>
-          <a href="https://linktr.ee/brightonandco" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-            <Icon name="brand-linktree" size="sm" class="group-hover:text-brand-500 transition-colors" /> Linktree
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    {/* Column 4: Site Info & Meta */}
-    <div class="space-y-[var(--space-stack-md)]">
-      <h3 class="font-semibold text-sm text-foreground">Site Info</h3>
-      <div class="space-y-2 text-sm text-foreground-muted">
-        <p>Version: <span class="font-mono bg-surface-secondary px-1.5 py-0.5 rounded-md border border-border">v{packageData.version}</span></p>
-        <div class="pt-1 space-y-1">
-          <p>&copy; {new Date().getFullYear()} Brighton and Co.</p>
-          <p>All rights reserved.</p>
-        </div>
-      </div>
-    </div>
-    
-  </Fragment>
-
-  {/* OVERRIDE: Hide the bottom bar since we moved copyright to Column 4 */}
-  <div slot="bottom" class="hidden"></div>
-</Footer>
 </BaseLayout>

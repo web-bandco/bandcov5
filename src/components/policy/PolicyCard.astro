@@ -1,0 +1,44 @@
+---
+/**
+ * PolicyCard
+ * Link card for a policy in the Policy Hub (About page and policy pages).
+ */
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import { cn } from '@/lib/cn';
+import { formatPolicyDate, type Policy } from '@/config/policies.config';
+
+interface Props {
+  policy: Policy;
+  class?: string;
+}
+
+const { policy, class: className } = Astro.props;
+---
+
+<a
+  href={policy.href}
+  data-analytics-nav="Policy Hub"
+  data-nav-label={policy.title}
+  class={cn(
+    'group flex flex-col h-full rounded-3xl border border-border p-8 shadow-sm hover-lift outline-none focus-visible:ring-2 focus-visible:ring-ring',
+    className
+  )}
+>
+  <div class="flex items-start justify-between gap-4 mb-6">
+    <div class="p-3 rounded-2xl bg-brand-700/10 text-brand-700 dark:text-brand-400">
+      <Icon name={policy.icon} size="lg" />
+    </div>
+    {policy.draft && <Badge variant="warning" size="sm">Draft</Badge>}
+  </div>
+
+  <h3 class="text-xl font-bold text-foreground tracking-tight mb-2">{policy.title}</h3>
+  <p class="text-foreground-muted text-sm md:text-base leading-relaxed mb-6">{policy.description}</p>
+
+  <div class="mt-auto pt-6 border-t border-border/50 flex items-center justify-between gap-4">
+    <span class="text-xs font-mono text-foreground-muted">
+      Updated {formatPolicyDate(policy.updated)} · v{policy.version}
+    </span>
+    <Icon name="arrow-right" size="sm" class="text-brand-700 dark:text-brand-400 transition-transform group-hover:translate-x-1" />
+  </div>
+</a>

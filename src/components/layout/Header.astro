@@ -30,6 +30,7 @@ import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 import Logo from '@/components/ui/marketing/Logo/Logo.astro';
 import ThemeToggle from '@/components/layout/ThemeToggle.astro';
 import siteConfig from '@/config/site.config';
+import { cleanPath } from '@/lib/url';
 
 export interface NavItem {
   label: string;
@@ -114,7 +115,7 @@ const defaultNav = getNavItems().map((item: NavConfigItem) => ({
 const navItems: NavItem[] = nav || [...extraNav, ...defaultNav];
 
 // Current path for active state
-const currentPath = Astro.url.pathname;
+const currentPath = cleanPath(Astro.url);
 
 // Check if we're on the landing page
 const isLandingPage = currentPath === '/';
@@ -167,11 +168,10 @@ const buttonId = `${menuId}-button`;
           <slot name="logo" />
         ) : (
           <a href="/" data-analytics-nav="Desktop Header" data-nav-label="Logo Home Link" class="flex items-center gap-2">
-            <Logo 
-              size={size === 'lg' ? 'md' : 'sm'} 
-              forceDark={isInvert} 
-              loading="eager" 
-              fetchpriority="high" 
+            <Logo
+              size={size === 'lg' ? 'md' : 'sm'}
+              forceDark={isInvert}
+              loading="eager"
             />
             <span
               class={cn(

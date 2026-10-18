@@ -1,0 +1,3 @@
+# Cloudflare redirects (https://developers.cloudflare.com/workers/static-assets/redirects/)
+/terms-and-conditions   /about/terms   301
+/terms-and-conditions/  /about/terms   301

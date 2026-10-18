@@ -3,15 +3,22 @@ import { ChevronLeft, ChevronRight, X, ChevronDown, ChevronUp } from "lucide-rea
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures" 
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/shadcn/carousel"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/shadcn/dialog"
-import type { ProductImage } from "./ShopGrid"
+import type { ProductImage } from "@/lib/sanity"
 
 interface ProductGalleryProps {
   images: ProductImage[];
   title: string;
 }
 
+// Main image width: full width below 1000px, the gallery column above it.
+// Both layouts use the same value so the first image is only downloaded once.
+const MAIN_SIZES = "(min-width: 1280px) 720px, (min-width: 1000px) 55vw, calc(100vw - 48px)";
+const GRID_SIZES = "(min-width: 1280px) 350px, (min-width: 1000px) 27vw, 50vw";
+
 export function ProductGallery({ images, title }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = React.useState(0);
+  // Mobile carousel slides only load once they are next to the one in view
+  const [loadedSlides, setLoadedSlides] = React.useState<Set<number>>(() => new Set([0]));
   const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   
@@ -48,6 +55,15 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
     if (!mainApi) return;
     mainApi.scrollTo(activeIndex);
   }, [activeIndex, mainApi]);
+
+  React.useEffect(() => {
+    const total = images.length;
+    setLoadedSlides((prev) => {
+      const next = new Set(prev);
+      [activeIndex - 1, activeIndex, activeIndex + 1].forEach((i) => next.add((i + total) % total));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [activeIndex, images.length]);
 
   React.useEffect(() => {
     if (isMobile && thumbnailsRef.current[activeIndex]) {
@@ -88,7 +104,19 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           <CarouselContent className="ml-0">
             {images.map((img, i) => (
               <CarouselItem key={i} className="pl-0 relative w-full flex items-center justify-center">
-                <img src={img.full} alt={`${title} ${i + 1}`} className="w-full aspect-[3/4] object-cover rounded-2xl" loading={i === 0 ? "eager" : "lazy"} />
+                {loadedSlides.has(i) ? (
+                  <img
+                    src={img.src}
+                    srcSet={img.srcset}
+                    sizes={MAIN_SIZES}
+                    alt={`${title} ${i + 1}`}
+                    className="w-full aspect-[3/4] object-cover rounded-2xl"
+                    loading={i === 0 ? "eager" : "lazy"}
+                    fetchPriority={i === 0 ? "high" : undefined}
+                  />
+                ) : (
+                  <div className="w-full aspect-[3/4]" />
+                )}
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -118,10 +146,18 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
       <div className="hidden min-[1000px]:flex flex-col gap-4">
         
         <div 
-          className={`w-full bg-surface-secondary rounded-2xl overflow-hidden transition-transform hover:opacity-95 ${cursorClass}`}
+          className={`w-full bg-surface-secondary rounded-2xl overflow-hidden hover-lift ${cursorClass}`}
           onClick={() => handleImageClick(0)}
         >
-          <img src={images[0].full} alt={`${title} Main`} className="w-full aspect-[3/4] object-cover rounded-2xl mx-auto" loading="eager" />
+          <img
+            src={images[0].src}
+            srcSet={images[0].srcset}
+            sizes={MAIN_SIZES}
+            alt={`${title} Main`}
+            className="w-full aspect-[3/4] object-cover rounded-2xl mx-auto"
+            loading="eager"
+            fetchPriority="high"
+          />
         </div>
 
         {extraImages.length > 0 && (
@@ -132,10 +168,10 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
                 return (
                   <div 
                     key={actualIndex}
-                    className={`w-full bg-surface-secondary rounded-2xl overflow-hidden break-inside-avoid hover:opacity-95 transition-opacity ${cursorClass}`}
+                    className={`w-full bg-surface-secondary rounded-2xl overflow-hidden break-inside-avoid hover-lift ${cursorClass}`}
                     onClick={() => handleImageClick(actualIndex)}
                   >
-                    <img src={img.thumb} alt={`${title} Detail ${actualIndex}`} className="w-full aspect-[3/4] object-cover rounded-2xl" loading="lazy" />
+                    <img src={img.src} srcSet={img.srcset} sizes={GRID_SIZES} alt={`${title} Detail ${actualIndex}`} className="w-full aspect-[3/4] object-cover rounded-2xl" loading="lazy" />
                   </div>
                 )
               })}
@@ -145,7 +181,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
               <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-background via-background/90 to-transparent flex items-end justify-center pb-8 pointer-events-none z-20">
                 <button 
                   onClick={() => setIsExpanded(true)} 
-                  className="pointer-events-auto flex items-center gap-2 text-sm font-extrabold tracking-widest uppercase text-foreground hover:text-brand-500 transition-colors drop-shadow-lg"
+                  className="pointer-events-auto flex items-center gap-2 text-sm font-extrabold tracking-widest uppercase text-foreground hover:text-foreground-muted transition-colors drop-shadow-lg"
                 >
                   CLICK TO VIEW MORE <ChevronDown className="w-5 h-5" />
                 </button>
@@ -156,7 +192,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
               <div className="w-full flex justify-center mt-8">
                 <button 
                   onClick={() => setIsExpanded(false)} 
-                  className="flex items-center gap-2 text-sm font-extrabold tracking-widest uppercase text-foreground hover:text-brand-500 transition-colors"
+                  className="flex items-center gap-2 text-sm font-extrabold tracking-widest uppercase text-foreground hover:text-foreground-muted transition-colors"
                 >
                   CLICK TO VIEW LESS <ChevronUp className="w-5 h-5" />
                 </button>

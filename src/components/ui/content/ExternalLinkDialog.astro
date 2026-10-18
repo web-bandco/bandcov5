@@ -1,0 +1,112 @@
+---
+/**
+ * ExternalLinkDialog
+ * The site-wide "Leaving B&Co" confirmation for links marked with
+ * `data-external-link` (see ExternalLink.astro). Uses the native <dialog>
+ * element. Also sends the outbound-link analytics event for those links.
+ */
+import Button from '@/components/ui/form/Button/Button.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+---
+
+<dialog
+  id="external-link-dialog"
+  aria-labelledby="external-link-title"
+  aria-describedby="external-link-description"
+  class="m-auto w-[calc(100%-2rem)] sm:max-w-md rounded-lg border border-border bg-background text-foreground p-0 shadow-lg backdrop:bg-black/50"
+>
+  <div class="relative p-6">
+    <button
+      type="button"
+      data-external-cancel
+      data-track-ui="External Link Dialog"
+      data-track-label="Dismissed (X)"
+      class="absolute top-3 right-3 p-2 rounded-full bg-background hover:bg-muted transition-colors duration-200 text-foreground outline-none shadow-sm border border-border cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-500"
+    >
+      <Icon name="x" class="w-4 h-4 md:w-5 md:h-5" />
+      <span class="sr-only">Close</span>
+    </button>
+
+    <h2 id="external-link-title" class="text-xl font-semibold pr-8">Leaving B&Co</h2>
+    <p id="external-link-description" class="text-base text-foreground-muted mt-2">
+      You are about to navigate to an external website: <strong class="text-foreground" data-external-domain></strong>.
+      <br /><br />
+      B&Co is not responsible for the content or privacy practices of external sites. Do you wish to continue?
+    </p>
+
+    <div class="mt-6 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between">
+      <Button
+        type="button"
+        variant="outline"
+        class="w-full sm:w-auto"
+        data-external-cancel
+        data-track-ui="External Link Dialog"
+        data-track-label="Cancelled"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="button"
+        class="w-full sm:w-auto bg-brand-500 text-white border-none"
+        data-external-continue
+        data-track-ui="External Link Dialog"
+        data-track-label="Proceeded to External Site"
+      >
+        Continue to site
+      </Button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const PLATFORMS: [string, string][] = [
+    ['vinted.', 'vinted'],
+    ['ebay.', 'ebay'],
+    ['github.', 'github'],
+    ['twitter.', 'twitter'],
+    ['linkedin.', 'linkedin'],
+    ['linktr.ee', 'linktree'],
+  ];
+
+  let pendingHref = '';
+
+  const getDialog = () => document.getElementById('external-link-dialog') as HTMLDialogElement | null;
+
+  function trackOutbound(href: string) {
+    const gtag = (window as any).gtag;
+    if (typeof gtag !== 'function') return;
+    const lower = href.toLowerCase();
+    const platform = PLATFORMS.find(([match]) => lower.includes(match))?.[1] ?? 'external_site';
+    gtag('event', `click_${platform}`, { event_category: 'outbound_link', link_url: href });
+  }
+
+  // One listener for the whole document, so it keeps working across page navigations
+  document.addEventListener('click', (e) => {
+    const target = e.target as Element;
+    const dialog = getDialog();
+
+    if (dialog?.open) {
+      if (target.closest('[data-external-continue]')) {
+        window.open(pendingHref, '_blank', 'noopener,noreferrer');
+        dialog.close();
+      } else if (target.closest('[data-external-cancel]') || target === dialog) {
+        dialog.close(); // Cancel, X or a click on the backdrop
+      }
+      return;
+    }
+
+    const link = target.closest<HTMLAnchorElement>('a[data-external-link]');
+    if (!link) return;
+
+    trackOutbound(link.href);
+
+    // Let modified clicks (new tab/window) and "direct" links go straight through
+    if (link.dataset.externalLink === 'direct' || e.metaKey || e.ctrlKey || e.shiftKey || !dialog) return;
+
+    e.preventDefault();
+    pendingHref = link.href;
+    const domain = dialog.querySelector('[data-external-domain]');
+    if (domain) domain.textContent = new URL(link.href).hostname.replace('www.', '');
+    dialog.showModal();
+  });
+</script>

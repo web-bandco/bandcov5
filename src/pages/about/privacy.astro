@@ -1,0 +1,173 @@
+---
+/**
+ * Privacy Policy
+ * URL: /about/privacy
+ */
+import PolicyLayout from '@/layouts/PolicyLayout.astro';
+import { getPolicy } from '@/config/policies.config';
+import { clause, subclause, link, externalLink, cookieSettingsButton, type PolicySection } from '@/lib/policy';
+
+const contactPage = link('/contact', 'Contact page');
+
+const storageRows = [
+  ['velocity-consent', 'Local storage (necessary)', 'Remembers your cookie choices.', 'Until you clear it'],
+  ['theme', 'Local storage (necessary)', 'Remembers whether you chose light or dark mode.', 'Until you clear it'],
+  ['_ga', 'Cookie (analytics)', 'Used by Google Analytics to distinguish visitors.', '2 years'],
+  ['_ga_&lt;ID&gt;', 'Cookie (analytics)', 'Used by Google Analytics to keep track of a visit (session).', '2 years'],
+];
+
+const storageTable = `<div class='overflow-x-auto rounded-xl border border-border'><table class='w-full text-left text-sm'><thead class='bg-background-secondary text-foreground'><tr><th scope='col' class='px-4 py-3 font-semibold'>Name</th><th scope='col' class='px-4 py-3 font-semibold'>Type</th><th scope='col' class='px-4 py-3 font-semibold'>Purpose</th><th scope='col' class='px-4 py-3 font-semibold'>Duration</th></tr></thead><tbody class='divide-y divide-border'>${storageRows
+  .map(([name, type, purpose, duration]) => `<tr><td class='px-4 py-3 font-mono text-foreground whitespace-nowrap'>${name}</td><td class='px-4 py-3 whitespace-nowrap'>${type}</td><td class='px-4 py-3'>${purpose}</td><td class='px-4 py-3 whitespace-nowrap'>${duration}</td></tr>`)
+  .join('')}</tbody></table></div>`;
+
+const sections: PolicySection[] = [
+  {
+    id: 'about-this-policy',
+    tocLabel: '1. About this Policy',
+    title: '1. About this privacy policy -',
+    content: [
+      clause('1.1', `This policy explains how Brighton and Co collects, uses and looks after personal information when you visit the Brighton and Co site or get in touch. Terms such as 'Brighton and Co' and 'the Brighton and Co site' have the same meaning as in the ${link('/about/terms', 'Terms and Conditions')}.`),
+      clause('1.2', 'Brighton and Co is run by Harry Brighton, who is the data controller for personal information collected through the Brighton and Co site. This means Brighton and Co decides how and why it is used, and is responsible for looking after it under the UK General Data Protection Regulation (UK GDPR), the Data Protection Act 2018 and the Privacy and Electronic Communications Regulations 2003 (PECR).'),
+      clause('1.3', 'Brighton and Co is a personal website, run as a hobby project.'),
+      clause('1.4', `If you have any questions about this policy, or about your personal information, please use the form on the ${contactPage}.`),
+    ],
+    defaultOpen: true,
+  },
+  {
+    id: 'what-data-is-collected',
+    tocLabel: '2. What Data Is Collected',
+    title: '2. What information is collected -',
+    content: [
+      clause('2.1', `<strong class='text-foreground font-semibold'>Information you give Brighton and Co.</strong> When you use the form on the ${contactPage}, your name, email address, subject and message, as well as anything else you choose to include will be received.`),
+      clause('2.2', `<strong class='text-foreground font-semibold'>Analytics (only with your consent).</strong> If you accept analytics cookies, Google Analytics collects information about your visit, such as:`),
+      subclause('2.2.1', 'the pages you visit, how long you spend on them and what you click on,'),
+      subclause('2.2.2', 'how you arrived at the site, for example from a search engine or another website,'),
+      subclause('2.2.3', 'the type of device, browser and operating system you use, and'),
+      subclause('2.2.4', 'your approximate location (such as country or city), worked out from your IP address. Google Analytics does not store your full IP address.'),
+      clause('2.3', 'Brighton and Co only sees analytics as statistics about visitors as a whole, and does not use it to identify you personally.'),
+      clause('2.4', `<strong class='text-foreground font-semibold'>Technical information.</strong> Like all websites, the service that delivers the Brighton and Co site (Cloudflare) processes your IP address and basic information about your browser, so that pages can be delivered to you and the site can be protected from attacks and abuse.`),
+      clause('2.5', `<strong class='text-foreground font-semibold'>Preferences stored on your device.</strong> Your light/dark mode setting and your cookie choices are saved in your browser's local storage. These stay on your device and are not sent to Brighton and Co.`),
+      clause('2.6', 'There are no user accounts and no payments on the Brighton and Co site. Brighton and Co does not knowingly collect any special category data (such as information about health, religion or ethnicity), so please do not include this in your messages.'),
+    ],
+  },
+  {
+    id: 'how-data-is-used',
+    tocLabel: '3. How Data Is Used',
+    title: '3. How and why your information is used -',
+    content: [
+      clause('3.1', 'Under UK GDPR, Brighton and Co must have a lawful basis for using your personal information. It is used for the following purposes:'),
+      subclause('3.1.1', `<strong class='text-foreground font-semibold'>Replying to your messages</strong> - on the basis of Brighton and Co's legitimate interests in responding to enquiries that you send. Where your message is about buying an item from SHOP: B&Co, Brighton and Co also relies on taking steps at your request before entering into a contract.`),
+      subclause('3.1.2', `<strong class='text-foreground font-semibold'>Analytics</strong> - on the basis of your consent. You can withdraw your consent at any time (see section 4).`),
+      subclause('3.1.3', `<strong class='text-foreground font-semibold'>Delivering and securing the site</strong> - on the basis of Brighton and Co's legitimate interests in keeping the Brighton and Co site working, secure and free from abuse.`),
+      subclause('3.1.4', `<strong class='text-foreground font-semibold'>Complying with the law</strong> - where Brighton and Co is legally required to keep or share information.`),
+      clause('3.2', 'Your information is never used for marketing and is never sold. It is also not used for automated decision-making or profiling that has legal or similarly significant effects on you.'),
+    ],
+  },
+  {
+    id: 'cookies',
+    tocLabel: '4. Cookies & Storage',
+    title: '4. Cookies and local storage -',
+    content: [
+      clause('4.1', 'Cookies and local storage are small pieces of information saved by your browser. Under PECR, any that are not strictly necessary for the site to work can only be used with your consent.'),
+      clause('4.2', 'When you first visit, a banner asks whether you accept analytics cookies. They are not set unless you choose to accept them.'),
+      clause('4.3', `The Brighton and Co site uses Google Consent Mode. This means that if you decline (or before you make a choice), Google Analytics may still receive basic, cookieless signals - such as that a page was viewed - which do not use cookies or identify you.`),
+      clause('4.4', 'The following cookies and local storage items are used:'),
+      storageTable,
+      clause('4.5', `You can change your choices at any time using ${cookieSettingsButton('Privacy Policy')} (also found in the footer of every page), or by clearing cookies and site data in your browser settings.`),
+    ],
+  },
+  {
+    id: 'sharing',
+    tocLabel: '5. Sharing',
+    title: '5. Who your information is shared with -',
+    content: [
+      clause('5.1', `Brighton and Co only shares personal information with service providers that help to run the Brighton and Co site. They act on Brighton and Co's instructions, and only use your information to provide their service:`),
+      subclause('5.1.1', `<strong class='text-foreground font-semibold'>Cloudflare</strong> - hosting, delivery and security for the site,`),
+      subclause('5.1.2', `<strong class='text-foreground font-semibold'>Google</strong> - website analytics, only if you consent,`),
+      subclause('5.1.3', `<strong class='text-foreground font-semibold'>Web3Forms</strong> - delivering messages sent through the contact form to the Brighton and Co inbox,`),
+      subclause('5.1.4', `<strong class='text-foreground font-semibold'>Brighton and Co's email provider</strong> - storing messages and replies, and`),
+      subclause('5.1.5', `<strong class='text-foreground font-semibold'>Sanity</strong> - storing and delivering images for SHOP: B&Co. Your browser loads these images directly from Sanity, which means Sanity receives your IP address.`),
+      clause('5.2', `Brighton and Co may also share information where required by law, for example in response to a court order or a request from the police, or to protect the Brighton and Co site from attacks (see section 9 of the ${link('/about/terms', 'Terms and Conditions')}).`),
+      clause('5.3', 'Brighton and Co will never sell, rent or trade your personal information.'),
+    ],
+  },
+  {
+    id: 'international-transfers',
+    tocLabel: '6. International Transfers',
+    title: '6. International transfers -',
+    content: [
+      clause('6.1', 'Some of the service providers above process information outside the UK, including in the United States.'),
+      clause('6.2', `Where this happens, your information is protected either by UK adequacy regulations (such as the UK Extension to the EU-US Data Privacy Framework, for certified companies), or by approved safeguards such as the ICO's International Data Transfer Agreement or the UK Addendum to the EU Standard Contractual Clauses.`),
+    ],
+  },
+  {
+    id: 'retention',
+    tocLabel: '7. How Long Data Is Kept',
+    title: '7. How long your information is kept -',
+    content: [
+      clause('7.1', '<strong class=\'text-foreground font-semibold\'>Contact messages</strong> and replies are kept for up to 14 months after the last correspondence, unless they are needed for longer - for example, if they relate to a sale or a dispute.'),
+      clause('7.2', '<strong class=\'text-foreground font-semibold\'>Analytics data</strong> is kept by Google Analytics for 14 months. After this, only anonymous, combined statistics remain.'),
+      clause('7.3', '<strong class=\'text-foreground font-semibold\'>Technical and security logs</strong> are kept by Cloudflare for a short period, in line with their own policies.'),
+      clause('7.4', '<strong class=\'text-foreground font-semibold\'>Preferences in local storage</strong> stay on your device until you clear your browser data.'),
+    ],
+  },
+  {
+    id: 'your-rights',
+    tocLabel: '8. Your Rights',
+    title: '8. Your rights -',
+    content: [
+      clause('8.1', 'Under UK GDPR, you have the right to:'),
+      subclause('8.1.1', 'ask for a copy of the personal information Brighton and Co holds about you (a subject access request),'),
+      subclause('8.1.2', 'ask Brighton and Co to correct information that is wrong or incomplete,'),
+      subclause('8.1.3', 'ask Brighton and Co to delete your information,'),
+      subclause('8.1.4', 'ask Brighton and Co to restrict how your information is used,'),
+      subclause('8.1.5', 'object to your information being used, including where Brighton and Co relies on legitimate interests,'),
+      subclause('8.1.6', 'ask for your information to be transferred to you or someone else (data portability), and'),
+      subclause('8.1.7', 'withdraw your consent at any time. This does not affect anything done before you withdrew it.'),
+      clause('8.2', 'Some of these rights only apply in certain circumstances.'),
+      clause('8.3', `To use any of these rights, please use the form on the ${contactPage}. It is free of charge, and Brighton and Co will respond within one month. For complex requests this may be extended by up to two further months, and you will be told if so. Brighton and Co may need to confirm your identity first.`),
+    ],
+  },
+  {
+    id: 'complaints',
+    tocLabel: '9. Complaints',
+    title: '9. Making a complaint -',
+    content: [
+      clause('9.1', `If you are unhappy with how your personal information has been handled, please contact Brighton and Co first using the ${contactPage}, and every effort will be made to put things right.`),
+      clause('9.2', `You also have the right to complain to the Information Commissioner's Office (ICO), the UK's data protection regulator, at ${externalLink('https://ico.org.uk/make-a-complaint/', 'ico.org.uk/make-a-complaint')} or by calling 0303 123 1113.`),
+    ],
+  },
+  {
+    id: 'security-and-children',
+    tocLabel: '10. Security & Children',
+    title: '10. Security and children -',
+    content: [
+      clause('10.1', 'The Brighton and Co site is only served over a secure (HTTPS) connection, and reasonable steps are taken to protect your information. However, no method of sending information over the internet is ever completely secure.'),
+      clause('10.2', 'The Brighton and Co site is not aimed at children under 13. If you are under 13, please do not send any personal information through the contact form. If it is found that personal information from a child under 13 has been received, it will be promptly deleted.'),
+    ],
+  },
+  {
+    id: 'other-websites',
+    tocLabel: '11. Other Websites',
+    title: '11. Other websites -',
+    content: [
+      clause('11.1', `The Brighton and Co site links to other websites, such as Vinted, eBay, Spotify and Steam. These websites have their own privacy policies, and Brighton and Co is not responsible for how they use your information. See section 5 of the ${link('/about/terms', 'Terms and Conditions')} for more information.`),
+    ],
+  },
+  {
+    id: 'changes',
+    tocLabel: '12. Changes',
+    title: '12. Changes to this privacy policy -',
+    content: [
+      clause('12.1', 'This policy may be updated from time to time, for example if the way the site works changes, or if the law changes.'),
+      clause('12.2', 'The date this policy was last updated, and its version number, are shown at the bottom of this page.'),
+    ],
+  },
+];
+---
+
+<PolicyLayout
+  policy={getPolicy('privacy')}
+  intro="How your personal information is collected, used and protected when you visit the Brighton and Co website."
+  sections={sections}
+/>

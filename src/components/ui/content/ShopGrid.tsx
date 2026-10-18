@@ -1,22 +1,21 @@
 import * as React from "react"
 import { 
   ChevronDown, ArrowDownAZ, ArrowUpZA, TrendingUp, TrendingDown, 
-  Sparkles, History, Filter, SlidersHorizontal, RefreshCw, PackageX 
+  Sparkles, History, SlidersHorizontal, RefreshCw, PackageX
 } from "lucide-react" 
-import { Skeleton } from "@/components/ui/shadcn/skeleton"
-import { sanityClient, urlFor } from '@/lib/sanity'
+import type { CardImage } from "@/lib/sanity"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/shadcn/select"
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/shadcn/sheet"
 import { SiVinted, SiEbay } from "react-icons/si"
 
-export interface ProductImage { thumb: string; full: string; }
-export interface Product {
-  id: string; title: string; slug: string; price: string; description: string;
-  images: ProductImage[]; url: string; condition?: string; size?: string; fit?: string;
-  createdAt?: string; category?: string; storeName: "Vinted" | "eBay";
-  features?: string[];
-  materials?: string[];
+export interface ShopProduct {
+  id: string; title: string; slug: string; price: string;
+  images: CardImage[]; size?: string; createdAt?: string; category?: string;
+  storeName: "Vinted" | "eBay";
 }
+
+// Card width: 2 columns on mobile, 3 from md, 4 from lg (capped by the container)
+const CARD_SIZES = "(min-width: 1280px) 290px, (min-width: 1024px) calc(25vw - 40px), (min-width: 768px) calc(33vw - 40px), calc(50vw - 32px)";
 
 const trackEvent = (eventName: string, params: Record<string, any>) => {
   if (typeof window === 'undefined') return;
@@ -31,7 +30,7 @@ function FilterSection({ title, children }: { title: string, children: React.Rea
   const [isOpen, setIsOpen] = React.useState(true);
   return (
     <div className="space-y-3">
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between py-2 border-b border-border text-sm font-semibold text-foreground hover:text-brand-500 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between py-2 border-b border-border text-sm font-semibold text-foreground hover:text-foreground-muted transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
         {title}
         <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -40,23 +39,11 @@ function FilterSection({ title, children }: { title: string, children: React.Rea
   );
 }
 
-function ProductCard({ product, isPriority }: { product: Product, isPriority?: boolean }) {
+function ProductCard({ product, isPriority }: { product: ShopProduct, isPriority?: boolean }) {
   const [activeIndex, setActiveIndex] = React.useState(0);
-  const [loadedImages, setLoadedImages] = React.useState<Record<string, boolean>>({});
-  
-  // Track if the viewport is desktop to determine how many images to load
-  const [isDesktop, setIsDesktop] = React.useState(
-    typeof window !== "undefined" ? window.innerWidth >= 1024 : true
-  );
-
-  React.useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  
-  // Limit scrubber to max 3 images on desktop, and strictly 1 image on mobile
-  const previewImages = product.images.slice(0, isDesktop ? 3 : 1);
+  // The extra preview images (for the hover scrubber) only load once the card is hovered
+  const [hasHovered, setHasHovered] = React.useState(false);
+  const previewImages = product.images.slice(0, 3);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (previewImages.length <= 1) return;
@@ -68,41 +55,37 @@ function ProductCard({ product, isPriority }: { product: Product, isPriority?: b
   };
 
   const handleMouseLeave = () => setActiveIndex(0);
-  const handleImageLoad = (key: string) => setLoadedImages(prev => ({ ...prev, [key]: true }));
 
   const PlatformIcon = product.storeName === "Vinted" ? SiVinted : SiEbay;
   const platformColor = product.storeName === "Vinted" ? "#017573" : "#0064D2";
 
   return (
     <a href={`/shop/${product.slug}`} className="group flex flex-col gap-3 outline-none h-full">
-      <figure 
-        className="relative w-full aspect-[3/4] overflow-hidden rounded-2xl bg-surface-secondary shadow-sm group-hover:shadow-lg transition-all duration-300"
+      <figure
+        className="relative w-full aspect-[3/4] overflow-hidden rounded-2xl bg-surface-secondary shadow-sm hover-lift-child"
+        onMouseEnter={() => setHasHovered(true)}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
         <div className="absolute top-3 left-3 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-background/90 backdrop-blur shadow-sm border border-border">
-          <PlatformIcon className="w-4 h-4" style={{ color: platformColor }} />
+          <PlatformIcon className="w-4 h-4" style={{ color: platformColor }} title={product.storeName} />
         </div>
 
-        {previewImages.map((imgObj, i) => {
-          const isLoaded = loadedImages[`card-${i}`];
-          return (
-            <React.Fragment key={i}>
-              {!isLoaded && activeIndex === i && <Skeleton className="absolute inset-0 w-full h-full rounded-none z-10" />}
-              <img 
-                src={imgObj.thumb} 
-                alt={`${product.title} - Preview ${i + 1}`} 
-                onLoad={() => handleImageLoad(`card-${i}`)}
-                className={`absolute inset-0 object-cover w-full h-full transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-                style={{ zIndex: activeIndex === i ? 10 : 0 }}
-                loading={isPriority && i === 0 ? "eager" : "lazy"} 
-                decoding="async"
-              />
-            </React.Fragment>
-          );
-        })}
+        {previewImages.map((imgObj, i) => (i === 0 || hasHovered) && (
+          <img
+            key={i}
+            src={imgObj.src}
+            srcSet={imgObj.srcset}
+            sizes={CARD_SIZES}
+            alt={`${product.title} - Preview ${i + 1}`}
+            className="absolute inset-0 object-cover w-full h-full"
+            style={{ zIndex: activeIndex === i ? 10 : 0 }}
+            loading={isPriority && i === 0 ? "eager" : "lazy"}
+            decoding="async"
+          />
+        ))}
         {previewImages.length > 1 && (
-          <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center gap-1.5 px-4">
+          <div className="absolute bottom-3 left-0 right-0 z-20 hidden lg:flex justify-center gap-1.5 px-4">
             {previewImages.map((_, i) => (
               <div key={i} className={`h-1 rounded-full transition-all duration-300 ${activeIndex === i ? 'w-4 bg-white' : 'w-1.5 bg-white/50'}`} />
             ))}
@@ -111,7 +94,7 @@ function ProductCard({ product, isPriority }: { product: Product, isPriority?: b
       </figure>
 
       <div className="flex flex-col flex-grow px-1">
-        <h2 className="text-sm md:text-base font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-brand-500 transition-colors">
+        <h2 className="text-sm md:text-base font-semibold text-foreground leading-snug line-clamp-2">
           {product.title}
         </h2>
         {/* mt-auto pushes the price to the bottom, aligning it with all other items in the row */}
@@ -123,37 +106,17 @@ function ProductCard({ product, isPriority }: { product: Product, isPriority?: b
   );
 }
 
-export function ShopGrid({ children }: { children?: React.ReactNode }) {
-  const [products, setProducts] = React.useState<Product[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+export function ShopGrid({ products, children }: { products: ShopProduct[], children?: React.ReactNode }) {
   const [sortOption, setSortOption] = React.useState<string>("date-desc");
   const [selectedPlatforms, setSelectedPlatforms] = React.useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = React.useState<string[]>([]);
 
-  React.useEffect(() => {
-    const fetchLiveProducts = async () => {
-      try {
-        const query = `*[_type == "product"]`;
-        const data = await sanityClient.fetch(query);
-        const formattedData = data.map((item: any) => ({
-          ...item, id: item._id, slug: item.slug?.current || '', createdAt: item._createdAt, category: item.category, size: item.size, condition: item.condition, storeName: item.storeName,
-          images: item.images?.map((img: any) => ({
-            thumb: urlFor(img).width(600).format('webp').quality(80).url(), full: urlFor(img).width(1600).format('webp').quality(90).url()
-          })) || []
-        })).filter((item: Product) => item.slug); // ensure slug exists
-        setProducts(formattedData);
-      } catch (error) { console.error("Failed to fetch products:", error); } 
-      finally { setIsLoading(false); }
-    };
-    fetchLiveProducts();
-  }, []);
-
   const availableCategories = React.useMemo(() => Array.from(new Set(products.map(p => p.category).filter(Boolean) as string[])).sort(), [products]);
   const availableSizes = React.useMemo(() => Array.from(new Set(products.map(p => p.size).filter(Boolean) as string[])).sort(), [products]);
   const availablePlatforms = ["Vinted", "eBay"];
 
-  const matchesFilter = React.useCallback((p: Product) => {
+  const matchesFilter = React.useCallback((p: ShopProduct) => {
     const platformMatch = selectedPlatforms.length === 0 || selectedPlatforms.includes(p.storeName);
     const categoryMatch = selectedCategories.length === 0 || (p.category && selectedCategories.includes(p.category));
     const sizeMatch = selectedSizes.length === 0 || (p.size && selectedSizes.includes(p.size));
@@ -185,7 +148,7 @@ export function ShopGrid({ children }: { children?: React.ReactNode }) {
   const FilterCheckbox = ({ label, isChecked, onChange, filterType }: { label: string, isChecked: boolean, onChange: (checked: boolean) => void, filterType: string }) => (
     <label className="flex items-center justify-between cursor-pointer group">
       <div className="flex items-center gap-3">
-        <div className="relative flex items-center justify-center w-5 h-5 border border-border rounded shadow-sm group-hover:border-brand-500 transition-colors bg-background shrink-0">
+        <div className="relative flex items-center justify-center w-5 h-5 border border-border rounded shadow-sm group-hover:border-foreground-muted transition-colors bg-background shrink-0">
           <input type="checkbox" className="peer sr-only" checked={isChecked} onChange={(e) => {
             const checked = e.target.checked; onChange(checked);
             trackEvent('use_filter', { filter_type: filterType, filter_value: label, filter_action: checked ? 'add' : 'remove' });
@@ -194,7 +157,7 @@ export function ShopGrid({ children }: { children?: React.ReactNode }) {
             <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
           </div>
         </div>
-        <span className="text-sm font-medium text-foreground group-hover:text-brand-500 transition-colors">{label}</span>
+        <span className="text-sm font-medium text-foreground group-hover:text-foreground-muted transition-colors">{label}</span>
       </div>
     </label>
   );
@@ -205,17 +168,6 @@ export function ShopGrid({ children }: { children?: React.ReactNode }) {
     { value: "date-desc", label: "Newest First", icon: Sparkles }, { value: "date-asc", label: "Oldest First", icon: History },
   ];
 
-  if (isLoading) {
-    return (
-      <div className="w-full flex flex-col">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8"><div className="flex-1">{children}</div></div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 w-full">
-          {[...Array(8)].map((_, i) => ( <Skeleton key={i} className="w-full aspect-[3/4] rounded-2xl" /> ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full flex flex-col">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
@@ -224,7 +176,7 @@ export function ShopGrid({ children }: { children?: React.ReactNode }) {
           
           <Sheet>
             <SheetTrigger asChild>
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 h-11 px-6 rounded-xl bg-surface-primary border border-border text-foreground shadow-sm hover:shadow-md transition-all font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 h-11 px-6 rounded-xl bg-surface-primary border border-border text-foreground shadow-sm hover-lift font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <SlidersHorizontal className="w-4 h-4 text-foreground-muted" /><span>Filters</span>
                 {totalActiveFilters > 0 && (<span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand-500 text-white text-[10px] font-bold">{totalActiveFilters}</span>)}
               </button>
@@ -243,7 +195,7 @@ export function ShopGrid({ children }: { children?: React.ReactNode }) {
                     <SelectContent position="popper" sideOffset={8} className="rounded-xl border-border bg-background shadow-2xl z-[200]">
                       <SelectGroup>
                         {sortOptionsData.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value} className="cursor-pointer py-2 focus:bg-accent focus:text-accent-foreground">
+                          <SelectItem key={opt.value} value={opt.value} className="cursor-pointer py-2 focus:bg-secondary focus:text-foreground">
                             <div className="flex items-center gap-2.5"><opt.icon className="w-4 h-4 text-foreground-muted" /><span>{opt.label}</span></div>
                           </SelectItem>
                         ))}
@@ -270,7 +222,7 @@ export function ShopGrid({ children }: { children?: React.ReactNode }) {
               </div>
 
               <SheetFooter className="p-6 border-t border-border mt-auto">
-                <button onClick={clearAllFilters} disabled={totalActiveFilters === 0} className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-foreground bg-surface-secondary border border-border transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent hover:text-accent-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <button onClick={clearAllFilters} disabled={totalActiveFilters === 0} className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-foreground bg-surface-secondary border border-border hover-lift active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <RefreshCw className="w-4 h-4" /> Clear Filters
                 </button>
               </SheetFooter>
@@ -279,13 +231,13 @@ export function ShopGrid({ children }: { children?: React.ReactNode }) {
 
           <div className="hidden md:block relative shrink-0 w-[240px]">
             <Select value={sortOption} onValueChange={(val) => setSortOption(val)}>
-              <SelectTrigger aria-label="Sort products" className="w-full !h-11 px-4 bg-surface-primary border-border text-foreground rounded-xl shadow-sm hover:shadow-md transition-all font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <SelectTrigger aria-label="Sort products" className="w-full !h-11 px-4 bg-surface-primary border-border text-foreground rounded-xl shadow-sm hover-lift font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <div className="flex items-center gap-2 overflow-hidden"><span className="text-foreground-muted font-normal shrink-0">Sort by:</span><SelectValue placeholder="Newest First" /></div>
               </SelectTrigger>
               <SelectContent position="popper" sideOffset={8} className="rounded-xl border-border bg-background shadow-2xl z-[100]">
                 <SelectGroup>
                   {sortOptionsData.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value} className="cursor-pointer py-2 focus:bg-accent focus:text-accent-foreground">
+                    <SelectItem key={opt.value} value={opt.value} className="cursor-pointer py-2 focus:bg-secondary focus:text-foreground">
                       <div className="flex items-center gap-2.5"><opt.icon className="w-4 h-4 text-foreground-muted" /><span>{opt.label}</span></div>
                     </SelectItem>
                   ))}

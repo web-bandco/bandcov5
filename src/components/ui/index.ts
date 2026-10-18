@@ -6,13 +6,12 @@
  *
  * Categories:
  * - form: Button, Input, Textarea, Select, Checkbox, Radio, Switch
- * - data-display: Card, Badge, Avatar, AvatarGroup, Table, Pagination, Progress, Skeleton
- * - feedback: Alert, Toast, Tooltip
- * - overlay: Dialog, Dropdown, Tabs, VerticalTabs, Accordion
+ * - data-display: Card, Badge, Avatar, Table, Pagination, Progress, Skeleton
+ * - feedback: Alert, Toast
+ * - overlay: Dialog, Tabs, Accordion
  * - layout: Separator
  * - primitives: Icon
- * - content: CodeBlock
- * - marketing: Logo, CTA, NpmCopyButton, SocialProof, TerminalDemo
+ * - marketing: Logo, CTA
  */
 
 // Form Components
@@ -32,9 +31,6 @@ export * from './layout';
 
 // Primitive Components
 export * from './primitives';
-
-// Content Components
-export * from './content';
 
 // Marketing Components
 export * from './marketing';

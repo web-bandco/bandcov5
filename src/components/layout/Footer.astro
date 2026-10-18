@@ -22,9 +22,8 @@ import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 
 import siteConfig from '@/config/site.config';
 
-import { Home } from 'lucide-react';
 
-import { ExternalLink } from '@/components/ui/content/ExternalLink';
+import ExternalLink from '@/components/ui/content/ExternalLink.astro';
 
 
 export interface NavItem {
@@ -260,11 +259,10 @@ function getSocialIcon(platform: string): string {
 
               <ExternalLink
 
-                client:visible
 
                 href={item.href}
 
-                className="transition-colors hover:text-foreground"
+                class="transition-colors hover:text-foreground"
 
                 showIndicator={true}
 
@@ -313,11 +311,10 @@ function getSocialIcon(platform: string): string {
 
                 <ExternalLink
 
-                  client:visible
 
                   href={social.href}
 
-                  className="transition-colors text-foreground-muted hover:text-foreground"
+                  class="transition-colors text-foreground-muted hover:text-foreground"
 
                   showIndicator={false}
 
@@ -394,11 +391,10 @@ function getSocialIcon(platform: string): string {
 
                     <ExternalLink
 
-                      client:visible
 
                       href={social.href}
 
-                      className="transition-colors text-foreground-muted hover:text-foreground"
+                      class="transition-colors text-foreground-muted hover:text-foreground"
 
                       showIndicator={false}
 
@@ -455,11 +451,10 @@ function getSocialIcon(platform: string): string {
 
                           <ExternalLink
 
-                            client:visible
 
                             href={link.href}
 
-                            className="text-sm transition-colors text-foreground-muted hover:text-foreground"
+                            class="text-sm transition-colors text-foreground-muted hover:text-foreground"
 
                             showIndicator={true}
 
@@ -540,11 +535,10 @@ function getSocialIcon(platform: string): string {
 
                         <ExternalLink
 
-                          client:visible
 
                           href={link.href}
 
-                          className="text-sm transition-colors text-foreground-muted hover:text-foreground"
+                          class="text-sm transition-colors text-foreground-muted hover:text-foreground"
 
                           showIndicator={true}
 
@@ -662,11 +656,10 @@ function getSocialIcon(platform: string): string {
 
               <ExternalLink
 
-                client:visible
 
                 href={item.href}
 
-                className="transition-colors hover:text-foreground"
+                class="transition-colors hover:text-foreground"
 
                 showIndicator={true}
 
@@ -709,11 +702,10 @@ function getSocialIcon(platform: string): string {
 
               <ExternalLink
 
-                client:visible
 
                 href={social.href}
 
-                className="transition-colors text-foreground-muted hover:text-foreground"
+                class="transition-colors text-foreground-muted hover:text-foreground"
 
                 showIndicator={false}
 
@@ -762,11 +754,10 @@ function getSocialIcon(platform: string): string {
 
                     <ExternalLink
 
-                      client:visible
 
                       href={link.href}
 
-                      className="text-sm transition-colors text-foreground-muted hover:text-foreground"
+                      class="text-sm transition-colors text-foreground-muted hover:text-foreground"
 
                       showIndicator={true}
 

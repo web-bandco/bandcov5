@@ -13,13 +13,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/shadcn/dialog"
-import { Skeleton } from "@/components/ui/shadcn/skeleton"
 import { Spinner } from "@/components/ui/shadcn/spinner"
 
 export interface CarouselImage {
   src: string;
-  fullSrc: string; 
-  width?: number; 
+  srcset?: string;
+  fullSrc: string;
+  width?: number;
   height?: number;
   alt: string;
 }
@@ -27,6 +27,10 @@ export interface CarouselImage {
 interface ImageCarouselProps {
   images: CarouselImage[];
   galleryName?: string;
+  /** Rendered width of the carousel, used to pick the right image from srcset */
+  sizes?: string;
+  /** Load the first image straight away (for carousels near the top of the page) */
+  priority?: boolean;
 }
 
 // ── GA4 TRACKING HELPER ──
@@ -40,14 +44,13 @@ const trackEvent = (eventName: string, params: Record<string, any>) => {
 };
 // -------------------------
 
-export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }: ImageCarouselProps) {
+export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", sizes = "(min-width: 1024px) 50vw, calc(100vw - 56px)", priority = false }: ImageCarouselProps) {
   const [mainApi, setMainApi] = React.useState<CarouselApi>()
   const [dialogApi, setDialogApi] = React.useState<CarouselApi>()
-  
+
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedIndex, setSelectedIndex] = React.useState(0)
-  
-  const [gridLoadedImages, setGridLoadedImages] = React.useState<Record<string, boolean>>({})
+
   const [lightboxLoadedImages, setLightboxLoadedImages] = React.useState<Record<string, boolean>>({})
 
   const getActiveWindow = React.useCallback((currentIndex: number, total: number) => {
@@ -64,7 +67,8 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }:
     return window;
   }, []);
 
-  const [mainActiveSlides, setMainActiveSlides] = React.useState<Set<number>>(new Set())
+  // The first slide is rendered on the server so it loads without waiting for JavaScript
+  const [mainActiveSlides, setMainActiveSlides] = React.useState<Set<number>>(() => new Set([0]))
   const [lightboxActiveSlides, setLightboxActiveSlides] = React.useState<Set<number>>(new Set())
 
   React.useEffect(() => {
@@ -132,10 +136,6 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }:
     });
   }
 
-  const handleGridImageLoad = (key: string) => {
-    setGridLoadedImages((prev) => ({ ...prev, [key]: true }));
-  };
-
   const handleLightboxImageLoad = (key: string) => {
     setLightboxLoadedImages((prev) => ({ ...prev, [key]: true }));
   };
@@ -152,33 +152,29 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery" }:
         <CarouselContent>
           {images.map((image, index) => {
             const shouldLoad = mainActiveSlides.has(index);
-            const isLoaded = gridLoadedImages[`main-${index}`];
-            
+            const isPriority = priority && index === 0;
+
             return (
               <CarouselItem key={index}>
                 <div className="p-1">
                   <DialogTrigger asChild>
-                    <button 
+                    <button
                       type="button"
                       aria-label={`View full image: ${image.alt}`}
                       onClick={() => handleImageClick(index)}
-                      className="w-full block overflow-hidden rounded-2xl border border-border bg-surface-primary shadow-sm aspect-[4/3] relative flex items-center justify-center cursor-pointer p-0 focus-visible:ring-2 focus-visible:ring-ring outline-none"
+                      className="w-full block overflow-hidden rounded-2xl border border-border bg-surface-secondary shadow-sm aspect-[4/3] relative flex items-center justify-center cursor-pointer p-0 focus-visible:ring-2 focus-visible:ring-ring outline-none"
                     >
-                      {!isLoaded && (
-                        <Skeleton className="absolute inset-0 w-full h-full rounded-none z-10" />
-                      )}
-                      
                       {shouldLoad && (
-                        <img 
-                          src={image.src} 
-                          alt={image.alt} 
-                          onLoad={() => handleGridImageLoad(`main-${index}`)}
-                          ref={(img) => {
-                            if (img && img.complete && !isLoaded) {
-                              handleGridImageLoad(`main-${index}`);
-                            }
-                          }}
-                          className={`absolute inset-0 object-cover w-full h-full transition-opacity duration-300 z-0 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        <img
+                          src={image.src}
+                          srcSet={image.srcset}
+                          sizes={sizes}
+                          width={image.width}
+                          height={image.height}
+                          alt={image.alt}
+                          className="absolute inset-0 object-cover w-full h-full"
+                          loading={isPriority ? "eager" : "lazy"}
+                          fetchPriority={isPriority ? "high" : undefined}
                           decoding="async"
                         />
                       )}

@@ -1,187 +1,265 @@
 ---
+/**
+ * About page
+ * URL: /about
+ */
 import PageLayout from '@/layouts/PageLayout.astro';
-import Badge from '@/components/ui/data-display/Badge/Badge.astro';
 import { Hero } from '@/components/hero';
-import CTA from '@/components/landing/CTA.astro';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 import Accordion from '@/components/ui/overlay/Accordion';
-import TechStack from '@/components/landing/TechStack.astro';
 import { ImageCarousel } from '@/components/ui/content/ImageCarousel';
+import CTA from '@/components/landing/CTA.astro';
+import JsonLd from '@/components/seo/JsonLd.astro';
+import PolicyCard from '@/components/policy/PolicyCard.astro';
+import { policies } from '@/config/policies.config';
+import siteConfig from '@/config/site.config';
+import packageData from '../../../package.json';
+import type { AboutPage, WithContext } from 'schema-dts';
 
-// NEW RELOCATED COMPONENTS FROM INDEX
-import { HomeTabs } from '@/components/landing/HomeTabs';
-import FeatureTabs from '@/components/landing/FeatureTabs.tsx';
+import { Image } from 'astro:assets';
+import { toGalleryImages } from '@/lib/images';
 
-import { Image, getImage } from 'astro:assets';
+import hiwaveImg from '@/assets/images/memoji/hi-wave.png';
+import shopLogo from '@/assets/branding/shoplogo.png';
+import gameLogo from '@/assets/branding/gamelogo.jpg';
+import musicLogo from '@/assets/branding/musiclogo.jpg';
 
-import pennyImg from '../assets/images/cats/penny.jpg';
-import poppyImg from '../assets/images/cats/poppy.jpg';
-import lunaImg from '../assets/images/cats/luna.jpg';
+import pennyImg from '@/assets/images/cats/penny.jpg';
+import poppyImg from '@/assets/images/cats/poppy.jpg';
+import lunaImg from '@/assets/images/cats/luna.jpg';
+import badmintonImg from '@/assets/images/hobbies/badminton.jpg';
+import computerImg from '@/assets/images/hobbies/mycomputer.jpg';
+import gymImg from '@/assets/images/hobbies/atgym.jpg';
 
-import badmintonImg from '../assets/images/hobbies/badminton.jpg';
-import computerImg from '../assets/images/hobbies/mycomputer.jpg';
-import gymImg from '../assets/images/hobbies/atgym.jpg';
-
-import hiwaveImg from '../assets/images/memoji/hi-wave.png';
-
-const webinfo = [
+// THE B&CO FAMILY
+const brands = [
   {
-    title: "Brighton and Co Version 5",
-    content: "Based on the Velocity template by Southwell Media. This theme teplate leverages a large number of pre-built components, which are then tailored to Brighton and Co.",
+    name: 'SHOP: B&Co',
+    logo: shopLogo,
+    description: 'Pre-loved clothing, tech and more, from my Vinted and eBay inventories.',
+    href: '/shop',
+    label: 'Visit the Shop',
+    external: false,
+  },
+  {
+    name: 'GAME: B&Co',
+    logo: gameLogo,
+    description: 'The games I am playing right now, plus my library and achievements on Steam.',
+    href: 'https://steamcommunity.com/id/game-bandco/',
+    label: 'View on Steam',
+    external: true,
+  },
+  {
+    name: 'MUSIC: B&Co',
+    logo: musicLogo,
+    description: 'What I am listening to, with my playlists and favourites on Spotify.',
+    href: 'https://open.spotify.com/user/itsharryb_?si=19a4b2c62618408b',
+    label: 'Listen on Spotify',
+    external: true,
+  },
+];
+
+// CAROUSELS
+const catPhotos = await toGalleryImages([
+  { img: pennyImg, alt: 'Penny, a British shorthair black cat with orange eyes, laid by the window.' },
+  { img: poppyImg, alt: 'Poppy, a British shorthair blue cat, with orange eyes, stood up by the window.' },
+  { img: lunaImg, alt: 'Luna, a British shorthair fawn-coloured cat, with orange eyes sat like a loaf on a similar coloured carpet.' },
+]);
+
+const hobbyPhotos = await toGalleryImages([
+  { img: badmintonImg, alt: 'Me and my girlfriend playing badminton.' },
+  { img: computerImg, alt: 'The internals of a Desktop PC I had.' },
+  { img: gymImg, alt: 'A photo of some dumbbells at the gym.' },
+]);
+
+// The two carousels sit side by side from lg upwards, full width (minus padding) below
+const carouselSizes = '(min-width: 1280px) 600px, (min-width: 1024px) 46vw, calc(100vw - 56px)';
+
+// ABOUT THE SITE
+const siteFacts = [
+  { label: 'Version', value: `v${packageData.version}` },
+  { label: 'Built with', value: 'Astro 7' },
+  { label: 'Based on', value: 'Velocity by Southwell Media' },
+  { label: 'Hosted on', value: 'Cloudflare' },
+  { label: 'Made in', value: 'The United Kingdom (UK)' },
+];
+
+const faqs = [
+  {
+    title: 'Who runs Brighton and Co?',
+    content: 'Just me, Harry B. I design, build and run the whole site myself, in my free time.',
     defaultOpen: true,
   },
   {
-    title: "Improvements",
-    content: "A completely brand new look, with more fluid, uniform styling and animations.",
+    title: 'Is B&Co a business?',
+    content: 'No - Brighton and Co is a personal website and hobby project. Items from SHOP: B&Co are listed and bought through Vinted and eBay, under their own terms.',
   },
   {
-    title: "Performance",
-    content: "Brighton and Co Version 5 uses pre-built components, built to be as lightweight and efficient as possible, whilst remaining fully accessible to every user.",
+    title: 'Are the photos on the site original?',
+    content: 'Yes. Every photo is taken by me, and none are generated by AI. Please read the Terms and Conditions before using any of them.',
   },
   {
-    title: "Visual Changes",
-    content: "With Brighton and Co Version 5, the site has a completely refreshed look and feel, with more fluid animations. Moreover, a more comprehensive design system provides a more uniform and cohesive website design.",
+    title: 'How can I get in touch?',
+    content: 'Use the form on the Contact page - you should get a reply within 48 hours.',
   },
-  {
-    title: "More Customisation",
-    content: "With the range of components available with the Velocity theme template, there are far greater options and much greater potential for future developments to Brighton and Co.",
-  },
-  {
-    title: "More Content",
-    content: "The potential for more content and features for the site is seemingly exponentially increased with the Velocity theme teplate. Blog posts in particular will benefit from this new design.",
-  }
-]
-
-const rawCatPhotos = [
-  { img: pennyImg, alt: "Penny, a British shorthair black cat with orange eyes, laid by the window." },
-  { img: poppyImg, alt: "Poppy, a British shorthair blue cat, with orange eyes, stood up by the window." },
-  { img: lunaImg, alt: "Luna, a British shorthair fawn-coloured cat, with orange eyes sat like a loaf on a similar coloured carpet." },
 ];
 
-const catPhotos = await Promise.all(
-  rawCatPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
-    
-    return { 
-      src: thumb.src,       
-      fullSrc: full.src,    
-      alt: photo.alt 
-    };
-  })
-);
-
-const rawHobbyPhotos = [
-  { img: badmintonImg, alt: "Me and my girlfriend playing badminton." },
-  { img: computerImg, alt: "The internals of a Desktop PC I had." },
-  { img: gymImg, alt: "A photo of some dumbbells at the gym." },
-];
-
-const hobbyPhotos = await Promise.all(
-  rawHobbyPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'webp', width: 600, quality: 80 });
-    const full = await getImage({ src: photo.img, format: 'webp', width: 1600, quality: 90 });
-    
-    return { 
-      src: thumb.src, 
-      fullSrc: full.src, 
-      alt: photo.alt 
-    };
-  })
-);
+const aboutSchema: WithContext<AboutPage> = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About Brighton and Co',
+  url: new URL('/about', siteConfig.url).toString(),
+  mainEntity: {
+    '@type': 'Person',
+    name: 'Harry Brighton',
+    url: siteConfig.url,
+    sameAs: siteConfig.socialLinks,
+  },
+};
 ---
 
 <PageLayout
   title="About"
-  description="About Brighton and Co - who we are, what this site is, and more."
+  description="About Brighton and Co - who runs it, the B&Co family, the site itself, and its policies."
 >
+  <JsonLd schema={aboutSchema} />
+
+  {/* HERO */}
   <Hero layout="split" size="sm">
-    <Badge slot="badge" pill pulse>Want to know more about B&CO?</Badge>
+    <Badge slot="badge" pill pulse>Get to know B&Co</Badge>
     <h1 slot="title">
-      {/* ACCESSIBILITY: Updated text color to 700 to pass contrast ratio checks */}
-      About <span class="text-brand-700 dark:text-brand-400">B&CO</span>
+      About <span class="text-brand-700 dark:text-brand-400">B&Co</span>
     </h1>
     <p slot="description">
-      Learn more about Brighton and Co - who made what you're looking at right now, and more.
+      Who is behind Brighton and Co, the different parts of B&Co, a little about the site itself, and the policies that cover it.
     </p>
 
-    <div slot="aside" class="flex flex-col items-center text-center bg-surface-primary border border-border rounded-2xl shadow-sm p-8 w-full max-w-sm mx-auto transition-all hover:shadow-md">
+    <div slot="aside" class="flex flex-col items-center text-center bg-card border border-border rounded-3xl shadow-sm p-8 w-full max-w-sm mx-auto">
       <figure class="w-32 h-32 mb-6">
         <Image
           src={hiwaveImg}
-          alt="My memoji waving" 
+          alt="My memoji waving"
           width={256}
           loading="eager"
           fetchpriority="high"
-          class="w-full h-full object-contain drop-shadow-sm hover:scale-105 transition-transform duration-300" 
+          class="w-full h-full object-contain drop-shadow-sm"
         />
       </figure>
       <h2 class="text-2xl font-bold text-foreground mb-2">Hello there!</h2>
       <p class="text-foreground-muted leading-relaxed">I'm Harry, the creator of Brighton and Co.</p>
     </div>
   </Hero>
-  
-  <section class="py-16 bg-surface-secondary border-y border-border">
-    <div class="container max-w-6xl">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-start">
-        
-        <div class="flex flex-col gap-6">
-          <div class="text-center lg:text-left">
-            <h2 class="text-3xl font-bold text-foreground">Meet the Cats</h2>
-            <p class="text-foreground-muted mt-2">The real bosses behind Brighton and Co.</p>
-          </div>
-          <ImageCarousel images={catPhotos} client:visible />
-        </div>
 
-        <div class="flex flex-col gap-6">
-          <div class="text-center lg:text-left">
-            <h2 class="text-3xl font-bold text-foreground">Hobbies & Interests</h2>
-            <p class="text-foreground-muted mt-2">Some of the other things I do in my free time.</p>
-          </div>
-          <ImageCarousel images={hobbyPhotos} client:visible />
-        </div>
-
-      </div>
-    </div>
-  </section>
-  
-  <section class="py-12 md:py-16">
-      <div class="container max-w-3xl">
-        <div class="text-center mb-10">
-          <h2 class="text-3xl font-bold text-foreground">About the Site:</h2>
-          <p class="text-foreground-muted mt-2">Some key details about this site.</p>
-        </div>
-        
-        <Accordion 
-         items={webinfo} 
-         variant="card" 
-         size="lg" 
-         exclusive={true}
-      />
-    </div>
-  </section>
-  
-
-  {/* RELOCATED: Under The Hood (Technical Features) */}
-  <section class="py-16 md:py-24 bg-surface-primary border-t border-border">
+  {/* THE B&CO FAMILY */}
+  <section class="py-16 md:py-24 bg-background-secondary border-y border-border" aria-labelledby="brands-heading">
     <div class="mx-auto max-w-7xl px-6">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-foreground">Under the Hood</h2>
-        <p class="text-foreground-muted mt-2 text-lg">A look at the technical features powering Brighton and Co Version 5.</p>
+      <div class="mb-12 text-center md:text-left">
+        <h2 id="brands-heading" class="text-3xl md:text-4xl font-bold text-foreground">The B&Co Family</h2>
+        <p class="text-foreground-muted mt-2 text-lg">Brighton and Co is more than just this website.</p>
       </div>
-      
-      <div class="grid grid-cols-1 lg:grid-cols-10 gap-16 lg:gap-0 items-start">
-        <div class="w-full flex flex-col lg:col-span-3 lg:pr-12">
-          <HomeTabs client:visible />
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        {brands.map((brand) => (
+          <a
+            href={brand.href}
+            {...(brand.external && { target: '_blank', rel: 'noopener noreferrer', 'data-external-link': '' })}
+            data-analytics-nav="About Brands"
+            data-nav-label={brand.name}
+            class="group flex flex-col items-center text-center h-full bg-background rounded-3xl border border-border p-8 shadow-sm hover-lift outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <Image
+              src={brand.logo}
+              alt=""
+              width={192}
+              height={192}
+              loading="lazy"
+              class="w-24 h-24 rounded-full object-cover shadow-md ring-4 ring-background-secondary mb-6"
+            />
+            <h3 class="text-2xl font-bold text-foreground tracking-tight mb-2">{brand.name}</h3>
+            <p class="text-foreground-muted text-sm md:text-base leading-relaxed mb-6">{brand.description}</p>
+            <span class="mt-auto inline-flex items-center text-brand-700 dark:text-brand-400 font-bold uppercase tracking-widest text-xs">
+              {brand.label}
+              {brand.external && <span class="sr-only">(opens an external site)</span>}
+              <Icon
+                name={brand.external ? 'external-link' : 'arrow-right'}
+                class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+              />
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* CATS & HOBBIES */}
+  <section class="py-16 md:py-24 bg-background" aria-label="Cats, hobbies and interests">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-12 items-start">
+        <div class="flex flex-col gap-8">
+          <div class="text-center md:text-left">
+            <h2 class="text-3xl md:text-4xl font-bold text-foreground">Meet the Cats</h2>
+            <p class="text-foreground-muted mt-2 text-lg">The real bosses behind Brighton and Co.</p>
+          </div>
+          <ImageCarousel images={catPhotos} galleryName="About Cats" sizes={carouselSizes} priority client:visible />
         </div>
-        <div class="w-full flex flex-col lg:col-span-7 border-l-0 lg:border-l border-border lg:pl-12">
-          <FeatureTabs client:visible />
+
+        <div class="flex flex-col gap-8">
+          <div class="text-center md:text-left">
+            <h2 class="text-3xl md:text-4xl font-bold text-foreground">Hobbies & Interests</h2>
+            <p class="text-foreground-muted mt-2 text-lg">Some of the other things I do in my free time.</p>
+          </div>
+          <ImageCarousel images={hobbyPhotos} galleryName="About Hobbies" sizes={carouselSizes} client:visible />
         </div>
       </div>
     </div>
   </section>
 
-  
+  {/* ABOUT THE SITE */}
+  <section class="py-16 md:py-24 bg-background-secondary border-y border-border" aria-labelledby="site-heading">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="mb-12 text-center md:text-left">
+        <h2 id="site-heading" class="text-3xl md:text-4xl font-bold text-foreground">About the Site</h2>
+        <p class="text-foreground-muted mt-2 text-lg">What you are looking at right now, and the answers to some common questions.</p>
+      </div>
 
-  <TechStack />
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-5 bg-background rounded-3xl border border-border p-8 shadow-sm">
+          <h3 class="text-2xl font-bold text-foreground tracking-tight mb-4">Brighton and Co Version 5</h3>
+          <p class="text-foreground-muted text-sm md:text-base leading-relaxed mb-6">
+            Brighton and Co is my personal website and hobby project - the place where I dive deeper into web development and share the things I am interested in. Version 5 is a complete redesign, with a more consistent design system, smoother animations and faster pages.
+          </p>
+          <dl class="divide-y divide-border/50 border-t border-border/50 text-sm">
+            {siteFacts.map((fact) => (
+              <div class="flex items-center justify-between gap-4 py-3">
+                <dt class="text-foreground-muted">{fact.label}</dt>
+                <dd class="font-medium text-foreground text-right">{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <div class="lg:col-span-7">
+          <h3 class="sr-only">Frequently asked questions</h3>
+          <Accordion items={faqs} variant="card" size="lg" exclusive={true} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* POLICY HUB */}
+  <section id="policies" class="py-16 md:py-24 bg-background scroll-mt-16" aria-labelledby="policies-heading">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="mb-12 text-center md:text-left">
+        <h2 id="policies-heading" class="text-3xl md:text-4xl font-bold text-foreground">Policy Hub</h2>
+        <p class="text-foreground-muted mt-2 text-lg">The terms and policies that cover your use of Brighton and Co.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        {policies.map((policy) => <PolicyCard policy={policy} class="bg-card" />)}
+      </div>
+    </div>
+  </section>
+
   <CTA />
 </PageLayout>

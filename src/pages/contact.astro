@@ -16,7 +16,7 @@ import CTA from '@/components/landing/CTA.astro';
 import Toast from '@/components/ui/feedback/Toast/Toast.astro';
 import { Separator } from '@/components/ui';
 import Accordion from '@/components/ui/overlay/Accordion/Accordion.astro';
-import { ExternalLink } from '@/components/ui/content/ExternalLink';
+import ExternalLink from '@/components/ui/content/ExternalLink.astro';
 
 const contactFaqs = [
   {
@@ -43,8 +43,7 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
   title="Contact"
   description="Get in touch with Brighton and Co."
 >
-  {/* OPTIMIZATION: Semantic main wrapper for perfect SEO and Accessibility scores */}
-  <main id="main-content">
+  <div>
     <Hero layout="centered" size="sm">
       <Badge slot="badge" pill pulse>Get in Touch</Badge>
 
@@ -153,12 +152,11 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
                   </div>
                 </a>
 
-                {/* GITHUB LINK (Changed to client:visible) */}
+                {/* GITHUB LINK */}
                 <ExternalLink
-                  client:visible
                   href="https://github.com/web-bandco"
                   showIndicator={false}
-                  className="!flex w-full" 
+                  class="!flex w-full" 
                 >
                   <div class="w-full">
                     <Card hover padding="sm">
@@ -175,13 +173,12 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
                   </div>
                 </ExternalLink>
 
-                {/* TWITTER LINK (Changed to client:visible) */}
+                {/* TWITTER LINK */}
                 {siteConfig.twitter && (
                   <ExternalLink
-                    client:visible
                     href={`https://twitter.com/${siteConfig.twitter.site.replace('@', '')}`}
                     showIndicator={false}
-                    className="!flex w-full"
+                    class="!flex w-full"
                   >
                     <div class="w-full">
                       <Card hover padding="sm">
@@ -208,7 +205,7 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
     <Separator orientation="horizontal" className="my-20" />
     <CTA />
     <Toast />
-  </main>
+  </div>
 </PageLayout>
 
 <script>

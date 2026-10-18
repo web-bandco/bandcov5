@@ -6,6 +6,7 @@ import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import ArticleHero from '@/components/blog/ArticleHero.astro';
 import ShareButtons from '@/components/blog/ShareButtons.astro';
 import RelatedPosts from '@/components/blog/RelatedPosts.astro';
+import { cleanPath } from '@/lib/url';
 
 interface Props {
   title: string;
@@ -31,7 +32,8 @@ const {
   slug = '',
 } = Astro.props;
 
-const ogImage = image?.src || `/og${Astro.url.pathname}.png`;
+const path = cleanPath(Astro.url);
+const ogImage = image?.src || `/og${path}.png`;
 
 const breadcrumbs = [
   { label: 'Home', href: '/' },
@@ -40,7 +42,7 @@ const breadcrumbs = [
 ];
 
 // Get full URL for sharing
-const fullUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const fullUrl = new URL(path, Astro.site).toString();
 ---
 
 <BaseLayout
@@ -93,7 +95,7 @@ const fullUrl = new URL(Astro.url.pathname, Astro.site).toString();
 
       <!-- Article Content -->
       <div
-        class="prose prose-lg prose-headings:font-display prose-headings:font-bold prose-a:text-brand-600 hover:prose-a:text-brand-500 prose-code:text-brand-600 prose-code:bg-brand-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-background-secondary prose-pre:border prose-pre:border-border dark:prose-invert dark:prose-a:text-brand-400 dark:hover:prose-a:text-brand-300 dark:prose-code:text-brand-400 dark:prose-code:bg-brand-900/30 max-w-none"
+        class="prose prose-lg prose-headings:font-display prose-headings:font-bold prose-a:text-brand-600 prose-a:hover:text-foreground prose-code:text-brand-600 prose-code:bg-brand-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-background-secondary prose-pre:border prose-pre:border-border dark:prose-invert dark:prose-a:text-brand-400 dark:prose-code:text-brand-400 dark:prose-code:bg-brand-900/30 max-w-none"
       >
         <slot />
       </div>
@@ -106,7 +108,7 @@ const fullUrl = new URL(Astro.url.pathname, Astro.site).toString();
             href="/blog"
             data-analytics-nav="Article Footer"
             data-nav-label="Back to Blog"
-            class="text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300 inline-flex items-center gap-2 text-sm font-medium transition-colors"
+            class="text-brand-600 hover:text-foreground dark:text-brand-400 dark:hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition-colors"
           >
             <svg
               class="h-4 w-4"

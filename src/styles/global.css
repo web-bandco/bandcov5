@@ -4,20 +4,17 @@
    Vercel-inspired: Clean, minimal, sophisticated
    ============================================================================= */
 
-@import 'tailwindcss';
+/* Only scan src/ for class names (skips build caches and config files in the project root) */
+@import 'tailwindcss' source(none);
+@source '../';
 @import './tokens/colors.css';
 @import './tokens/typography.css';
 @import './tokens/spacing.css';
 
-/* Self-hosted fonts via Fontsource (CSP-safe, no external requests) */
+/* Self-hosted fonts via Fontsource (CSP-safe, no external requests).
+   Monospace text uses the system monospace font (see --theme-font-mono). */
 @import '@fontsource-variable/manrope';
 @import '@fontsource-variable/outfit';
-@import '@fontsource-variable/jetbrains-mono';
-
-@plugin 'daisyui' {
-  themes: false; /* Disables all injected color themes */
-  base: false;   /* Stops DaisyUI from changing your <html> and <body> backgrounds */
-}
 
 @plugin "tailwindcss-animate";
 
@@ -32,6 +29,9 @@
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
   --color-background-tertiary: var(--background-tertiary);
+  /* Aliases used by page sections (bg-surface-primary / bg-surface-secondary) */
+  --color-surface-primary: var(--background);
+  --color-surface-secondary: var(--background-secondary);
   --color-foreground: var(--foreground);
   --color-foreground-secondary: var(--foreground-secondary);
   --color-foreground-muted: var(--foreground-muted);
@@ -539,15 +539,30 @@
   .delay-4 { animation-delay: 200ms; }
   .delay-5 { animation-delay: 250ms; }
 
-  /* Hover transitions */
-  .hover-lift {
-    transition: transform var(--transition-fast) var(--ease-out),
-                box-shadow var(--transition-fast) var(--ease-out);
+  /* Hover lift - the site's one hover effect for cards, tiles and buttons.
+     .hover-lift lifts the element itself; .hover-lift-child lifts an element when
+     its .group parent is hovered (e.g. a shop card's photo). Only applies on
+     devices with a mouse, and reduced-motion users get the shadow without the movement.
+     Tune the effect site-wide here. */
+  .hover-lift,
+  .hover-lift-child {
+    transition: transform var(--transition-normal) var(--ease-out),
+                box-shadow var(--transition-normal) var(--ease-out);
   }
 
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+  @media (hover: hover) {
+    .hover-lift:not(:disabled):hover,
+    .group:hover .hover-lift-child {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hover-lift:not(:disabled):hover,
+    .group:hover .hover-lift-child {
+      transform: none;
+    }
   }
 
   /* Link underline */

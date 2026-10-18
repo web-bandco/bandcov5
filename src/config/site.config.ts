@@ -4,7 +4,6 @@ export interface SiteConfig {
   name: string;
   description: string;
   url: string;
-  ogImage: string;
   author: string;
   email: string;
   phone?: string;
@@ -51,8 +50,7 @@ export interface SiteConfig {
 const siteConfig: SiteConfig = {
   name: 'B&Co',
   description: 'Brighton and Co - the personal website of Harry Brighton',
-  url: SITE_URL || 'https://new.brightonandco.co.uk',
-  ogImage: '/og-default.png',
+  url: SITE_URL || 'https://brightonandco.co.uk',
   author: 'Harry B',
   // Demo contact info - replace with your actual business details
   email: 'contact@web.bandco.uk',

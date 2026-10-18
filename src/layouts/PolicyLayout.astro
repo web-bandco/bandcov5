@@ -1,0 +1,193 @@
+---
+/**
+ * PolicyLayout
+ * Shared layout for Policy Hub pages (/about/terms, /about/privacy, /about/ai).
+ * Renders the hero, table of contents, clause accordion, version details
+ * and links to the other policies.
+ */
+import PageLayout from './PageLayout.astro';
+import { Hero } from '@/components/hero';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import Accordion from '@/components/ui/overlay/Accordion';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import PolicyCard from '@/components/policy/PolicyCard.astro';
+import { policies, formatPolicyDate, type Policy } from '@/config/policies.config';
+import type { PolicySection } from '@/lib/policy';
+
+interface Props {
+  policy: Policy;
+  /** Shown under the title in the hero */
+  intro: string;
+  sections: PolicySection[];
+}
+
+const { policy, intro, sections } = Astro.props;
+
+const otherPolicies = policies.filter((p) => p.id !== policy.id);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Policy Hub', href: '/about#policies' },
+  { label: policy.title },
+];
+---
+
+<PageLayout title={policy.title} description={policy.description} noindex={policy.draft}>
+  <Hero layout="centered" size="sm" class="bg-background-secondary border-b border-border">
+    <Badge slot="badge" pill pulse>Policy Hub</Badge>
+    <h1 slot="title">{policy.title}</h1>
+    <p slot="description">{intro}</p>
+  </Hero>
+
+  <section class="py-16 md:py-24 bg-background" aria-labelledby="policy-contents-heading">
+    <div class="mx-auto max-w-4xl px-6">
+      <Breadcrumbs items={breadcrumbs} class="mb-8" />
+
+      {policy.draft && (
+        <div class="flex items-start gap-3 p-4 mb-10 rounded-2xl border border-warning/40 bg-warning/10 text-sm text-foreground" role="note">
+          <Icon name="alert-triangle" size="md" class="text-warning mt-0.5" />
+          <p>This policy is a draft and is currently under review. It may change before it is finalised.</p>
+        </div>
+      )}
+
+      <h2 id="policy-contents-heading" class="text-2xl font-bold text-foreground mb-2">Contents</h2>
+      <p class="text-foreground-muted mb-4">Select a section to jump straight to it.</p>
+
+      <nav
+        id="toc-nav"
+        class="flex overflow-x-auto gap-3 py-4 rounded-3xl cursor-grab active:cursor-grabbing"
+        aria-label="Table of Contents"
+      >
+        {sections.map((section) => (
+          <a
+            href={`#${section.id}`}
+            class="toc-link min-w-[160px] md:min-w-[200px] flex items-center justify-center text-center px-4 py-3 bg-background border border-border shadow-sm rounded-xl text-sm font-medium text-foreground-muted hover-lift"
+          >
+            {section.tocLabel}
+          </a>
+        ))}
+      </nav>
+
+      <Accordion items={sections} variant="card" size="lg" exclusive={true} class="mt-10" />
+
+      <dl class="mt-12 pt-8 border-t border-border grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm">
+        <div>
+          <dt class="text-foreground-muted">Originally published</dt>
+          <dd class="font-mono text-foreground mt-1">{formatPolicyDate(policy.published)}</dd>
+        </div>
+        <div>
+          <dt class="text-foreground-muted">Last updated</dt>
+          <dd class="font-mono text-foreground mt-1">{formatPolicyDate(policy.updated)}</dd>
+        </div>
+        <div>
+          <dt class="text-foreground-muted">Version</dt>
+          <dd class="font-mono text-foreground mt-1">v{policy.version}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-24 bg-background-secondary border-t border-border" aria-labelledby="other-policies-heading">
+    <div class="mx-auto max-w-4xl px-6">
+      <div class="mb-12 text-center md:text-left">
+        <h2 id="other-policies-heading" class="text-3xl md:text-4xl font-bold text-foreground">Other Policies</h2>
+        <p class="text-foreground-muted mt-2 text-lg">
+          Have a question about any of these? <a href="/contact" class="text-brand-700 dark:text-brand-400 font-medium hover:underline">Get in touch</a>.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        {otherPolicies.map((p) => <PolicyCard policy={p} class="bg-background" />)}
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  html {
+    scroll-behavior: smooth;
+  }
+
+  :global(details[id]) {
+    scroll-margin-top: 6rem;
+  }
+
+  /* Mobile: hide scrollbar for a cleaner swipe experience */
+  @media (max-width: 767px) {
+    #toc-nav {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    #toc-nav::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  /* Desktop: custom scrollbar */
+  @media (min-width: 768px) {
+    #toc-nav {
+      scrollbar-width: auto;
+      scrollbar-color: rgba(150, 150, 150, 0.4) transparent;
+    }
+    #toc-nav::-webkit-scrollbar {
+      height: 12px;
+    }
+    #toc-nav::-webkit-scrollbar-track {
+      background: transparent;
+      border-radius: 12px;
+    }
+    #toc-nav::-webkit-scrollbar-thumb {
+      background-color: rgba(150, 150, 150, 0.4);
+      border-radius: 12px;
+    }
+    #toc-nav::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(150, 150, 150, 0.6);
+    }
+  }
+</style>
+
+<script>
+  function initTOC() {
+    const slider = document.getElementById('toc-nav');
+    if (!slider) return;
+
+    // Drag to scroll (desktop)
+    let isDown = false;
+    let isDragging = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      isDragging = false;
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => { isDown = false; });
+    slider.addEventListener('mouseup', () => { isDown = false; });
+    slider.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      // Moving more than 5px counts as a drag, not a click
+      if (Math.abs(x - startX) > 5) isDragging = true;
+      slider.scrollLeft = scrollLeft - (x - startX) * 2;
+    });
+
+    // Jump to a section and open it
+    slider.querySelectorAll<HTMLAnchorElement>('.toc-link').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        if (isDragging) {
+          e.preventDefault();
+          return;
+        }
+        const target = document.getElementById(link.hash.slice(1));
+        if (target instanceof HTMLDetailsElement) target.open = true;
+      });
+    });
+  }
+
+  // Runs on first load and after every view transition
+  document.addEventListener('astro:page-load', initTOC);
+</script>

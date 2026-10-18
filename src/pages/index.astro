@@ -19,7 +19,7 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
 
 <LandingLayout title="Welcome to Brighton and Co" description="Brighton and Co is a personal website and hobby project, maintained by me (Harry B). It serves as the place to dive deeper into my hobby of website development, as well as a way to showcase my interests.">
   
-  <main id="main-content">
+  <div>
     
     {/* HERO SECTION */}
     <section class="relative h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-black" aria-label="Hero Introduction">
@@ -40,9 +40,11 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
           class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-100 transition-opacity duration-1000 ease-in-out" 
         />
         
-        <Image 
-          src={shopBg} 
-          alt="Shop Flatlay Background" 
+        {/* The other two backgrounds stay hidden (and unloaded) until the page has loaded */}
+        <Image
+          src={shopBg}
+          alt="Shop Flatlay Background"
+          hidden
           loading="lazy"
           fetchpriority="low"
           decoding="async"
@@ -53,9 +55,10 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
           class="bg-layer absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom opacity-0 transition-opacity duration-1000 ease-in-out" 
         />
         
-        <Image 
-          src={photoBg} 
-          alt="Camera Lens Background" 
+        <Image
+          src={photoBg}
+          alt="Camera Lens Background"
+          hidden
           loading="lazy"
           fetchpriority="low"
           decoding="async"
@@ -75,7 +78,7 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
       </div>
 
       <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
-        <a href="#explore" class="relative flex items-center justify-center w-12 h-12 rounded-full text-white transition-all hover:scale-105 active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-white liquid-glass-btn" aria-label="Scroll down to explore more">
+        <a href="#explore" class="relative flex items-center justify-center w-12 h-12 rounded-full text-white hover-lift active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-white liquid-glass-btn" aria-label="Scroll down to explore more">
           <Icon name="chevron-down" class="w-6 h-6" aria-hidden="true" />
         </a>
       </div>
@@ -93,7 +96,7 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           
           {/* CARD 1: SHOP */}
-          <a href="/shop" data-analytics-nav="Homepage Bento Grid" data-nav-label="Shop Card" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <a href="/shop" data-analytics-nav="Homepage Bento Grid" data-nav-label="Shop Card" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover-lift border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Image 
               src={shopImg} 
               alt="Shop Category Background" 
@@ -103,16 +106,16 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
               quality={45}
               widths={[300, 400, 600, 800]}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+              class="absolute inset-0 w-full h-full object-cover" 
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true"></div>
-            <div class="relative z-10 p-8 flex flex-col items-start translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-              <div class="p-3 bg-white/20 text-white group-hover:bg-brand-500/20 group-hover:text-brand-400 group-hover:border-brand-500/30 backdrop-blur-md rounded-2xl mb-4 border border-white/30 transition-colors duration-300">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80" aria-hidden="true"></div>
+            <div class="relative z-10 p-8 flex flex-col items-start">
+              <div class="p-3 bg-white/20 text-white backdrop-blur-md rounded-2xl mb-4 border border-white/30">
                 <Icon name="handbag" class="w-6 h-6" aria-hidden="true" />
               </div>
               <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">SHOP: B&Co</h2>
               <p class="text-gray-300 text-sm md:text-base line-clamp-2">Browse the B&Co Vinted and eBay inventories — a curated variety of pre-loved items and tech.</p>
-              <span class="mt-6 inline-flex items-center text-white group-hover:text-brand-400 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
+              <span class="mt-6 inline-flex items-center text-white font-bold uppercase tracking-widest text-xs">
                 {/* SEO OPTIMIZATION: Hidden descriptive text for crawlers */}
                 Visit Shop <span class="sr-only">for B&Co inventories</span> <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </span>
@@ -120,7 +123,7 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
           </a>
 
           {/* CARD 2: PHOTOGRAPHY */}
-          <a href="/photography" data-analytics-nav="Homepage Bento Grid" data-nav-label="Photography Card" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <a href="/photography" data-analytics-nav="Homepage Bento Grid" data-nav-label="Photography Card" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover-lift border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Image 
               src={photoImg} 
               alt="Photography Category Background" 
@@ -130,16 +133,16 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
               quality={45}
               widths={[300, 400, 600, 800]}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+              class="absolute inset-0 w-full h-full object-cover" 
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true"></div>
-            <div class="relative z-10 p-8 flex flex-col items-start translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-              <div class="p-3 bg-white/20 text-white group-hover:bg-brand-500/20 group-hover:text-brand-400 group-hover:border-brand-500/30 backdrop-blur-md rounded-2xl mb-4 border border-white/30 transition-colors duration-300">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80" aria-hidden="true"></div>
+            <div class="relative z-10 p-8 flex flex-col items-start">
+              <div class="p-3 bg-white/20 text-white backdrop-blur-md rounded-2xl mb-4 border border-white/30">
                 <Icon name="camera" class="w-6 h-6" aria-hidden="true" />
               </div>
               <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Photography</h2>
               <p class="text-gray-300 text-sm md:text-base line-clamp-2">Explore my gallery of high-resolution, original photography.</p>
-              <span class="mt-6 inline-flex items-center text-white group-hover:text-brand-400 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
+              <span class="mt-6 inline-flex items-center text-white font-bold uppercase tracking-widest text-xs">
                 {/* SEO OPTIMIZATION: Hidden descriptive text for crawlers */}
                 View Gallery <span class="sr-only">of high-resolution photography</span> <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </span>
@@ -147,7 +150,7 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
           </a>
 
           {/* CARD 3: CONTACT */}
-          <a href="/contact" data-analytics-nav="Homepage Bento Grid" data-nav-label="Contact Card" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <a href="/contact" data-analytics-nav="Homepage Bento Grid" data-nav-label="Contact Card" class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] md:aspect-[3/4] shadow-md hover-lift border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Image 
               src={contactImg} 
               alt="Contact Category Background" 
@@ -157,16 +160,16 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
               quality={45}
               widths={[300, 400, 600, 800]}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+              class="absolute inset-0 w-full h-full object-cover" 
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true"></div>
-            <div class="relative z-10 p-8 flex flex-col items-start translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-              <div class="p-3 bg-white/20 text-white group-hover:bg-brand-500/20 group-hover:text-brand-400 group-hover:border-brand-500/30 backdrop-blur-md rounded-2xl mb-4 border border-white/30 transition-colors duration-300">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80" aria-hidden="true"></div>
+            <div class="relative z-10 p-8 flex flex-col items-start">
+              <div class="p-3 bg-white/20 text-white backdrop-blur-md rounded-2xl mb-4 border border-white/30">
                 <Icon name="mail" class="w-6 h-6" aria-hidden="true" />
               </div>
               <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Get in Touch</h2>
               <p class="text-gray-300 text-sm md:text-base line-clamp-2">Have a question regarding an item, or just want to chat? Send me a message.</p>
-              <span class="mt-6 inline-flex items-center text-white group-hover:text-brand-400 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
+              <span class="mt-6 inline-flex items-center text-white font-bold uppercase tracking-widest text-xs">
                 {/* SEO OPTIMIZATION: Hidden descriptive text for crawlers */}
                 Contact Me <span class="sr-only">via our messaging form</span> <Icon name="arrow-right" class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </span>
@@ -236,7 +239,7 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
     </section>
 
     <CTA />
-  </main>
+  </div>
 </LandingLayout>
 
 <style is:global>
@@ -275,6 +278,17 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
     -webkit-backdrop-filter: blur(4px);
   }
 
+  /* Deeper drop shadow as the glass button lifts (matches the carousel buttons) */
+  @media (hover: hover) {
+    .liquid-glass-btn:hover {
+      box-shadow:
+        inset 0 0.125rem 0.125rem rgba(0, 0, 0, 0.05),
+        inset 0 -0.125rem 0.125rem rgba(255, 255, 255, 0.6),
+        0 0.5rem 0.5rem -0.25rem rgba(0, 0, 0, 0.3),
+        0 0 0.1rem 0.25rem inset rgba(255, 255, 255, 0.2);
+    }
+  }
+
   .liquid-glass-btn::after {
     content: "";
     position: absolute;
@@ -300,10 +314,21 @@ import contactImg from '@/assets/images/quicklinks/contact1.png';
 
 {/* Listener Script: Crossfades backgrounds based on Text Carousel Events */}
 <script>
+  // Reveal (and so start loading) the hidden backgrounds once the page has loaded
+  const revealBackgrounds = () => {
+    document.querySelectorAll('.bg-layer[hidden]').forEach((layer) => layer.removeAttribute('hidden'));
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.readyState === 'complete') revealBackgrounds();
+    else window.addEventListener('load', revealBackgrounds, { once: true });
+  });
+
   document.addEventListener('slideChanged', ((e: CustomEvent) => {
     const activeIndex = e.detail.index;
     const bgLayers = document.querySelectorAll('.bg-layer');
-    
+    bgLayers[activeIndex]?.removeAttribute('hidden');
+
     bgLayers.forEach((layer, i) => {
       if (i === activeIndex) {
         layer.classList.remove('opacity-0');

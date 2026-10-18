@@ -7,8 +7,9 @@ import { ImageCarousel } from '@/components/ui/content/ImageCarousel';
 import Button from '@/components/ui/form/Button/Button.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 
-import { Image, getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import { toGalleryImages } from '@/lib/images';
 
 // KEEPING RECENT & CAT PHOTOS HARDCODED FOR NOW
 import cowImg from '../assets/images/recent/cow.jpg';
@@ -20,48 +21,21 @@ import luna2Img from '../assets/images/more-cats/luna2.jpg';
 import penny2Img from '../assets/images/more-cats/penny2.jpg';
 import poppy3Img from '../assets/images/more-cats/poppy3.jpg';
 
-const rawRecentPhotos = [
+const recentPhotos = await toGalleryImages([
   { img: cowImg, alt: "A black and white cow stood in a grassy field, framed by the evening sun." },
   { img: ducklingsImg, alt: "Two ducklings side by side in a pond." },
   { img: longhaircatImg, alt: "A long-haired cat sitting outside on some gravel." },
-];
+]);
 
-const recentPhotos = await Promise.all(
-  rawRecentPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
-    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
-    
-    return { 
-      src: thumb.src,       
-      fullSrc: full.src, 
-      width: full.attributes.width,
-      height: full.attributes.height,  
-      alt: photo.alt 
-    };
-  })
-);
-
-const rawMoreCatPhotos = [
+const moreCatPhotos = await toGalleryImages([
   { img: poppy2Img, alt: "Poppy, a British Blue, laying on a windowsill." },
   { img: luna2Img, alt: "Luna, curled up asleep." },
   { img: penny2Img, alt: "Penny, a black cat, fast asleep." },
   { img: poppy3Img, alt: "Poppy, a British Blue, fast asleep." },
-];
+]);
 
-const moreCatPhotos = await Promise.all(
-  rawMoreCatPhotos.map(async (photo) => {
-    const thumb = await getImage({ src: photo.img, format: 'avif', width: 600, quality: 60 });
-    const full = await getImage({ src: photo.img, format: 'avif', width: 1600, quality: 80 });
-    
-    return { 
-      src: thumb.src,       
-      fullSrc: full.src,
-      width: full.attributes.width,
-      height: full.attributes.height,    
-      alt: photo.alt 
-    };
-  })
-);
+// Carousels take 3/5 of the content width from lg upwards, full width (minus padding) below
+const carouselSizes = "(min-width: 1280px) 740px, (min-width: 1024px) 58vw, calc(100vw - 56px)";
 
 // FETCH DYNAMIC HOLIDAYS FROM CONTENT COLLECTIONS
 const allHolidays = await getCollection('holidays');
@@ -79,7 +53,7 @@ const recentHolidays = sortedHolidays.slice(0, 3);
   title="Photography"
   description="A selection of high-resolution original photography from Harry B."
 >
-  <main id="main-content">
+  <div>
     <!-- Hero Section -->
     <Hero layout="split" size="lg" showBlob>
       <Badge slot="badge" pill pulse>Some of my favourite photographs</Badge>
@@ -103,14 +77,14 @@ const recentHolidays = sortedHolidays.slice(0, 3);
             <p class="text-foreground-muted mt-4 text-lg">Some of my favourite photos I've taken recently.</p>
           </div>
           <div class="w-full lg:w-3/5">
-            <ImageCarousel images={recentPhotos} galleryName="Recent Photos" client:visible />
+            <ImageCarousel images={recentPhotos} galleryName="Recent Photos" sizes={carouselSizes} priority client:visible />
           </div>
         </div>
 
         {/* ROW 2: Carousel Left, Text Right */}
         <div class="flex flex-col-reverse lg:flex-row items-center gap-8 lg:gap-16">
           <div class="w-full lg:w-3/5">
-            <ImageCarousel images={moreCatPhotos} galleryName="More Cat Photos" client:visible />
+            <ImageCarousel images={moreCatPhotos} galleryName="More Cat Photos" sizes={carouselSizes} client:visible />
           </div>
           <div class="w-full lg:w-2/5 text-center lg:text-right">
             <h2 class="text-3xl md:text-4xl font-bold text-foreground">Some More Cat Photos</h2>
@@ -133,7 +107,7 @@ const recentHolidays = sortedHolidays.slice(0, 3);
               data-analytics-nav="Holiday Section Header" 
               data-nav-label="Holiday Galleries Title Link"
             >
-              <h2 id="holiday-photos-heading" class="text-3xl md:text-4xl font-bold text-foreground group-hover:text-brand-500 transition-colors">
+              <h2 id="holiday-photos-heading" class="text-3xl md:text-4xl font-bold text-foreground group-hover:text-foreground-muted transition-colors">
                 Holiday Galleries
               </h2>
             </a>
@@ -160,17 +134,21 @@ const recentHolidays = sortedHolidays.slice(0, 3);
                   href={`/photography/holidays/${holiday.id}`} 
                   data-analytics-nav="Holiday Grid" 
                   data-nav-label={holiday.data.title}
-                  class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  class="group relative flex flex-col justify-end overflow-hidden rounded-3xl aspect-[4/5] shadow-md hover-lift border border-border/50 !outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <Image 
-                    src={holiday.data.coverImage} 
+                  <Image
+                    src={holiday.data.coverImage}
                     alt={holiday.data.title}
                     width={800}
-                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 bg-surface-secondary"
+                    widths={[400, 600, 800]}
+                    sizes="(min-width: 1280px) 370px, (min-width: 1024px) 31vw, (min-width: 768px) 46vw, 100vw"
+                    format="avif"
+                    quality={60}
+                    class="absolute inset-0 w-full h-full object-cover bg-surface-secondary"
                   />
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80"></div>
                   
-                  <div class="relative z-10 p-8 flex flex-col items-start translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                  <div class="relative z-10 p-8 flex flex-col items-start">
                     <h3 class="text-3xl font-bold text-white mb-2 tracking-tight drop-shadow-md">{holiday.data.title}</h3>
                     <p class="text-gray-300 font-medium">
                       {holiday.data.location} • {holiday.data.date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
@@ -190,5 +168,5 @@ const recentHolidays = sortedHolidays.slice(0, 3);
     </section>
 
     <CTA />
-  </main>
+  </div>
 </PageLayout>
