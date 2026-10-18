@@ -1,19 +1,14 @@
 import * as React from "react"
-import { X } from "lucide-react" 
-import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures" 
+import { flushSync } from "react-dom"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/shadcn/carousel"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/shadcn/dialog"
-import { Spinner } from "@/components/ui/shadcn/spinner"
+import { Lightbox, withPillMorph } from "./Lightbox"
 
 export interface CarouselImage {
   src: string;
@@ -44,32 +39,42 @@ const trackEvent = (eventName: string, params: Record<string, any>) => {
 };
 // -------------------------
 
+// Slides within two of the current one are rendered (so swiping never shows a blank slide)
+const getActiveWindow = (currentIndex: number, total: number) => {
+  const window = new Set<number>([currentIndex]);
+  if (total > 1) {
+    window.add((currentIndex - 1 + total) % total);
+    window.add((currentIndex + 1) % total);
+  }
+  if (total > 3) {
+    window.add((currentIndex - 2 + total) % total);
+    window.add((currentIndex + 2) % total);
+  }
+  return window;
+};
+
 export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", sizes = "(min-width: 1024px) 50vw, calc(100vw - 56px)", priority = false }: ImageCarouselProps) {
   const [mainApi, setMainApi] = React.useState<CarouselApi>()
-  const [dialogApi, setDialogApi] = React.useState<CarouselApi>()
-
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedIndex, setSelectedIndex] = React.useState(0)
 
-  const [lightboxLoadedImages, setLightboxLoadedImages] = React.useState<Record<string, boolean>>({})
-
-  const getActiveWindow = React.useCallback((currentIndex: number, total: number) => {
-    const window = new Set<number>();
-    window.add(currentIndex);
-    if (total > 1) {
-      window.add((currentIndex - 1 + total) % total);
-      window.add((currentIndex + 1) % total);
-    }
-    if (total > 3) {
-      window.add((currentIndex - 2 + total) % total);
-      window.add((currentIndex + 2) % total);
-    }
-    return window;
-  }, []);
-
   // The first slide is rendered on the server so it loads without waiting for JavaScript
   const [mainActiveSlides, setMainActiveSlides] = React.useState<Set<number>>(() => new Set([0]))
-  const [lightboxActiveSlides, setLightboxActiveSlides] = React.useState<Set<number>>(new Set())
+
+  // The photo last shown in the lightbox, so the carousel can follow it on close
+  const lastViewed = React.useRef(0)
+  const handleLightboxIndex = React.useCallback((index: number) => { lastViewed.current = index }, [])
+
+  // Shared by this carousel's pill and its lightbox pill so one morphs into the other.
+  // Built from the gallery name so two carousels on the same page never clash.
+  const pillName = `pill-${galleryName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+
+  // The lightbox uses the large image, with smaller sizes for phones
+  const lightboxImages = React.useMemo(() => images.map((image) => ({
+    src: image.fullSrc,
+    srcset: image.srcset ? `${image.srcset}, ${image.fullSrc} 1600w` : undefined,
+    alt: image.alt,
+  })), [images]);
 
   React.useEffect(() => {
     if (!mainApi) return;
@@ -83,50 +88,25 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
     };
     onMainSelect();
     mainApi.on("select", onMainSelect);
-  }, [mainApi, images.length, getActiveWindow]);
-
-  React.useEffect(() => {
-    if (!dialogApi) return;
-    const onDialogSelect = () => {
-      const current = dialogApi.selectedScrollSnap();
-      setLightboxActiveSlides(prev => {
-        const next = new Set(prev);
-        getActiveWindow(current, images.length).forEach(i => next.add(i));
-        return next;
-      });
-    };
-    onDialogSelect();
-    dialogApi.on("select", onDialogSelect);
-  }, [dialogApi, images.length, getActiveWindow]);
-
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen || !dialogApi) return;
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        e.stopPropagation();
-        dialogApi.scrollPrev();
-      } else if (e.key === "ArrowRight") {
-        e.preventDefault();
-        e.stopPropagation();
-        dialogApi.scrollNext();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown, { capture: true });
-    return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
-  }, [isOpen, dialogApi]);
+    return () => { mainApi.off("select", onMainSelect) };
+  }, [mainApi, images.length]);
 
   if (!images || images.length === 0) return null;
 
+  const setLightboxOpen = (open: boolean, index?: number) => {
+    withPillMorph(() => flushSync(() => {
+      if (index !== undefined) {
+        setSelectedIndex(index);
+        lastViewed.current = index;
+      }
+      // On close, the carousel moves to the last photo shown in the lightbox
+      if (!open) mainApi?.scrollTo(lastViewed.current, true);
+      setIsOpen(open);
+    }));
+  };
+
   const handleImageClick = (index: number) => {
-    setSelectedIndex(index);
-    setIsOpen(true);
-    
-    setLightboxActiveSlides(prev => {
-      const next = new Set(prev);
-      getActiveWindow(index, images.length).forEach(i => next.add(i));
-      return next;
-    });
+    setLightboxOpen(true, index);
 
     trackEvent('photo_lightbox_open', {
       event_category: 'Photography',
@@ -136,18 +116,13 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
     });
   }
 
-  const handleLightboxImageLoad = (key: string) => {
-    setLightboxLoadedImages((prev) => ({ ...prev, [key]: true }));
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      
-      <Carousel 
+    <>
+      <Carousel
         setApi={setMainApi}
         opts={{ align: "start", loop: true }}
         plugins={[WheelGesturesPlugin()]}
-        className="w-full group relative"
+        className="w-full relative"
       >
         <CarouselContent>
           {images.map((image, index) => {
@@ -157,153 +132,72 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
             return (
               <CarouselItem key={index}>
                 <div className="p-1">
-                  <DialogTrigger asChild>
-                    <button
-                      type="button"
-                      aria-label={`View full image: ${image.alt}`}
-                      onClick={() => handleImageClick(index)}
-                      className="w-full block overflow-hidden rounded-2xl border border-border bg-surface-secondary shadow-sm aspect-[4/3] relative flex items-center justify-center cursor-pointer p-0 focus-visible:ring-2 focus-visible:ring-ring outline-none"
-                    >
-                      {shouldLoad && (
-                        <img
-                          src={image.src}
-                          srcSet={image.srcset}
-                          sizes={sizes}
-                          width={image.width}
-                          height={image.height}
-                          alt={image.alt}
-                          className="absolute inset-0 object-cover w-full h-full"
-                          loading={isPriority ? "eager" : "lazy"}
-                          fetchPriority={isPriority ? "high" : undefined}
-                          decoding="async"
-                        />
-                      )}
-                    </button>
-                  </DialogTrigger>
+                  <button
+                    type="button"
+                    aria-label={`View full image: ${image.alt}`}
+                    onClick={() => handleImageClick(index)}
+                    className="w-full block overflow-hidden rounded-2xl border border-border bg-surface-secondary shadow-sm aspect-[4/3] relative flex items-center justify-center cursor-pointer p-0 focus-visible:ring-2 focus-visible:ring-ring outline-none"
+                  >
+                    {shouldLoad && (
+                      <img
+                        src={image.src}
+                        srcSet={image.srcset}
+                        sizes={sizes}
+                        width={image.width}
+                        height={image.height}
+                        alt={image.alt}
+                        className="absolute inset-0 object-cover w-full h-full"
+                        loading={isPriority ? "eager" : "lazy"}
+                        fetchPriority={isPriority ? "high" : undefined}
+                        decoding="async"
+                      />
+                    )}
+                  </button>
                 </div>
               </CarouselItem>
             )
           })}
         </CarouselContent>
-        
-        <button 
-          onClick={() => mainApi?.scrollPrev()}
-          data-track-ui="Carousel Navigation"
-          data-track-label="Main Prev Arrow Clicked"
-          className="absolute left-4 top-1/2 -translate-y-1/2 hidden md:flex w-12 h-12 bg-background/80 hover:bg-background border-none shadow-sm opacity-0 transition-opacity duration-300 delay-500 group-hover:opacity-100 group-hover:delay-0 group-focus-within:opacity-100 group-focus-within:delay-0 rounded-full items-center justify-center text-foreground z-10 cursor-pointer outline-none"
-          aria-label="Previous slide"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
 
-        <button 
-          onClick={() => mainApi?.scrollNext()}
-          data-track-ui="Carousel Navigation"
-          data-track-label="Main Next Arrow Clicked"
-          className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:flex w-12 h-12 bg-background/80 hover:bg-background border-none shadow-sm opacity-0 transition-opacity duration-300 delay-500 group-hover:opacity-100 group-hover:delay-0 group-focus-within:opacity-100 group-focus-within:delay-0 rounded-full items-center justify-center text-foreground z-10 cursor-pointer outline-none"
-          aria-label="Next slide"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
+        {/* Small pill (arrows only); it morphs into the lightbox's ‹ 1 of N › pill */}
+        {images.length > 1 && (
+          <div
+            className="absolute bottom-4 right-4 z-10 hidden md:flex items-center gap-1 p-1 rounded-full glass select-none [view-transition-class:lightbox-pill]"
+            style={{ viewTransitionName: isOpen ? undefined : pillName }}
+          >
+            <button
+              type="button"
+              onClick={() => mainApi?.scrollPrev()}
+              aria-label="Previous slide"
+              data-track-ui="Carousel Navigation"
+              data-track-label="Main Prev Arrow Clicked"
+              className="p-2 hover:bg-current/15 rounded-full transition-colors outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-current"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => mainApi?.scrollNext()}
+              aria-label="Next slide"
+              data-track-ui="Carousel Navigation"
+              data-track-label="Main Next Arrow Clicked"
+              className="p-2 hover:bg-current/15 rounded-full transition-colors outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-current"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </Carousel>
 
-      <DialogContent 
-        showCloseButton={false}
-        className="max-w-none sm:max-w-none w-screen h-[100dvh] bg-transparent border-none shadow-none p-0 flex flex-col justify-center overflow-hidden data-[state=open]:animate-none outline-none"
-      >
-        <DialogTitle className="sr-only">Image Gallery</DialogTitle>
-
-        <button 
-          onClick={() => setIsOpen(false)}
-          data-track-ui="Lightbox Controls"
-          data-track-label="Close Button Clicked"
-          className="absolute top-4 right-4 md:top-6 md:right-6 z-[100] p-3 rounded-full bg-background/60 hover:bg-background backdrop-blur-md transition-all text-foreground outline-none shadow-md cursor-pointer"
-          aria-label="Close Lightbox"
-        >
-          <X className="w-6 h-6 md:w-8 md:h-8" />
-        </button>
-
-        <button 
-          onClick={() => dialogApi?.scrollPrev()}
-          data-track-ui="Lightbox Controls"
-          data-track-label="Lightbox Prev Arrow Clicked"
-          className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-[100] hidden md:flex w-14 h-14 bg-background/60 hover:bg-background border-none shadow-md backdrop-blur-md rounded-full items-center justify-center text-foreground outline-none transition-all cursor-pointer"
-          aria-label="Previous image"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
-
-        <button 
-          onClick={() => dialogApi?.scrollNext()}
-          data-track-ui="Lightbox Controls"
-          data-track-label="Lightbox Next Arrow Clicked"
-          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-[100] hidden md:flex w-14 h-14 bg-background/60 hover:bg-background border-none shadow-md backdrop-blur-md rounded-full items-center justify-center text-foreground outline-none transition-all cursor-pointer"
-          aria-label="Next image"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
-
-        <div 
-          className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
-          onClick={() => setIsOpen(false)}
-          aria-hidden="true"
-        />
-
-        <Carousel 
-          setApi={setDialogApi}
-          opts={{ 
-            align: "center", 
-            startIndex: selectedIndex, 
-            loop: true
-          }}
-          plugins={[WheelGesturesPlugin()]}
-          className="w-full h-full flex items-center justify-center max-md:pointer-events-none z-10"
-        >
-          <CarouselContent className="h-full ml-0 items-center">
-            {images.map((image, index) => {
-              const shouldLoad = lightboxActiveSlides.has(index);
-              const isLoaded = lightboxLoadedImages[`lightbox-${index}`];
-
-              return (
-                <CarouselItem key={index} className="flex h-[100dvh] flex-col items-center justify-center pl-0 relative">
-                  
-                  <div 
-                    className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
-                    onClick={() => setIsOpen(false)} 
-                  />
-
-                  <div className="relative w-full h-full p-4 md:p-24 flex items-center justify-center pointer-events-none z-10 md:cursor-pointer" onClick={() => setIsOpen(false)}>
-                    
-                    {!isLoaded && shouldLoad && (
-                      <div className="absolute inset-0 flex items-center justify-center z-10">
-                        <Spinner className="w-12 h-12 text-brand-500 animate-spin" />
-                      </div>
-                    )}
-
-                    {shouldLoad && (
-                      <img 
-                        src={image.fullSrc} 
-                        alt={image.alt} 
-                        onLoad={() => handleLightboxImageLoad(`lightbox-${index}`)}
-                        ref={(img) => {
-                          if (img && img.complete && !isLoaded) {
-                            handleLightboxImageLoad(`lightbox-${index}`);
-                          }
-                        }}
-                        onClick={(e) => e.stopPropagation()} 
-                        draggable={false}
-                        className={`max-w-full max-h-[85dvh] w-auto h-auto object-contain drop-shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing z-20 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-                        decoding="async"
-                      />
-                    )}
-                  </div>
-
-                </CarouselItem>
-              )
-            })}
-          </CarouselContent>
-        </Carousel>
-      </DialogContent>
-    </Dialog>
+      <Lightbox
+        images={lightboxImages}
+        open={isOpen}
+        onOpenChange={(open) => setLightboxOpen(open)}
+        startIndex={selectedIndex}
+        onIndexChange={handleLightboxIndex}
+        title={`${galleryName} gallery`}
+        pillTransitionName={pillName}
+      />
+    </>
   )
 }

@@ -1,4 +1,5 @@
 ---
+import SectionHeading from '@/components/ui/layout/SectionHeading.astro';
 import BlogCard from './BlogCard.astro';
 import { getCollection } from 'astro:content';
 
@@ -45,11 +46,9 @@ const getPostUrl = (postId: string) => {
 
 {relatedPosts.length > 0 && (
   <section class="border-t border-border pt-[var(--space-section-header)] mt-[var(--space-section-header)]">
-    <h2 class="font-display text-2xl font-bold text-foreground mb-[var(--space-stack-lg)]">
-      Related Posts
-    </h2>
+    <SectionHeading title="Related Posts" align="left" />
 
-    <div class="grid gap-[var(--space-stack-lg)] md:grid-cols-2 lg:grid-cols-3">
+    <div class="reveal-children grid gap-[var(--space-stack-lg)] md:grid-cols-2 lg:grid-cols-3">
       {relatedPosts.map((post) => (
         <BlogCard
           title={post.data.title}

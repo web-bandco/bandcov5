@@ -1,4 +1,5 @@
 ---
+import SectionHeading from '@/components/ui/layout/SectionHeading.astro';
 // CHANGED: Using PageLayout instead of BaseLayout
 import PageLayout from '@/layouts/PageLayout.astro';
 import BlogCard from '@/components/blog/BlogCard.astro';
@@ -27,7 +28,7 @@ const nonFeaturedPosts = posts.filter((post) => !post.data.featured);
 const regularPosts = nonFeaturedPosts.length > 0 ? nonFeaturedPosts : posts;
 
 const getPostUrl = (postId: string) => {
-  // Remove locale prefix from id (e.g., "en/welcome-to-velocity" -> "welcome-to-velocity")
+  // Remove locale prefix from id (e.g., "en/brighton-and-co-v5" -> "brighton-and-co-v5")
   const slug = postId.replace('en/', '');
   return `/blog/${slug}`;
 };
@@ -37,14 +38,14 @@ const getPostUrl = (postId: string) => {
 <PageLayout title="Blog" description="Latest articles and updates">
   {/* DELETED the <Header> override here so it uses the centralized one built into PageLayout */}
 
-  <Hero layout="centered" size="sm" class="bg-surface-secondary border-b border-border">
+  <Hero layout="centered" size="sm">
     <Badge slot="badge">
-      <Icon name="book" size="sm" class="text-brand-700" />
+      <Icon name="book" size="sm" class="text-accent" />
       All posts
     </Badge>
 
     <h1 slot="title">
-      The <span class="text-brand-700">B&Co</span> Blog
+      The <span class="text-accent">B&Co</span> Blog
     </h1>
 
     <p slot="description">Look below for the latest articles and updates</p>
@@ -54,14 +55,16 @@ const getPostUrl = (postId: string) => {
     featuredPosts.length > 0 && (
       <section class="bg-background py-16">
         <div class="mx-auto max-w-6xl px-6">
-          <h2 class="font-display text-foreground mb-8 flex items-center gap-2 text-2xl font-bold">
-            <svg class="text-brand-700 h-6 w-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <SectionHeading align="left">
+            <span class="inline-flex items-center gap-2">
+              <svg class="text-accent h-6 w-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            Featured
-          </h2>
+              Featured
+            </span>
+          </SectionHeading>
 
-          <div class="grid gap-6 md:grid-cols-2">
+          <div class="reveal-children grid gap-6 md:grid-cols-2">
             {featuredPosts.map((post) => (
               <BlogCard
                 title={post.data.title}
@@ -84,13 +87,13 @@ const getPostUrl = (postId: string) => {
     <div class="mx-auto max-w-6xl px-6">
       {
         featuredPosts.length > 0 && nonFeaturedPosts.length > 0 && (
-          <h2 class="font-display text-foreground mb-8 text-2xl font-bold">All posts</h2>
+          <SectionHeading title="All posts" align="left" />
         )
       }
 
       {
         regularPosts.length > 0 ? (
-          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div class="reveal-children grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {regularPosts.map((post) => (
               <BlogCard
                 title={post.data.title}

@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const textareaVariants = cva(
   [
-    'w-full rounded-lg border bg-background resize-y min-h-[80px]',
+    'w-full rounded-lg border bg-card resize-y min-h-[80px]',
     'transition-colors duration-(--transition-fast)',
     'placeholder:text-muted-foreground',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',

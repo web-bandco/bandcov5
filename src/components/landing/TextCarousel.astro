@@ -5,51 +5,55 @@ import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e43);";
 ---
 
-<div id="text-carousel" tabindex="0" class="group relative w-full max-w-4xl mx-auto px-4 sm:px-6 text-center outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-3xl">
+<div id="text-carousel" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Highlights" class="group relative w-full max-w-4xl mx-auto px-4 sm:px-6 text-center outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-3xl">
   
   {/* The Adaptive Glass Container */}
   <div class="carousel-container relative overflow-hidden rounded-3xl bg-background/35 dark:bg-background/80 backdrop-blur-xl border border-border shadow-2xl">
     
-    {/* Navigation Arrows: Strictly hidden on mobile (<768px) to prevent text overlap, fades in on desktop hover */}
-    <button id="prev-btn" aria-label="Previous slide" class="liquid-carousel-btn absolute left-4 md:left-6 top-0 bottom-0 my-auto w-12 h-12 hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 z-30 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-opacity duration-300">
-      <Icon name="chevron-left" class="w-6 h-6" />
-    </button>
-    <button id="next-btn" aria-label="Next slide" class="liquid-carousel-btn absolute right-4 md:right-6 top-0 bottom-0 my-auto w-12 h-12 hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 z-30 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-opacity duration-300">
-      <Icon name="chevron-right" class="w-6 h-6" />
-    </button>
-
-    {/* Play/Pause Button: Bottom right corner with inline SVGs */}
-    {/* FIX: Removed md:opacity-0 and group-hover:opacity-100 to make the button always visible */}
-    <button id="play-pause-btn" aria-label="Pause carousel" class="liquid-carousel-btn absolute right-4 md:right-6 bottom-4 md:bottom-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center opacity-100 z-30 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-opacity duration-300">
-      <div id="pause-icon" class="flex items-center justify-center">
-        <Icon name="pause" class="w-4 h-4 md:w-5 md:h-5" />
+    {/* Controls: one glass pill in the bottom-right corner. Only the pause button shows until
+        the pointer is on the carousel (or keyboard focus is in it); then the arrows open on each
+        side. The pill is centred on the pause button, so the pause button never moves.
+        Phones show only the pause button (visitors swipe to change slides). */}
+    <div class="carousel-pill-anchor">
+      <div class="carousel-pill glass">
+        <button id="prev-btn" type="button" aria-label="Previous slide" class="carousel-pill-btn carousel-pill-arrow">
+          <Icon name="chevron-left" class="w-5 h-5" />
+        </button>
+        <button id="play-pause-btn" type="button" aria-label="Pause carousel" class="carousel-pill-btn">
+          <span id="pause-icon" class="flex items-center justify-center">
+            <Icon name="pause" class="w-4 h-4 md:w-5 md:h-5" />
+          </span>
+          <span id="play-icon" class="hidden items-center justify-center">
+            <Icon name="play" class="w-4 h-4 md:w-5 md:h-5" />
+          </span>
+        </button>
+        <button id="next-btn" type="button" aria-label="Next slide" class="carousel-pill-btn carousel-pill-arrow">
+          <Icon name="chevron-right" class="w-5 h-5" />
+        </button>
       </div>
-      <div id="play-icon" class="hidden items-center justify-center">
-        <Icon name="play" class="w-4 h-4 md:w-5 md:h-5" />
-      </div>
-    </button>
+    </div>
 
     {/* The Sliding Flex Track */}
-    <div id="carousel-track" class="flex w-full touch-pan-y">
+    <div id="carousel-track" aria-live="off" class="flex w-full touch-pan-y select-none cursor-grab active:cursor-grabbing">
       
       {/* Slide 1: Welcome (the page's main heading) */}
-      <div class="carousel-slide w-full shrink-0 flex flex-col items-center justify-center px-8 md:px-24 py-12 md:py-16">
+      <div class="carousel-slide w-full shrink-0 flex flex-col items-center justify-center px-8 md:px-16 py-12 md:py-16" role="group" aria-roledescription="slide" aria-label="1 of 3">
         <h1 class="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-sm">
-          Welcome to <span class="text-brand-500 dark:text-brand-400">B&Co</span>
+          Welcome to <span class="text-brand-400">B&Co</span>
         </h1>
         <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
           Brighton and Co - A personal project made by Harry B, showcasing my photography and other interests.
         </p>
         {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
           <span class="sr-only">Brighton and Co website made by Harry B</span>
-        <a href="/about" class="liquid-carousel-btn inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+        <a href="/about" draggable="false" class="glass glass-btn rounded-full inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
           Learn More <span class="sr-only">about Brighton and Co</span> <Icon name="arrow-right" class="w-4 h-4" />
         </a>
       </div>
 
       {/* Slide 2: Shop */}
-      <div class="carousel-slide w-full shrink-0 flex flex-col items-center justify-center px-8 md:px-24 py-12 md:py-16">
+      <div class="carousel-slide w-full shrink-0 flex flex-col items-center justify-center px-8 md:px-16 py-12 md:py-16" role="group" aria-roledescription="slide" aria-label="2 of 3">
         <h2 class="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-sm">
           <span class="text-transparent bg-clip-text" style={gradientStyle}>SHOP</span>: B&Co
         </h2>
@@ -61,21 +65,21 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
           {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
           <span class="sr-only">All items are in excellent condition and shipped with care</span>
         </p>
-        <a href="/shop" class="liquid-carousel-btn inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+        <a href="/shop" draggable="false" class="glass glass-btn rounded-full inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
           Visit the Shop <span class="sr-only">for B&Co inventories</span> <Icon name="handbag" class="w-4 h-4" />
         </a>
       </div>
 
       {/* Slide 3: Photography */}
-      <div class="carousel-slide w-full shrink-0 flex flex-col items-center justify-center px-8 md:px-24 py-12 md:py-16">
+      <div class="carousel-slide w-full shrink-0 flex flex-col items-center justify-center px-8 md:px-16 py-12 md:py-16" role="group" aria-roledescription="slide" aria-label="3 of 3">
         <h2 class="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-sm">
-          My <span class="text-brand-500 dark:text-brand-400">Photography</span>
+          My <span class="text-brand-400">Photography</span>
         </h2>
         <p class="text-lg md:text-xl text-white/90 drop-shadow-sm max-w-2xl mb-8">
           A dedicated gallery space showcasing my passion for photography, featuring high-resolution landscapes and other moments.
         </p>
-        <a href="/photography" class="liquid-carousel-btn inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+        <a href="/photography" draggable="false" class="glass glass-btn rounded-full inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold pointer-events-auto outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           {/* SEO OPTIMIZATION: Visually hidden descriptive text */}
           View Gallery <span class="sr-only">of high-resolution photography</span> <Icon name="camera" class="w-4 h-4" />
         </a>
@@ -85,7 +89,7 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
 
     {/* The Adaptive CSS Progress Bar */}
     <div class="absolute bottom-0 left-0 w-full h-1.5 bg-foreground/10 z-30">
-      <div id="carousel-progress" class="h-full bg-foreground w-0"></div>
+      <div id="carousel-progress" class="h-full bg-brand-400 w-0"></div>
     </div>
 
   </div>
@@ -112,90 +116,80 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
   }
   
   .animate-peek {
-    animation: swipe-peek 1s cubic-bezier(0.25, 1, 0.5, 1) ease-in-out;
+    animation: swipe-peek 1s ease-in-out;
   }
 
-  @property --glass-angle {
-    syntax: "<angle>";
-    inherits: false;
-    initial-value: -75deg;
+  /* Controls pill (glass from global.css). Centred on the pause button: the anchor
+     sits at the pause button's centre, so the open arrows never move it. */
+  .carousel-pill-anchor {
+    position: absolute;
+    z-index: 30;
+    right: 2.5rem; /* 1rem gap + half the pause-only pill (48px) */
+    bottom: 1rem;
+    width: 0;
   }
 
-  .liquid-carousel-btn {
-    isolation: isolate; 
-    color: var(--color-foreground); 
-    border-radius: 9999px; 
-    
-    transform: translateY(0) scale(1);
-    /* Same timing as the site-wide .hover-lift */
-    transition: transform var(--transition-normal) var(--ease-out), box-shadow var(--transition-normal) var(--ease-out), opacity 0.3s ease;
-    will-change: transform, box-shadow;
-    
-    background: color-mix(in oklch, var(--color-background) 60%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--color-border);
-    box-shadow: 
-      inset 0 0.125rem 0.125rem rgba(0, 0, 0, 0.05),
-      inset 0 -0.125rem 0.125rem rgba(255, 255, 255, 0.5),
-      0 0.25rem 0.125rem -0.125rem rgba(0, 0, 0, 0.2),
-      0 0 0.1rem 0.25rem inset rgba(255, 255, 255, 0.2);
+  .carousel-pill {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 9999px;
   }
 
-  /* Lift + deeper shadow, matching the site-wide .hover-lift (mouse devices only) */
-  @media (hover: hover) {
-    .liquid-carousel-btn:hover {
-      transform: translateY(-4px);
-      box-shadow:
-        inset 0 0.125rem 0.125rem rgba(0, 0, 0, 0.05),
-        inset 0 -0.125rem 0.125rem rgba(255, 255, 255, 0.6),
-        0 0.5rem 0.5rem -0.25rem rgba(0, 0, 0, 0.3),
-        0 0 0.1rem 0.25rem inset rgba(255, 255, 255, 0.2);
+  .carousel-pill-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+    transition: background-color var(--transition-fast) var(--ease-out);
+  }
+
+  .carousel-pill-btn:hover {
+    background-color: color-mix(in oklch, currentColor 12%, transparent);
+  }
+
+  .carousel-pill-btn:focus-visible {
+    box-shadow: inset 0 0 0 2px currentColor;
+  }
+
+  /* Phones: pause button only */
+  .carousel-pill-arrow {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .carousel-pill-anchor {
+      right: 5.5rem; /* 1.5rem gap + half the open pill (3 x 40px + 8px) */
+      bottom: 1.5rem;
     }
 
-    .liquid-carousel-btn:hover::before {
-      transform: translateY(4px);
+    .carousel-pill-arrow {
+      display: grid;
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: width 260ms var(--ease-out), opacity 200ms var(--ease-out), background-color var(--transition-fast) var(--ease-out);
+    }
+
+    #text-carousel:hover .carousel-pill-arrow,
+    #text-carousel:focus-within .carousel-pill-arrow {
+      width: 40px;
+      opacity: 1;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .liquid-carousel-btn:hover {
-      transform: none;
+    .carousel-pill-arrow {
+      transition: none;
     }
-  }
-  
-  .liquid-carousel-btn:active {
-    transform: translateY(1px) scale(0.96);
-    box-shadow: 
-      inset 0 0.125rem 0.125rem rgba(0, 0, 0, 0.05),
-      inset 0 -0.125rem 0.125rem rgba(255, 255, 255, 0.4),
-      0 0.125rem 0.125rem -0.125rem rgba(0, 0, 0, 0.1),
-      0 0 0.1rem 0.25rem inset rgba(255, 255, 255, 0.2);
-  }
-
-  .liquid-carousel-btn::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px; 
-    background: conic-gradient(from var(--glass-angle) at 50% 50%, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 5% 40%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 60% 95%, rgba(0, 0, 0, 0.5)), linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    pointer-events: none;
-    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.5);
-  }
-
-  .liquid-carousel-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
-    filter: blur(8px);
-    z-index: -1;
-    transition: transform var(--transition-normal) var(--ease-out);
   }
 </style>
 
@@ -203,9 +197,9 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
   function initCarousel() {
     const carousel = document.getElementById('text-carousel') as HTMLElement;
     const track = document.getElementById('carousel-track') as HTMLElement;
-    
+
     if (!carousel || !track) return;
-    
+
     if (track.dataset.initialized) return;
     track.dataset.initialized = "true";
 
@@ -215,7 +209,10 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
     const pauseIcon = document.getElementById('pause-icon') as HTMLElement;
     const playIcon = document.getElementById('play-icon') as HTMLElement;
     const progress = document.getElementById('carousel-progress') as HTMLElement;
-    
+
+    // Visitors who prefer reduced motion get no autoplay and instant slide changes
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // Infinite Loop Setup
     const originalSlides = Array.from(track.children) as HTMLElement[];
     const firstClone = originalSlides[0].cloneNode(true) as HTMLElement;
@@ -242,9 +239,15 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
     track.style.transition = 'none';
     track.style.transform = `translateX(-${currentIndex * 100}%)`;
 
+    const realIndex = () => (currentIndex - 1 + totalSlides) % totalSlides;
+
     function dispatchSlideChange() {
-      const realIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-      document.dispatchEvent(new CustomEvent('slideChanged', { detail: { index: realIndex } }));
+      document.dispatchEvent(new CustomEvent('slideChanged', { detail: { index: realIndex() } }));
+    }
+
+    // Only the visible slide can be reached with Tab or read by screen readers
+    function updateHiddenSlides() {
+      originalSlides.forEach((slide, i) => { slide.inert = i !== realIndex(); });
     }
 
     // Bulletproof Native JS Timer for Auto-Scrolling
@@ -260,34 +263,8 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
       if (autoPlayTimer) clearInterval(autoPlayTimer);
     }
 
-    function updateSlide(smooth = true) {
-      if (!track) return;
-      
-      if (smooth) {
-        track.style.transition = 'transform 700ms cubic-bezier(0.25, 1, 0.5, 1)';
-      } else {
-        track.style.transition = 'none';
-      }
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
-      dispatchSlideChange();
-      startAutoPlay();
-    }
-
-    function resetProgress() {
-      if (progress) {
-        progress.classList.remove('animate-progress');
-        void progress.offsetWidth; 
-        progress.classList.add('animate-progress');
-        
-        if (isPaused || isManuallyPaused) {
-          progress.classList.add('pause-progress');
-        } else {
-          progress.classList.remove('pause-progress');
-        }
-      }
-    }
-
-    track.addEventListener('transitionend', () => {
+    // After a slide change: jump from a clone back to the real slide it copies
+    function finishTransition() {
       isTransitioning = false;
       if (currentIndex === totalSlides + 1) {
         currentIndex = 1;
@@ -296,6 +273,39 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
         currentIndex = totalSlides;
         updateSlide(false);
       }
+    }
+
+    function updateSlide(smooth = true) {
+      if (!track) return;
+
+      const animate = smooth && !reduceMotion;
+      track.style.transition = animate ? 'transform 700ms cubic-bezier(0.25, 1, 0.5, 1)' : 'none';
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      updateHiddenSlides();
+      dispatchSlideChange();
+      startAutoPlay();
+
+      // Without an animation there's no transitionend event, so finish straight away
+      if (!animate) finishTransition();
+    }
+
+    function resetProgress() {
+      if (progress) {
+        progress.classList.remove('animate-progress');
+        void progress.offsetWidth;
+        progress.classList.add('animate-progress');
+
+        if (isPaused || isManuallyPaused) {
+          progress.classList.add('pause-progress');
+        } else {
+          progress.classList.remove('pause-progress');
+        }
+      }
+    }
+
+    track.addEventListener('transitionend', (e) => {
+      // Ignore transitions bubbling up from the buttons inside the slides
+      if (e.target === track) finishTransition();
     });
 
     function nextSlide() {
@@ -320,7 +330,7 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
       stopAutoPlay();
       progress?.classList.add('pause-progress');
     };
-    
+
     const resumeCarousel = () => {
       if (isManuallyPaused) return;
       isPaused = false;
@@ -328,23 +338,21 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
       progress?.classList.remove('pause-progress');
     };
 
-    if (playPauseBtn) {
-      playPauseBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isManuallyPaused = !isManuallyPaused;
-        if (isManuallyPaused) {
-          pauseCarousel();
-          pauseIcon?.classList.add('hidden');
-          playIcon?.classList.remove('hidden');
-          playPauseBtn.setAttribute('aria-label', 'Play carousel');
-        } else {
-          resumeCarousel();
-          playIcon?.classList.add('hidden');
-          pauseIcon?.classList.remove('hidden');
-          playPauseBtn.setAttribute('aria-label', 'Pause carousel');
-        }
-      });
+    function setManuallyPaused(paused: boolean) {
+      isManuallyPaused = paused;
+      if (paused) pauseCarousel();
+      else resumeCarousel();
+      pauseIcon?.classList.toggle('hidden', paused);
+      playIcon?.classList.toggle('hidden', !paused);
+      playPauseBtn?.setAttribute('aria-label', paused ? 'Play carousel' : 'Pause carousel');
+      // Announce slide changes to screen readers only while the carousel isn't rotating by itself
+      track.setAttribute('aria-live', paused ? 'polite' : 'off');
     }
+
+    playPauseBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setManuallyPaused(!isManuallyPaused);
+    });
 
     carousel.addEventListener('mouseenter', pauseCarousel);
     carousel.addEventListener('mouseleave', resumeCarousel);
@@ -362,35 +370,84 @@ const gradientStyle = "background-image: linear-gradient(135deg, #ff0055, #ff2e4
         isScrolling = true;
         if (e.deltaX > 0) nextSlide();
         else prevSlide();
-        setTimeout(() => isScrolling = false, 500); 
+        setTimeout(() => isScrolling = false, 500);
       }
     }, { passive: true });
 
-    let touchStartX = 0;
-    track.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
+    // Drag / swipe with a mouse, finger or pen: the slide follows the pointer and
+    // snaps to the next slide when released past the threshold (or springs back)
+    let dragPointer: number | null = null;
+    let dragStartX = 0;
+    let dragDelta = 0;
+    let isDragging = false;
+    let suppressClick = false;
 
-    track.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].screenX;
-      const diff = touchStartX - touchEndX;
-      if (diff > 50) nextSlide();
-      else if (diff < -50) prevSlide();
-    }, { passive: true });
+    track.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 || isTransitioning) return;
+      dragPointer = e.pointerId;
+      dragStartX = e.clientX;
+      dragDelta = 0;
+      isDragging = false;
+      suppressClick = false;
+    });
+
+    track.addEventListener('pointermove', (e) => {
+      if (e.pointerId !== dragPointer) return;
+      dragDelta = e.clientX - dragStartX;
+      if (!isDragging && Math.abs(dragDelta) > 8) {
+        isDragging = true;
+        track.setPointerCapture(e.pointerId);
+        track.classList.remove('animate-peek'); // the swipe hint would override the drag
+        track.style.transition = 'none';
+        pauseCarousel();
+      }
+      if (isDragging) {
+        track.style.transform = `translateX(calc(-${currentIndex * 100}% + ${dragDelta}px))`;
+      }
+    });
+
+    const endDrag = (e: PointerEvent) => {
+      if (e.pointerId !== dragPointer) return;
+      dragPointer = null;
+      if (!isDragging) return;
+      isDragging = false;
+      suppressClick = true; // the click that ends a drag shouldn't open a link
+
+      const threshold = Math.min(track.offsetWidth * 0.2, 80);
+      if (dragDelta <= -threshold) nextSlide();
+      else if (dragDelta >= threshold) prevSlide();
+      else if (dragDelta === 0) updateSlide(false); // released where it started: nothing to animate
+      else { isTransitioning = true; updateSlide(true); } // spring back
+
+      if (e.pointerType !== 'mouse' || !carousel.matches(':hover')) resumeCarousel();
+    };
+    track.addEventListener('pointerup', endDrag);
+    track.addEventListener('pointercancel', endDrag);
+
+    track.addEventListener('click', (e) => {
+      if (!suppressClick) return;
+      e.preventDefault();
+      e.stopPropagation();
+      suppressClick = false;
+    }, true);
 
     // 1-Time "Swipe Hint" Peek Animation (Triggers 1.5s after load)
-    setTimeout(() => {
-      if (!isPaused && currentIndex === 1) {
-        track.classList.add('animate-peek');
-        track.addEventListener('animationend', () => {
-          track.classList.remove('animate-peek');
-        }, { once: true });
-      }
-    }, 1500);
+    if (!reduceMotion) {
+      setTimeout(() => {
+        if (!isPaused && currentIndex === 1) {
+          track.classList.add('animate-peek');
+          track.addEventListener('animationend', () => {
+            track.classList.remove('animate-peek');
+          }, { once: true });
+        }
+      }, 1500);
+    }
 
     // Start everything up!
+    updateHiddenSlides();
     setTimeout(dispatchSlideChange, 50);
     startAutoPlay();
+    if (reduceMotion) setManuallyPaused(true);
   }
 
   initCarousel();

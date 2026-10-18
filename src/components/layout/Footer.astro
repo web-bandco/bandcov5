@@ -143,7 +143,6 @@ const defaultExternalLinks: NavItem[] = [
 
   { label: 'GitHub', href: 'https://github.com/web-bandco', external: true },
 
-  { label: 'License', href: 'https://github.com/southwellmedia/velocity/blob/main/LICENSE', external: true },
 
 ];
 
@@ -224,7 +223,7 @@ function getSocialIcon(platform: string): string {
 
                 />
 
-                <span class="font-display text-lg font-bold text-brand-700">
+                <span class="font-display text-lg font-bold text-accent">
 
                   {siteConfig.name}
 
@@ -351,7 +350,7 @@ function getSocialIcon(platform: string): string {
 
           {!hideLogo && (
 
-            <div class="space-y-[var(--space-stack-md)]">
+            <div class={cn('space-y-[var(--space-stack-md)]', columns === 4 && 'col-span-2 md:col-span-1')}>
 
               {hasLogoSlot ? (
 
@@ -363,7 +362,7 @@ function getSocialIcon(platform: string): string {
 
                   <Logo size="sm" />
 
-                  <span class="font-display text-lg font-bold text-brand-700">
+                  <span class="font-display text-lg font-bold text-accent">
 
                     {siteConfig.name}
 
@@ -622,7 +621,7 @@ function getSocialIcon(platform: string): string {
 
               <Logo size="md" />
 
-              <span class="font-display text-xl font-bold text-brand-700">
+              <span class="font-display text-xl font-bold text-accent">
 
                 {siteConfig.name}
 

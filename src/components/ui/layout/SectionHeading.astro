@@ -1,0 +1,56 @@
+---
+/**
+ * SectionHeading
+ * The one heading pattern for page sections: an optional small teal label, the
+ * title, and an optional line of text below it. It fades in as it enters the
+ * screen (see .reveal in global.css).
+ *
+ * Pass a plain `title`, or put rich content (an icon, a link) in the default slot.
+ * The `description` slot takes text with links.
+ */
+import { cn } from '@/lib/cn';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Small teal label above the title */
+  eyebrow?: string;
+  /** id for the heading, so its section can use aria-labelledby */
+  id?: string;
+  /**
+   * left: always left. center: always centred.
+   * start: centred on phones, left from md. start-lg: the same from lg.
+   * end: centred on phones, right from lg.
+   */
+  align?: 'left' | 'center' | 'start' | 'start-lg' | 'end';
+  /** Fade in as the heading enters the screen */
+  reveal?: boolean;
+  class?: string;
+}
+
+const { title, description, eyebrow, id, align = 'start', reveal = true, class: className } = Astro.props;
+
+const alignment = {
+  left: { text: 'text-left', block: '' },
+  center: { text: 'text-center', block: 'mx-auto' },
+  start: { text: 'text-center md:text-left', block: 'mx-auto md:mx-0' },
+  'start-lg': { text: 'text-center lg:text-left', block: 'mx-auto lg:mx-0' },
+  end: { text: 'text-center lg:text-right', block: 'mx-auto lg:mr-0' },
+}[align];
+
+const hasDescription = Boolean(description) || Astro.slots.has('description');
+---
+
+<div class={cn('mb-10 md:mb-12', alignment.text, reveal && 'reveal', className)}>
+  {eyebrow && (
+    <p class="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-accent-strong">{eyebrow}</p>
+  )}
+  <h2 id={id} class="font-display text-3xl md:text-4xl font-bold tracking-tight text-foreground text-balance">
+    {title}<slot />
+  </h2>
+  {hasDescription && (
+    <p class={cn('mt-3 max-w-2xl text-lg text-foreground-muted', alignment.block)}>
+      {description}<slot name="description" />
+    </p>
+  )}
+</div>

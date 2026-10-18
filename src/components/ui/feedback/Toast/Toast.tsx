@@ -106,7 +106,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
       </div>
       <button
         type="button"
-        className="shrink-0 p-1 -mr-1 -mt-1 rounded-md text-foreground-muted hover:text-foreground transition-colors"
+        className="shrink-0 p-1 -mr-1 -mt-1 rounded-full text-foreground-muted hover:text-foreground transition-colors"
         onClick={handleDismiss}
         aria-label="Dismiss"
       >

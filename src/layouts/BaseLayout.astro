@@ -14,10 +14,11 @@ import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 import lightLogo from '@/assets/branding/logo-full.png';
 import darkLogo from '@/assets/branding/logo-full-dark.png';
 import packageData from '../../package.json';
-import { policies } from '@/config/policies.config';
-
+import { getPolicy } from '@/config/policies.config';
 import ExternalLink from '@/components/ui/content/ExternalLink.astro';
 import ExternalLinkDialog from '@/components/ui/content/ExternalLinkDialog.astro';
+
+const privacyPolicy = getPolicy('privacy');
 
 interface Props {
   title?: string;
@@ -51,6 +52,14 @@ const schemas: Array<WithContext<WebSite> | WithContext<Organization>> = [create
 if (includeOrgSchema) {
   schemas.push(createOrganizationSchema());
 }
+
+// Page changes: the old page fades out quickly, and the new one fades in with a
+// small rise (keyframes in global.css). The header stays still (see Header.astro).
+const pageFade = {
+  old: { name: 'page-out', duration: '150ms', easing: 'cubic-bezier(0.4, 0, 1, 1)', fillMode: 'both' },
+  new: { name: 'page-in', duration: '250ms', easing: 'cubic-bezier(0, 0, 0.2, 1)', fillMode: 'both' },
+};
+const pageTransition = { forwards: pageFade, backwards: pageFade };
 ---
 
 <!doctype html>
@@ -136,14 +145,14 @@ if (includeOrgSchema) {
     <!-- Skip to content link -->
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
     >
       Skip to content
     </a>
 
     <slot name="header" />
 
-    <main id="main-content" class="flex-1">
+    <main id="main-content" class="flex-1" transition:animate={pageTransition}>
       <slot />
     </main>
 
@@ -206,22 +215,28 @@ if (includeOrgSchema) {
           </ul>
         </div>
 
-        {/* Column 4: Site Info & Meta */}
-        <div class="space-y-[var(--space-stack-md)]">
-          <h3 class="font-semibold text-sm text-foreground">Site Info</h3>
-          <div class="space-y-2 text-sm text-foreground-muted">
-           <p>Version: <span class="font-mono bg-surface-secondary px-1.5 py-0.5 rounded-md border border-border">v{packageData.version}</span></p>
-            <div class="pt-1 space-y-1">
-              <p>&copy; {new Date().getFullYear()} Brighton and Co.</p>
+        {/* Column 4: Site Info & Meta. On phones it spans the full width as two columns
+            (details | policy links) with a vertical line between them; from md it is
+            one column with a horizontal line */}
+        <div class="col-span-2 md:col-span-1 grid grid-cols-2 gap-x-6 md:block">
+          <div class="space-y-[var(--space-stack-md)]">
+            <h3 class="font-semibold text-sm text-foreground">Site Info</h3>
+            <div class="space-y-2 text-sm text-foreground-muted">
+              <p>Version: <span class="font-mono bg-surface-secondary px-1.5 py-0.5 rounded-md border border-border">v{packageData.version}</span></p>
+              <div class="pt-1 space-y-1">
+              <p>&copy; {new Date().getFullYear()} <span class="whitespace-nowrap">Brighton and Co.</span></p>
               <p>All rights reserved.</p>
            </div>
-            {/* Policy Hub & Cookie Preferences links */}
-            <div class="pt-2 mt-2 border-t border-border/50 flex flex-col items-start gap-1">
-              {policies.map((policy) => (
-                <a href={policy.href} data-analytics-nav="Footer" data-nav-label={policy.title} class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
-                  {policy.title}
-                </a>
-              ))}
+            </div>
+          </div>
+          {/* Privacy Policy, Policy Hub (all policies) & Cookie Preferences */}
+          <div class="flex flex-col items-start gap-1 border-l border-border/50 pl-6 md:mt-4 md:border-l-0 md:border-t md:pl-0 md:pt-2">
+              <a href={privacyPolicy.href} data-analytics-nav="Footer" data-nav-label="Privacy Policy" class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
+                Privacy Policy
+              </a>
+              <a href="/about#policies" data-analytics-nav="Footer" data-nav-label="Policy Hub" class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
+                Policy Hub
+              </a>
               <button 
                 type="button" 
                 data-analytics-nav="Footer" 
@@ -232,7 +247,6 @@ if (includeOrgSchema) {
                 Cookie Preferences
               </button>
             </div>
-          </div>
         </div>
         
       </Fragment>
@@ -243,6 +257,12 @@ if (includeOrgSchema) {
 
     <ExternalLinkDialog />
     <ConsentBanner />
+
+    {/* Photos fade in as they load, instead of a sudden appearance */}
+    <script>
+      import { initImageFade } from '@/lib/image-fade';
+      document.addEventListener('astro:page-load', initImageFade);
+    </script>
 
     {/* ── NAVIGATION & UI INTERACTION TRACKING ──
         One document-level listener each, registered once, so they keep working

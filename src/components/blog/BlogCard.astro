@@ -57,7 +57,7 @@ const readingTime = Math.max(1, Math.ceil(estimatedWords / wordsPerMinute));
     data-nav-label={title}
   >
     {image && (
-      <div class="mb-4 overflow-hidden rounded-md">
+      <div class="mb-4 overflow-hidden rounded-xl">
         <Image
           src={image}
           alt={title}
@@ -80,7 +80,7 @@ const readingTime = Math.max(1, Math.ceil(estimatedWords / wordsPerMinute));
     <div class="flex flex-wrap items-center gap-3 text-sm text-foreground-subtle">
       {author && (
         <div class="flex items-center gap-2">
-          <div class="h-6 w-6 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-xs font-bold text-brand-600 dark:text-brand-400">
+          <div class="h-6 w-6 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-xs font-bold text-accent-strong">
             {author.charAt(0).toUpperCase()}
           </div>
           <span class="font-medium">{author}</span>

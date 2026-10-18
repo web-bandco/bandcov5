@@ -1,8 +1,8 @@
 /* =============================================================================
-   Velocity Design Tokens - Typography
+   B&Co Design Tokens - Typography
    =============================================================================
    Fluid typography using clamp() for responsive sizing.
-   Font families are theme-controlled — see themes/*.css
+   Font families are theme-controlled — see themes/default.css
    ============================================================================= */
 
 :root {

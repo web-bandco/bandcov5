@@ -1,8 +1,8 @@
 import * as React from "react"
-import { ChevronLeft, ChevronRight, X, ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown, ChevronUp } from "lucide-react"
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures" 
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/shadcn/carousel"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/shadcn/dialog"
+import { Lightbox } from "./Lightbox"
 import type { ProductImage } from "@/lib/sanity"
 
 interface ProductGalleryProps {
@@ -20,9 +20,12 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
   // Mobile carousel slides only load once they are next to the one in view
   const [loadedSlides, setLoadedSlides] = React.useState<Set<number>>(() => new Set([0]));
   const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
+  const lightboxImages = React.useMemo(
+    () => images.map((img, i) => ({ src: img.full, alt: `${title} ${i + 1}` })),
+    [images, title]
+  );
   const [isMobile, setIsMobile] = React.useState(false);
   
-  const [dialogApi, setDialogApi] = React.useState<CarouselApi>();
   const [mainApi, setMainApi] = React.useState<CarouselApi>();
   
   const thumbnailsRef = React.useRef<(HTMLButtonElement | null)[]>([]);
@@ -40,11 +43,6 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  React.useEffect(() => {
-    if (!dialogApi) return;
-    dialogApi.on("select", () => setActiveIndex(dialogApi.selectedScrollSnap()));
-  }, [dialogApi]);
 
   React.useEffect(() => {
     if (!mainApi) return;
@@ -74,16 +72,6 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
       });
     }
   }, [activeIndex, isMobile]);
-
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isLightboxOpen || !dialogApi) return;
-      if (e.key === "ArrowLeft") dialogApi.scrollPrev();
-      if (e.key === "ArrowRight") dialogApi.scrollNext();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isLightboxOpen, dialogApi]);
 
   const handleImageClick = (index: number) => {
     setActiveIndex(index);
@@ -207,45 +195,14 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           DESKTOP LIGHTBOX (Overlay)
          ========================================== */}
       {!isMobile && (
-        <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
-          <DialogContent 
-            showCloseButton={false} 
-            className="!max-w-[100vw] !w-screen !h-[100dvh] !m-0 !p-0 !border-none !rounded-none bg-black/95 flex flex-col justify-center overflow-hidden outline-none z-[200] cursor-default data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-[0.96] data-[state=open]:zoom-in-[0.96] duration-300 ease-out"
-          >
-            <DialogTitle className="sr-only">{title} Image Viewer</DialogTitle>
-            
-            <button onClick={() => setIsLightboxOpen(false)} className="absolute top-6 right-6 z-[250] p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all text-white outline-none cursor-pointer">
-              <X className="w-6 h-6" />
-            </button>
-
-            <Carousel setApi={setDialogApi} opts={{ align: "center", loop: true, startIndex: activeIndex }} plugins={[WheelGesturesPlugin()]} className="w-full h-full flex items-center justify-center z-10">
-              <CarouselContent className="h-full ml-0">
-                {images.map((img, i) => (
-                  <CarouselItem key={i} className="flex h-[100dvh] flex-col items-center justify-center pl-0 relative">
-                    <div className="absolute inset-0 z-0 cursor-default pointer-events-auto" onClick={() => setIsLightboxOpen(false)} />
-                    <div className="relative w-full h-[100dvh] flex items-center justify-center pointer-events-none z-10">
-                      <img src={img.full} alt={`Expanded Image ${i + 1}`} draggable={false} className="max-w-full h-[100dvh] object-contain pointer-events-auto select-none cursor-default" loading={Math.abs(activeIndex - i) <= 1 ? "eager" : "lazy"} />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-
-            {images.length > 1 && (
-              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[250] flex items-center gap-4 bg-black/70 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-white shadow-2xl select-none cursor-auto">
-                <button onClick={() => dialogApi?.scrollPrev()} className="p-1 hover:bg-white/20 rounded-full transition-colors outline-none cursor-pointer" aria-label="Previous image">
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
-                <span className="text-sm font-bold tracking-wider px-2 tabular-nums">
-                  {activeIndex + 1} of {images.length}
-                </span>
-                <button onClick={() => dialogApi?.scrollNext()} className="p-1 hover:bg-white/20 rounded-full transition-colors outline-none cursor-pointer" aria-label="Next image">
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+        <Lightbox
+          images={lightboxImages}
+          open={isLightboxOpen}
+          onOpenChange={setIsLightboxOpen}
+          startIndex={activeIndex}
+          onIndexChange={setActiveIndex}
+          title={`${title} image viewer`}
+        />
       )}
     </div>
   )

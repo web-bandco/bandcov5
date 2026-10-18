@@ -111,7 +111,7 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
               <ul class="space-y-3">
                 {product.features.map((feature: string) => (
                   <li class="flex items-start gap-3 text-foreground-muted">
-                    <Check className="w-5 h-5 shrink-0 text-brand-500 mt-0.5" />
+                    <Check className="w-5 h-5 shrink-0 text-accent mt-0.5" />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -122,14 +122,14 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
           {/* HTML Native Accordions - Removed 'my-8' to equalize the spacing */}
           <div class="border-y border-border divide-y divide-border pt-2">
             
-            <details class="group py-5" open>
-              <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-brand-500 [&::-webkit-details-marker]:hidden">
+            <details data-accordion-item class="group py-5" open>
+              <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-accent [&::-webkit-details-marker]:hidden">
                 Key Details
-                <div class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center group-open:rotate-180 transition-transform duration-300">
+                <div class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center accordion-icon">
                   <ChevronDown className="w-4 h-4 text-foreground-muted" />
                 </div>
               </summary>
-              <div class="grid grid-cols-2 gap-y-6 gap-x-4 pt-5 animate-in fade-in duration-300">
+              <div class="grid grid-cols-2 gap-y-6 gap-x-4 pt-5">
                 {product.condition && (
                   <div>
                     <p class="text-sm font-semibold text-foreground mb-1">Condition</p>
@@ -158,28 +158,28 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
             </details>
 
             {product.description && (
-              <details class="group py-5">
-                <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-brand-500 [&::-webkit-details-marker]:hidden">
+              <details data-accordion-item class="group py-5">
+                <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-accent [&::-webkit-details-marker]:hidden">
                   Description
-                  <div class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center group-open:rotate-180 transition-transform duration-300">
+                  <div class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center accordion-icon">
                     <ChevronDown className="w-4 h-4 text-foreground-muted" />
                   </div>
                 </summary>
-                <div class="pt-5 text-base text-foreground-muted leading-relaxed whitespace-pre-wrap animate-in fade-in duration-300">
+                <div class="pt-5 text-base text-foreground-muted leading-relaxed whitespace-pre-wrap">
                   {product.description}
                 </div>
               </details>
             )}
 
             {product.materials && product.materials.length > 0 && (
-              <details class="group py-5">
-                <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-brand-500 [&::-webkit-details-marker]:hidden">
+              <details data-accordion-item class="group py-5">
+                <summary class="flex justify-between items-center font-bold text-lg cursor-pointer list-none outline-none focus-visible:text-accent [&::-webkit-details-marker]:hidden">
                   Materials
-                  <div class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center group-open:rotate-180 transition-transform duration-300">
+                  <div class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center accordion-icon">
                     <ChevronDown className="w-4 h-4 text-foreground-muted" />
                   </div>
                 </summary>
-                <div class="pt-5 text-base text-foreground-muted animate-in fade-in duration-300">
+                <div class="pt-5 text-base text-foreground-muted">
                   {product.materials.join(', ')}
                 </div>
               </details>
@@ -195,3 +195,10 @@ const gradientStyle = "linear-gradient(135deg, #ff0055, #ff2e43)";
 
   <CTA />
 </PageLayout>
+
+<script>
+  import { initAccordions } from '@/lib/accordion';
+
+  // Smooth open and close for the product detail sections
+  document.addEventListener('astro:page-load', initAccordions);
+</script>

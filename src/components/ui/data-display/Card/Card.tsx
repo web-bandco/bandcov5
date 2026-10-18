@@ -57,7 +57,7 @@ export function Card({
       <div ref={ref} className={cardStyles} {...props}>
         <div className="flex items-start gap-4">
           {icon && (
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-accent shrink-0">
               {icon}
             </div>
           )}

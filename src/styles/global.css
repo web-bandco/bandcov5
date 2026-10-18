@@ -1,7 +1,5 @@
 /* =============================================================================
-   Velocity Global Styles
-   =============================================================================
-   Vercel-inspired: Clean, minimal, sophisticated
+   B&Co Global Styles
    ============================================================================= */
 
 /* Only scan src/ for class names (skips build caches and config files in the project root) */
@@ -47,6 +45,8 @@
 
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  /* Small text and links (darker than the accent in light mode) */
+  --color-accent-strong: var(--accent-strong);
 
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
@@ -120,6 +120,7 @@
   --transition-fast: 150ms;
   --transition-normal: 200ms;
   --transition-slow: 300ms;
+  --transition-slower: 600ms;
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -179,6 +180,12 @@
   :focus-visible {
     outline: 2px solid var(--color-ring);
     outline-offset: 2px;
+  }
+
+  /* Selected text: the pale blue tint, readable in both modes (11.4:1) */
+  ::selection {
+    background-color: #B3D1ED;
+    color: #161616;
   }
 
   /* Scrollbar */
@@ -256,6 +263,26 @@
     --color-ring: var(--on-invert);
     --color-primary: var(--on-invert);
     --color-primary-foreground: var(--surface-invert);
+  }
+
+  /* CTA band - the deep #193747 band, the same in both modes. Like .invert-section
+     it remaps the tokens, so text, buttons and focus rings inside it use the
+     bright accent (#15BACA, 5.3:1 on the band). */
+  .cta-band {
+    color: var(--color-foreground);
+    background-color: var(--background-cta);
+
+    --color-background: var(--background-cta);
+    --color-foreground: var(--on-cta);
+    --color-foreground-secondary: var(--on-cta);
+    --color-foreground-muted: var(--on-cta-muted);
+    --color-foreground-subtle: var(--on-cta-muted);
+    --color-border: color-mix(in oklch, var(--on-cta) 45%, transparent);
+    --color-accent: var(--cta-accent);
+    --color-accent-strong: var(--cta-accent);
+    --color-primary: var(--cta-accent);
+    --color-primary-foreground: #161616; /* 7.7:1 on the accent */
+    --color-ring: var(--cta-accent);
   }
 
   /* Container */
@@ -376,61 +403,6 @@
   }
 
   /* Animations */
-  .animate-fade-in {
-    animation: fade-in 0.5s ease-out forwards;
-  }
-
-  .animate-slide-up {
-    animation: slide-up 0.5s ease-out forwards;
-  }
-
-  .animate-slide-down {
-    animation: slide-down 0.5s ease-out forwards;
-  }
-
-  @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes slide-up {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slide-down {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Sheet slide up from bottom */
-  .animate-sheet-up {
-    animation: sheet-up 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  }
-
-  @keyframes sheet-up {
-    from {
-      opacity: 0;
-      transform: translateY(100%);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
   /* Backdrop fade */
   .animate-backdrop {
     animation: backdrop-fade 0.2s ease-out forwards;
@@ -439,37 +411,6 @@
   @keyframes backdrop-fade {
     from { opacity: 0; }
     to { opacity: 1; }
-  }
-
-  /* Dropdown animations */
-  .animate-dropdown-in {
-    animation: dropdown-in 0.2s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  }
-
-  .animate-dropdown-out {
-    animation: dropdown-out 0.15s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  }
-
-  @keyframes dropdown-in {
-    from {
-      opacity: 0;
-      transform: translateY(-8px) scale(0.96);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  @keyframes dropdown-out {
-    from {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-    to {
-      opacity: 0;
-      transform: translateY(-8px) scale(0.96);
-    }
   }
 
   /* Mobile menu slide down */
@@ -505,22 +446,6 @@
     }
   }
 
-  /* Sheet exit animation */
-  .animate-sheet-down {
-    animation: sheet-down 0.2s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  }
-
-  @keyframes sheet-down {
-    from {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateY(100%);
-    }
-  }
-
   /* Backdrop fade out */
   .animate-backdrop-out {
     animation: backdrop-fade-out 0.2s ease-out forwards;
@@ -530,14 +455,6 @@
     from { opacity: 1; }
     to { opacity: 0; }
   }
-
-  /* Stagger delays */
-  .delay-0 { animation-delay: 0ms; }
-  .delay-1 { animation-delay: 50ms; }
-  .delay-2 { animation-delay: 100ms; }
-  .delay-3 { animation-delay: 150ms; }
-  .delay-4 { animation-delay: 200ms; }
-  .delay-5 { animation-delay: 250ms; }
 
   /* Hover lift - the site's one hover effect for cards, tiles and buttons.
      .hover-lift lifts the element itself; .hover-lift-child lifts an element when
@@ -595,17 +512,6 @@
     50% { opacity: 0.5; }
   }
 
-  /* Input error shake */
-  .animate-shake {
-    animation: shake 400ms var(--ease-default);
-  }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-4px); }
-    40%, 80% { transform: translateX(4px); }
-  }
-
   /* Tab content crossfade */
   .animate-tab-enter {
     animation: tab-enter var(--transition-normal) var(--ease-out);
@@ -639,28 +545,10 @@
     }
   }
 
-  /* Tooltip scale-in */
-  .animate-tooltip-in {
-    animation: tooltip-in var(--transition-fast) var(--ease-out);
-  }
-
-  @keyframes tooltip-in {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
   /* Reduced motion: disable micro-animations */
   @media (prefers-reduced-motion: reduce) {
-    .animate-shake,
     .animate-tab-enter,
-    .animate-toast-in,
-    .animate-tooltip-in {
+    .animate-toast-in {
       animation: none;
     }
   }
@@ -930,4 +818,272 @@ html {
 
 body[data-scroll-locked] {
   padding-right: 0 !important;
+}
+
+/* Liquid glass reflection angle (registered so the reflection can turn smoothly) */
+@property --glass-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -75deg;
+}
+
+@layer components {
+  /* -------------------------------------------------------------------------
+     Liquid glass - the site's original glass (first used on the header nav and
+     the text carousel buttons): a see-through fill, inner shading, a reflective
+     outline that catches the light on two sides, and a soft blurred shadow.
+       .glass            frosted: light glass on light surfaces, dark glass on dark
+                         surfaces (dark mode and .invert-section)
+       .glass-dark       frosted dark glass in both modes (the lightbox is always dark)
+       .glass-clear      see-through, for the nav highlight and white icons on photos
+       .glass-highlight  the nav highlight: a little more fill, so the link stands out
+       .glass-btn        lifts on hover like .hover-lift, keeping the glass shading
+     ------------------------------------------------------------------------- */
+  .glass {
+    --glass-fill: color-mix(in oklch, var(--color-background) 60%, transparent);
+    --glass-blur: 12px;
+    --glass-border: var(--color-border);
+    --glass-shade: rgb(0 0 0 / 0.05);      /* inner shading at the top */
+    --glass-light: rgb(255 255 255 / 0.5); /* inner light at the bottom */
+    --glass-rim: rgb(255 255 255 / 0.2);   /* soft inner rim */
+    --glass-edge: rgb(255 255 255 / 0.5);  /* outline */
+    --glass-glint: rgb(0 0 0 / 0.5);       /* reflections on the outline */
+    --glass-drop: 0 0.25rem 0.125rem -0.125rem rgb(0 0 0 / 0.2);
+    position: relative;
+    isolation: isolate;
+    color: var(--color-foreground);
+    background: var(--glass-fill);
+    border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+    box-shadow:
+      inset 0 0.125rem 0.125rem var(--glass-shade),
+      inset 0 -0.125rem 0.125rem var(--glass-light),
+      var(--glass-drop),
+      0 0 0.1rem 0.25rem inset var(--glass-rim);
+  }
+
+  /* The reflective outline: light catches the edge on two sides */
+  .glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background:
+      conic-gradient(from var(--glass-angle) at 50% 50%, var(--glass-glint), transparent 5% 40%, var(--glass-glint) 50%, transparent 60% 95%, var(--glass-glint)),
+      linear-gradient(var(--glass-edge), var(--glass-edge));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    box-shadow: inset 0 0 0 0.5px var(--glass-edge);
+    transition: --glass-angle var(--transition-slower) var(--ease-out);
+  }
+
+  /* The soft blurred shadow under the glass */
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.1));
+    filter: blur(8px);
+    transform: translateY(2px);
+    transition: transform var(--transition-normal) var(--ease-out);
+  }
+
+  /* Dark surfaces: softer highlights, so the glass doesn't look grey */
+  :where(.dark, .invert-section) .glass,
+  .glass.glass-dark {
+    --glass-fill: color-mix(in oklch, var(--color-background) 70%, transparent);
+    --glass-shade: rgb(0 0 0 / 0.25);
+    --glass-light: rgb(255 255 255 / 0.12);
+    --glass-rim: rgb(255 255 255 / 0.06);
+    --glass-edge: rgb(255 255 255 / 0.24);
+    --glass-drop: 0 0.25rem 0.125rem -0.125rem rgb(0 0 0 / 0.4);
+  }
+
+  .glass.glass-dark {
+    --glass-fill: rgb(22 22 22 / 0.7);
+    --glass-border: rgb(255 255 255 / 0.1);
+    color: #f2f6fc;
+  }
+
+  .glass.glass-clear {
+    --glass-fill: linear-gradient(-75deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.05));
+    --glass-blur: 4px;
+    --glass-border: transparent;
+  }
+
+  .glass.glass-highlight {
+    --glass-fill: linear-gradient(-75deg, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.3));
+  }
+
+  :where(.dark, .invert-section) .glass.glass-highlight {
+    --glass-fill: linear-gradient(-75deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.05));
+  }
+
+  .glass-btn {
+    transition: transform var(--transition-normal) var(--ease-out), box-shadow var(--transition-normal) var(--ease-out);
+  }
+
+  .glass-btn:not(:disabled):active {
+    transform: translateY(1px) scale(0.96);
+  }
+
+  @media (hover: hover) {
+    /* The reflection turns a little under the pointer */
+    .glass:hover::after {
+      --glass-angle: -55deg;
+    }
+
+    .glass-btn:not(:disabled):hover {
+      transform: translateY(-4px);
+      --glass-drop: 0 0.5rem 0.5rem -0.25rem rgb(0 0 0 / 0.3);
+    }
+
+    .glass-btn:not(:disabled):hover::before {
+      transform: translateY(4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glass::after,
+    .glass::before {
+      transition: none;
+    }
+
+    .glass-btn:not(:disabled):hover,
+    .glass-btn:not(:disabled):active {
+      transform: none;
+    }
+  }
+
+  /* Solid glass for visitors who ask for less transparency */
+  @media (prefers-reduced-transparency: reduce) {
+    .glass:not(.glass-clear) {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      --glass-fill: var(--color-background);
+    }
+
+    .glass.glass-dark {
+      --glass-fill: #161616;
+    }
+  }
+}
+
+/* Lightbox pill morph: both snapshots stretch to fill the pill as it moves and
+   resizes, so the small on-page pill grows smoothly into the ‹ 1 of N › pill */
+::view-transition-old(*.lightbox-pill),
+::view-transition-new(*.lightbox-pill) {
+  height: 100%;
+}
+
+/* Accordions (see src/lib/accordion.ts): the chevron turns as soon as an item
+   starts to open or close, and the content fades in as the item opens */
+details > summary .accordion-icon {
+  transition: rotate 300ms var(--ease-out);
+}
+
+details[open] > summary .accordion-icon {
+  rotate: 180deg;
+}
+
+details[data-state="closed"] > summary .accordion-icon {
+  rotate: 0deg;
+}
+
+details[data-accordion-item][open] > :not(summary) {
+  animation: accordion-reveal 300ms var(--ease-out);
+}
+
+@keyframes accordion-reveal {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details > summary .accordion-icon {
+    transition: none;
+  }
+
+  details[data-accordion-item][open] > :not(summary) {
+    animation: none;
+  }
+}
+
+/* Page changes (see BaseLayout): the old page fades out and the new one fades in
+   with a small rise. The header stays still. */
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+/* Scroll reveal: .reveal fades an element in with a small rise as it enters the
+   screen. .reveal-children does the same for each child of a grid, a little later
+   for each column. CSS only: browsers without scroll-driven animations, and
+   visitors who ask for less motion, see the content at once. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal,
+    .reveal-children > * {
+      /* The timeline goes through a custom property, so the CSS minifier keeps it
+         out of the animation shorthand (browsers reject a timeline there) */
+      --reveal-timeline: view();
+      animation: reveal linear both;
+      animation-timeline: var(--reveal-timeline);
+      animation-range: entry 5% cover 20%;
+    }
+
+    .reveal-children > :nth-child(3n + 2) {
+      animation-range: entry 10% cover 25%;
+    }
+
+    .reveal-children > :nth-child(3n + 3) {
+      animation-range: entry 15% cover 30%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+}
+
+/* Photos fade in as they load (see src/lib/image-fade.ts) */
+img[data-fade] {
+  transition: opacity var(--transition-slow) var(--ease-out);
+}
+
+img[data-fade=out] {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  img[data-fade] {
+    transition: none;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }

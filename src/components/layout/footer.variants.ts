@@ -14,12 +14,13 @@ export const footerVariants = cva('py-[var(--space-stack-lg)]', {
   },
 });
 
-export const footerColumnGridVariants = cva('grid grid-cols-1 gap-[var(--space-stack-lg)]', {
+export const footerColumnGridVariants = cva('grid gap-[var(--space-stack-lg)]', {
   variants: {
     columns: {
-      2: 'md:grid-cols-2',
-      3: 'md:grid-cols-3',
-      4: 'md:grid-cols-4',
+      2: 'grid-cols-1 md:grid-cols-2',
+      3: 'grid-cols-1 md:grid-cols-3',
+      // Two columns on mobile; the logo and last column span the full width
+      4: 'grid-cols-2 md:grid-cols-4',
     },
   },
   defaultVariants: {

@@ -18,7 +18,7 @@ export const badgeVariants = cva(
           'bg-[var(--error-light)] text-[var(--error-foreground)] border-[var(--error)]/20',
         info: 'bg-[var(--info-light)] text-[var(--info-foreground)] border-[var(--info)]/20',
         brand:
-          'bg-brand-500/10 text-brand-600 border-brand-500/20 dark:text-brand-400',
+          'bg-accent/10 text-accent-strong border-accent/20',
       },
       size: {
         sm: 'text-[10px] px-2 py-0.5 gap-1',
@@ -26,7 +26,7 @@ export const badgeVariants = cva(
       },
       pill: {
         true: 'rounded-full shadow-sm',
-        false: 'rounded-md',
+        false: 'rounded-full',
       },
     },
     compoundVariants: [

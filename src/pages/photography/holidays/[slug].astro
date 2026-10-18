@@ -41,11 +41,11 @@ const optimizedImages = await toGalleryImages(images.map(({ src, alt }) => ({ im
 >
   <div>
     
-    <Hero layout="centered" size="sm" class="bg-surface-secondary border-b border-border">
+    <Hero layout="centered" size="sm">
       <Badge slot="badge" pill pulse>Holiday Gallery</Badge>
       <h1 slot="title">{title}</h1>
       <p slot="description" class="flex items-center justify-center gap-2">
-        <Icon name="map-pin" size="sm" class="text-brand-500" />
+        <Icon name="map-pin" size="sm" class="text-accent" />
         {/* UPDATED: Formats date to "August 2025" instead of just "2025" */}
         {location} • {date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
       </p>

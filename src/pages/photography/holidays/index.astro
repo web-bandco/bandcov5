@@ -27,9 +27,9 @@ const breadcrumbs = [
   description="A complete directory of all holiday and travel photography galleries."
 >
   <div>
-    <Hero layout="centered" size="sm" class="bg-surface-secondary border-b border-border">
+    <Hero layout="centered" size="sm">
       <Badge slot="badge" pill pulse>Travel Directory</Badge>
-      <h1 slot="title">Holiday Galleries</h1>
+      <h1 slot="title">Holiday <span class="text-accent">Galleries</span></h1>
       <p slot="description">
         A complete archive of all my travel photography. Select a destination to view the full gallery.
       </p>
@@ -52,7 +52,7 @@ const breadcrumbs = [
         </a>
 
         {sortedHolidays.length > 0 ? (
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div class="reveal-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {sortedHolidays.map(holiday => (
               <a 
                 href={`/photography/holidays/${holiday.id}`} 

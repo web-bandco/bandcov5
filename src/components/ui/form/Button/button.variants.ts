@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const buttonVariants = cva(
   [
     'inline-flex items-center justify-center gap-2',
-    'font-medium rounded-md',
+    'font-medium rounded-full',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     'disabled:pointer-events-none disabled:opacity-50',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
@@ -13,7 +13,7 @@ export const buttonVariants = cva(
       variant: {
         // Solid and outline buttons lift on hover (see .hover-lift in global.css)
         primary:
-          'bg-foreground text-background hover-lift active:scale-[0.98]',
+          'bg-primary text-primary-foreground hover-lift active:scale-[0.98]',
         secondary:
           'bg-secondary text-secondary-foreground border border-border hover-lift active:scale-[0.98]',
         outline:
@@ -34,7 +34,7 @@ export const buttonVariants = cva(
         true: 'w-full',
       },
       icon: {
-        true: 'rounded-md',
+        true: 'rounded-full',
       },
     },
     compoundVariants: [

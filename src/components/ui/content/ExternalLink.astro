@@ -47,7 +47,7 @@ const domain = (() => {
   <slot />
   {showIndicator && <Icon name="external-link" class="w-3.5 h-3.5 opacity-60 relative top-[1px]" />}
   {!disableHover && (
-    <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden md:group-hover/ext:block w-auto whitespace-nowrap p-3 bg-background border border-border shadow-md rounded-md z-50 text-sm text-foreground font-normal pointer-events-none">
+    <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden md:group-hover/ext:block w-auto whitespace-nowrap p-3 bg-background border border-border shadow-md rounded-xl z-50 text-sm text-foreground font-normal pointer-events-none">
       Opens an external site: <strong class="font-semibold">{domain}</strong>
     </span>
   )}

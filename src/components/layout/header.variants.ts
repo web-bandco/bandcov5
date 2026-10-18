@@ -8,7 +8,7 @@ export const headerVariants = cva('z-50', {
       static: 'relative',
     },
     variant: {
-      default: 'bg-background/80 backdrop-blur-lg border-b border-border/50',
+      default: 'bg-background/95 backdrop-blur-lg border-b border-border/50',
       solid: 'bg-background border-b border-border',
       transparent: 'bg-transparent',
     },

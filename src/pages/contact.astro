@@ -48,7 +48,7 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
       <Badge slot="badge" pill pulse>Get in Touch</Badge>
 
       <h1 slot="title">
-        Contact <span class="text-brand-700 dark:text-brand-400">B&Co</span>
+        Contact <span class="text-accent">B&Co</span>
       </h1>
 
       <p slot="description">
@@ -61,7 +61,7 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
       <div class="mx-auto max-w-6xl px-6">
         <div class="grid gap-12 lg:grid-cols-2">
           <!-- Form -->
-          <Card padding="lg">
+          <Card padding="lg" class="bg-background">
             <h2 class="text-2xl font-display font-bold text-foreground mb-6">Send us a message</h2>
 
             <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" class="space-y-6">
@@ -138,9 +138,9 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
                 {/* EMAIL LINK */}
                 <a href={`mailto:${siteConfig.email}`} class="flex w-full outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-2xl">
                   <div class="w-full">
-                    <Card hover padding="sm">
+                    <Card hover padding="sm" class="bg-background">
                       <div class="flex items-center gap-4">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-accent shrink-0">
                           <Icon name="mail" size="md" />
                         </div>
                         <div>
@@ -159,9 +159,9 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
                   class="!flex w-full" 
                 >
                   <div class="w-full">
-                    <Card hover padding="sm">
+                    <Card hover padding="sm" class="bg-background">
                       <div class="flex items-center gap-4">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-accent shrink-0">
                           <Icon name="github" size="md" />
                         </div>
                         <div>
@@ -181,9 +181,9 @@ const accessKey = "598318ee-9b49-4c95-9cc2-6b6882707fcf";
                     class="!flex w-full"
                   >
                     <div class="w-full">
-                      <Card hover padding="sm">
+                      <Card hover padding="sm" class="bg-background">
                         <div class="flex items-center gap-4">
-                          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
+                          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-accent shrink-0">
                             <Icon name="twitter" size="md" />
                           </div>
                           <div>

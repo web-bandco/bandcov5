@@ -1,5 +1,5 @@
 /* =============================================================================
-   Velocity Design Tokens - Primitive Colors
+   B&Co Design Tokens - Primitive Colors
    =============================================================================
    Raw color scales that themes build upon.
    Using OKLCH for perceptual color uniformity.
@@ -23,20 +23,21 @@
   --gray-950: oklch(12.3% 0 0);
 
   /* -------------------------------------------------------------------------
-     Brand Scale - Cyan Theme
-     Adjusted for WCAG AA compliance (text-brand-500 passes on light & dark)
+     Brand Scale - Logo Teal
+     Built from the teal end of the logo. 400, 600, 700 and 900 are the theme
+     colours; the other steps sit between them. 500 gives at least 3:1 on the
+     light and dark pages and cards, so it works for focus rings.
      ------------------------------------------------------------------------- */
-  /* Cyan Theme */
-  --brand-50: oklch(.984 .019 200.873);
-  --brand-100: oklch(.956 .045 203.388);
-  --brand-200: oklch(.917 .08 205.041);
-  --brand-300: oklch(.865 .127 207.078);
-  --brand-400: oklch(.789 .154 211.53);
-  --brand-500: oklch(.715 .143 215.221); 
-  --brand-600: oklch(.609 .126 221.723);
-  --brand-700: oklch(.52 .105 223.128);  
-  --brand-800: oklch(.45 .085 224.283);
-  --brand-900: oklch(.398 .07 227.392);
+  --brand-50: #EDFAFB;
+  --brand-100: #D7F3F7;
+  --brand-200: #ACE7EE;
+  --brand-300: #72D6E2;
+  --brand-400: #15BACA;  /* dark-mode accent */
+  --brand-500: #119BA8;
+  --brand-600: #0E7C86;  /* light-mode accent */
+  --brand-700: #006666;  /* light-mode small text and links */
+  --brand-800: #104D59;
+  --brand-900: #193747;  /* CTA band */
 
   /* Accent - Blue for links/focus */
   --blue-500: oklch(59.5% 0.19 260);

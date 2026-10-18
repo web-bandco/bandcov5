@@ -13,8 +13,8 @@ export interface OGImageOptions {
   label?: string;
 }
 
-// B&Co brand teal (brand-400 / brand-500 / brand-600)
-const BRAND = { light: '#00d3f2', main: '#00b8db', dark: '#0092b8' };
+// B&Co theme colours: bright teal (brand-400), teal (brand-600), deep blue (brand-900)
+const BRAND = { light: '#15BACA', main: '#0E7C86', deep: '#193747' };
 
 let fontCache: Buffer | null = null;
 let logoCache: string | null = null;
@@ -64,22 +64,22 @@ export async function generateOGImage(options: OGImageOptions): Promise<Uint8Arr
     : '';
 
   const markup = decodeText(html`
-    <div style="height: 100%; width: 100%; display: flex; flex-direction: column; background: linear-gradient(135deg, #18181b 0%, #27272a 50%, #18181b 100%); padding: 60px 80px; font-family: 'Inter'; position: relative;">
-      <div style="display: flex; position: absolute; top: 0; left: 0; width: 8px; height: 100%; background: linear-gradient(180deg, ${BRAND.main} 0%, ${BRAND.light} 50%, ${BRAND.dark} 100%);"></div>
+    <div style="height: 100%; width: 100%; display: flex; flex-direction: column; background: linear-gradient(135deg, #161616 0%, ${BRAND.deep} 100%); padding: 60px 80px; font-family: 'Inter'; position: relative;">
+      <div style="display: flex; position: absolute; top: 0; left: 0; width: 8px; height: 100%; background: linear-gradient(180deg, ${BRAND.light} 0%, ${BRAND.main} 100%);"></div>
       <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding-left: 20px;">
         <div style="display: flex; align-items: center;">
-          <div style="display: flex; padding: 8px 16px; background: rgba(0, 184, 219, 0.1); border: 1px solid rgba(0, 184, 219, 0.3); border-radius: 9999px; color: ${BRAND.light}; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">${label}</div>
+          <div style="display: flex; padding: 8px 16px; background: rgba(21, 186, 202, 0.12); border: 1px solid rgba(21, 186, 202, 0.35); border-radius: 9999px; color: ${BRAND.light}; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">${label}</div>
         </div>
         <div style="display: flex; flex-direction: column; gap: 24px;">
-          <div style="display: flex; font-size: ${title.length > 50 ? '48px' : '64px'}; font-weight: 700; color: #fafafa; line-height: 1.2; letter-spacing: -0.02em;">${title}</div>
-          <div style="display: ${truncatedDescription ? 'flex' : 'none'}; font-size: 24px; color: #a1a1aa; line-height: 1.5; max-width: 800px;">${truncatedDescription}</div>
+          <div style="display: flex; font-size: ${title.length > 50 ? '48px' : '64px'}; font-weight: 700; color: #F2F6FC; line-height: 1.2; letter-spacing: -0.02em;">${title}</div>
+          <div style="display: ${truncatedDescription ? 'flex' : 'none'}; font-size: 24px; color: #A3ACB9; line-height: 1.5; max-width: 800px;">${truncatedDescription}</div>
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: 12px;">
             <img src="${logo}" style="width: 48px; height: 48px;" />
-            <span style="font-size: 20px; font-weight: 600; color: #fafafa;">${siteConfig.name}</span>
+            <span style="font-size: 20px; font-weight: 600; color: #F2F6FC;">${siteConfig.name}</span>
           </div>
-          <span style="font-size: 16px; color: #71717a;">${new URL(siteConfig.url).hostname}</span>
+          <span style="font-size: 16px; color: #8B95A3;">${new URL(siteConfig.url).hostname}</span>
         </div>
       </div>
     </div>

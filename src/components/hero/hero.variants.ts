@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const heroSectionVariants = cva(
   // CHANGED: mt-6 is now mt-12 to push the card down and clear the new bar header
-  'relative overflow-hidden bg-surface-primary rounded-3xl px-8 sm:px-12 lg:px-20 mx-4 mt-12 mb-16 md:w-fit md:mx-auto shadow-xl border border-border/50',  {
+  'relative overflow-hidden bg-card rounded-3xl px-8 sm:px-12 lg:px-20 mx-4 mt-12 mb-16 md:mx-auto md:max-w-3xl shadow-xl border border-border/50',  {
     variants: {
       size: {
         sm: 'pt-[calc(var(--space-page-top-sm)_-_1rem)] pb-[var(--space-section-sm)]',

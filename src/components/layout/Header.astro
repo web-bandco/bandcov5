@@ -152,6 +152,7 @@ const buttonId = `${menuId}-button`;
 ---
 
 <header
+  transition:animate="none"
   class={headerClasses}
   data-menu-id={menuId}
   data-button-id={buttonId}
@@ -176,7 +177,7 @@ const buttonId = `${menuId}-button`;
             <span
               class={cn(
                 'font-display text-xl font-bold tracking-tight',
-                isFloating ? 'hdr-logo-text' : (isInvert ? 'text-on-invert' : 'text-brand-700')
+                isFloating ? 'hdr-logo-text' : (isInvert ? 'text-on-invert' : 'text-accent')
               )}
             >
               {logoText || siteConfig.name}
@@ -196,7 +197,7 @@ const buttonId = `${menuId}-button`;
           <nav class="hidden items-center gap-1 md:flex relative z-10" aria-label="Main navigation" id="desktop-nav">
             
             {/* THE DESKTOP LIQUID PILL */}
-            <div id="desktop-pill" class="liquid-pill absolute left-0 top-0 pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] opacity-0 z-[-1]"></div>
+            <div id="desktop-pill" class="glass glass-clear glass-highlight rounded-md absolute left-0 top-0 pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] opacity-0 z-[-1]"></div>
 
             {navItems.map(({ label, href }) => (
               <a
@@ -213,7 +214,7 @@ const buttonId = `${menuId}-button`;
                         : 'font-medium opacity-80 hover:opacity-100')
                     : (isActive(href)
                         ? 'text-foreground font-semibold'
-                        : 'text-foreground-muted hover:text-foreground font-medium')
+                        : 'text-foreground-secondary hover:text-foreground font-medium')
                 )}
                 aria-current={isActive(href) ? 'page' : undefined}
               >
@@ -275,12 +276,12 @@ const buttonId = `${menuId}-button`;
             type="button"
             id={buttonId}
             class={cn(
-              'inline-flex items-center justify-center rounded-md p-2 md:hidden',
+              'menu-toggle inline-flex items-center justify-center rounded-full p-2 md:hidden',
               'transition-colors',
               'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
               isFloating
                 ? 'hdr-invert-text'
-                : 'text-foreground-muted hover:text-foreground hover:bg-secondary'
+                : 'text-foreground-secondary hover:text-foreground hover:bg-secondary'
             )}
             aria-expanded="false"
             aria-controls={menuId}
@@ -289,7 +290,7 @@ const buttonId = `${menuId}-button`;
             <span class="menu-icon">
               <Icon name="menu" size="md" />
             </span>
-            <span class="close-icon hidden">
+            <span class="close-icon">
               <Icon name="x" size="md" />
             </span>
           </button>
@@ -298,7 +299,8 @@ const buttonId = `${menuId}-button`;
     </div>
   </div>
 
-  {/* Mobile Menu */}
+  {/* Mobile Menu: positioned just below the header bar (top-full), so the header keeps its
+      own height and its square background and blur stay out from behind the menu's rounded corners */}
   {
     showMobileMenu &&
       layout !== 'minimal' &&
@@ -306,10 +308,10 @@ const buttonId = `${menuId}-button`;
         <div
           id={menuId}
           class={cn(
-            'hidden origin-top scale-y-0 opacity-0 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.12)] md:hidden',
+            'absolute inset-x-0 top-full hidden origin-top scale-y-0 opacity-0 shadow-[0_16px_32px_-16px_rgba(0,0,0,0.25)] md:hidden',
             isFloating
               ? 'rounded-b-2xl bg-background/95 backdrop-blur-xl'
-              : 'border-border bg-background border-t'
+              : 'border border-border bg-background rounded-b-3xl'
           )}
           role="navigation"
           aria-label="Mobile navigation"
@@ -320,10 +322,10 @@ const buttonId = `${menuId}-button`;
        <div
           id={menuId}
           class={cn(
-            'hidden origin-top scale-y-0 opacity-0 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.12)] md:hidden',
+            'absolute inset-x-0 top-full hidden origin-top scale-y-0 opacity-0 shadow-[0_16px_32px_-16px_rgba(0,0,0,0.25)] md:hidden',
             isFloating
               ? 'rounded-b-2xl bg-background/95 backdrop-blur-xl'
-              : 'border-border bg-background border-t'
+              : 'border border-border bg-background rounded-b-3xl'
           )}
           role="navigation"
           aria-label="Mobile navigation"
@@ -335,7 +337,7 @@ const buttonId = `${menuId}-button`;
           )} id="mobile-nav">
             
             {/* THE MOBILE LIQUID PILL */}
-            <div id="mobile-pill" class="liquid-pill absolute left-0 top-0 pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] opacity-0 z-[-1]"></div>
+            <div id="mobile-pill" class="glass glass-clear glass-highlight rounded-md absolute left-0 top-0 pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] opacity-0 z-[-1]"></div>
 
             {navItems.map(({ label, href }) => (
               <a
@@ -348,7 +350,7 @@ const buttonId = `${menuId}-button`;
                   'transition-colors duration-200',
                   isActive(href)
                     ? 'text-foreground font-semibold' 
-                    : 'text-foreground-muted hover:text-foreground font-medium' 
+                    : 'text-foreground-secondary hover:text-foreground font-medium' 
                 )}
                 aria-current={isActive(href) ? 'page' : undefined}
               >
@@ -415,8 +417,6 @@ const buttonId = `${menuId}-button`;
         document.body.style.overflow = 'hidden';
 
         button!.setAttribute('aria-expanded', 'true');
-        menuIcon!.classList.add('hidden');
-        closeIcon!.classList.remove('hidden');
 
         if (isFloating) {
           header.setAttribute('data-scrolled', '');
@@ -448,8 +448,6 @@ const buttonId = `${menuId}-button`;
         document.body.style.overflow = '';
 
         button!.setAttribute('aria-expanded', 'false');
-        menuIcon!.classList.remove('hidden');
-        closeIcon!.classList.add('hidden');
 
         menu!.classList.remove('animate-menu-down');
         menu!.classList.add('animate-menu-up');
@@ -704,12 +702,12 @@ const buttonId = `${menuId}-button`;
     transition: color 300ms;
   }
   [data-header-shape="floating"][data-header-color-scheme="invert"][data-scrolled] .hdr-logo-text {
-    color: var(--color-brand-500);
+    color: var(--color-accent);
   }
 
   /* Non-invert floating: use normal colors */
   [data-header-shape="floating"][data-header-color-scheme="default"] .hdr-logo-text {
-    color: var(--color-brand-500);
+    color: var(--color-accent);
   }
   [data-header-shape="floating"][data-header-color-scheme="default"] .hdr-invert-text {
     color: var(--color-foreground-muted);
@@ -757,6 +755,40 @@ const buttonId = `${menuId}-button`;
     opacity: 0.9;
   }
 
+  /* ===== Menu button: the menu and close icons turn and fade into each other ===== */
+  .menu-toggle {
+    position: relative;
+  }
+
+  .menu-toggle > span {
+    display: flex;
+    transition: opacity 200ms var(--ease-out), rotate 200ms var(--ease-out);
+  }
+
+  /* The close icon sits on top of the menu icon (the button keeps its own display, so md:hidden works) */
+  .menu-toggle > .close-icon {
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-toggle[aria-expanded="true"] .menu-icon {
+    opacity: 0;
+    rotate: 90deg;
+  }
+
+  .menu-toggle:not([aria-expanded="true"]) .close-icon {
+    opacity: 0;
+    rotate: -90deg;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-toggle > span {
+      transition: none;
+    }
+  }
+
   /* ===== Reduced motion ===== */
   @media (prefers-reduced-motion: reduce) {
     [data-header-shape="floating"],
@@ -766,64 +798,5 @@ const buttonId = `${menuId}-button`;
     [data-header-shape="floating"] .nav-link::after {
       transition: none !important;
     }
-  }
-  /* ===== Liquid Glass Pill Implementation ===== */
-  @property --glass-angle {
-    syntax: "<angle>";
-    inherits: false;
-    initial-value: -75deg;
-  }
-
-  .liquid-pill {
-    /* Base Glass Background & Inner Shadows for Depth */
-    background: linear-gradient(
-      -75deg,
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.2),
-      rgba(255, 255, 255, 0.05)
-    );
-    box-shadow: 
-      inset 0 0.125rem 0.125rem rgba(0, 0, 0, 0.05),
-      inset 0 -0.125rem 0.125rem rgba(255, 255, 255, 0.5),
-      0 0.25rem 0.125rem -0.125rem rgba(0, 0, 0, 0.2),
-      0 0 0.1rem 0.25rem inset rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 0.375rem; /* Matches the rounded-md of the nav links */
-  }
-
-  /* The Reflective Outline Mask Trick */
-  .liquid-pill::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px; /* Border width */
-    background: conic-gradient(
-        from var(--glass-angle) at 50% 50%,
-        rgba(0, 0, 0, 0.5),
-        rgba(0, 0, 0, 0) 5% 40%,
-        rgba(0, 0, 0, 0.5) 50%,
-        rgba(0, 0, 0, 0) 60% 95%,
-        rgba(0, 0, 0, 0.5)
-      ),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    pointer-events: none;
-    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.5);
-  }
-
-  /* Drop Shadow */
-  .liquid-pill::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
-    filter: blur(8px);
-    z-index: -1;
-    transform: translateY(2px);
   }
 </style>

@@ -1,4 +1,5 @@
 ---
+import SectionHeading from '@/components/ui/layout/SectionHeading.astro';
 import PageLayout from '@/layouts/PageLayout.astro';
 import Badge from '@/components/ui/data-display/Badge/Badge.astro';
 import { Hero } from '@/components/hero';
@@ -55,11 +56,11 @@ const recentHolidays = sortedHolidays.slice(0, 3);
 >
   <div>
     <!-- Hero Section -->
-    <Hero layout="split" size="lg" showBlob>
+    <Hero layout="centered" size="sm">
       <Badge slot="badge" pill pulse>Some of my favourite photographs</Badge>
 
       <h1 slot="title">
-        Photography
+        My <span class="text-accent">Photography</span>
       </h1>
 
       <p slot="description">
@@ -71,10 +72,9 @@ const recentHolidays = sortedHolidays.slice(0, 3);
       <div class="container max-w-7xl space-y-24"> 
 
         {/* ROW 1: Text Left, Carousel Right */}
-        <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-          <div class="w-full lg:w-2/5 text-center lg:text-left">
-            <h2 id="recent-photos-heading" class="text-3xl md:text-4xl font-bold text-foreground">Some Recent Photos</h2>
-            <p class="text-foreground-muted mt-4 text-lg">Some of my favourite photos I've taken recently.</p>
+        <div class="reveal flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+          <div class="w-full lg:w-2/5">
+            <SectionHeading id="recent-photos-heading" title="Some Recent Photos" description="Some of my favourite photos I've taken recently." align="start-lg" reveal={false} class="mb-0" />
           </div>
           <div class="w-full lg:w-3/5">
             <ImageCarousel images={recentPhotos} galleryName="Recent Photos" sizes={carouselSizes} priority client:visible />
@@ -82,13 +82,12 @@ const recentHolidays = sortedHolidays.slice(0, 3);
         </div>
 
         {/* ROW 2: Carousel Left, Text Right */}
-        <div class="flex flex-col-reverse lg:flex-row items-center gap-8 lg:gap-16">
+        <div class="reveal flex flex-col-reverse lg:flex-row items-center gap-8 lg:gap-16">
           <div class="w-full lg:w-3/5">
             <ImageCarousel images={moreCatPhotos} galleryName="More Cat Photos" sizes={carouselSizes} client:visible />
           </div>
-          <div class="w-full lg:w-2/5 text-center lg:text-right">
-            <h2 class="text-3xl md:text-4xl font-bold text-foreground">Some More Cat Photos</h2>
-            <p class="text-foreground-muted mt-4 text-lg">More photos of my cats, of course.</p>
+          <div class="w-full lg:w-2/5">
+            <SectionHeading title="Some More Cat Photos" description="More photos of my cats, of course." align="end" reveal={false} class="mb-0" />
           </div>
         </div>
         
@@ -100,19 +99,15 @@ const recentHolidays = sortedHolidays.slice(0, 3);
       <div class="container max-w-6xl">
         <div class="flex flex-col gap-6">
           
-          <div class="text-center lg:text-left mb-8 flex flex-col items-center lg:items-start">
-            <a 
-              href="/photography/holidays" 
-              class="group inline-block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
-              data-analytics-nav="Holiday Section Header" 
-              data-nav-label="Holiday Galleries Title Link"
-            >
-              <h2 id="holiday-photos-heading" class="text-3xl md:text-4xl font-bold text-foreground group-hover:text-foreground-muted transition-colors">
-                Holiday Galleries
-              </h2>
-            </a>
-            
-            <p class="text-foreground-muted mt-2 text-lg">Select a destination below to view the full gallery.</p>
+          <div class="mb-8 flex flex-col items-center lg:items-start">
+            <SectionHeading id="holiday-photos-heading" align="start-lg" class="mb-0" description="Select a destination below to view the full gallery.">
+              <a
+                href="/photography/holidays"
+                class="rounded-lg outline-none transition-colors hover:text-foreground-muted focus-visible:ring-2 focus-visible:ring-ring"
+                data-analytics-nav="Holiday Section Header"
+                data-nav-label="Holiday Galleries Title Link"
+              >Holiday Galleries</a>
+            </SectionHeading>
             
             <Button 
               href="/photography/holidays" 
@@ -128,7 +123,7 @@ const recentHolidays = sortedHolidays.slice(0, 3);
           </div>
           
           {recentHolidays.length > 0 ? (
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div class="reveal-children grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {recentHolidays.map(holiday => (
                 <a 
                   href={`/photography/holidays/${holiday.id}`} 

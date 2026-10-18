@@ -250,7 +250,7 @@ export function ShopGrid({ products, children }: { products: ShopProduct[], chil
 
       {filteredAndSortedProducts.length === 0 ? (
         <div className="w-full py-24 flex flex-col items-center justify-center text-center px-4 bg-surface-secondary rounded-3xl border border-border/50">
-          <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6"><PackageX className="w-8 h-8 text-brand-500" /></div>
+          <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6"><PackageX className="w-8 h-8 text-accent" /></div>
           <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2">No matches found</h3>
           <p className="text-foreground-muted max-w-sm">Try removing some filters to explore more of our catalog.</p>
         </div>
