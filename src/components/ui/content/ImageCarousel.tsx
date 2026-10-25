@@ -1,5 +1,4 @@
 import * as React from "react"
-import { flushSync } from "react-dom"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
 import {
@@ -8,7 +7,7 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/shadcn/carousel"
-import { Lightbox, withPillMorph } from "./Lightbox"
+import { Lightbox, pagePhoto } from "./Lightbox"
 
 export interface CarouselImage {
   src: string;
@@ -57,6 +56,7 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
   const [mainApi, setMainApi] = React.useState<CarouselApi>()
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedIndex, setSelectedIndex] = React.useState(0)
+  const [placeholder, setPlaceholder] = React.useState<string>()
 
   // The first slide is rendered on the server so it loads without waiting for JavaScript
   const [mainActiveSlides, setMainActiveSlides] = React.useState<Set<number>>(() => new Set([0]))
@@ -65,14 +65,11 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
   const lastViewed = React.useRef(0)
   const handleLightboxIndex = React.useCallback((index: number) => { lastViewed.current = index }, [])
 
-  // Shared by this carousel's pill and its lightbox pill so one morphs into the other.
-  // Built from the gallery name so two carousels on the same page never clash.
-  const pillName = `pill-${galleryName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
-
-  // The lightbox uses the large image, with smaller sizes for phones
+  // The lightbox uses the large image, with smaller sizes for phones. The large one goes
+  // first: if a page size has the same width, the browser keeps the first of the two.
   const lightboxImages = React.useMemo(() => images.map((image) => ({
     src: image.fullSrc,
-    srcset: image.srcset ? `${image.srcset}, ${image.fullSrc} 1600w` : undefined,
+    srcset: image.srcset ? `${image.fullSrc} ${image.width}w, ${image.srcset}` : undefined,
     alt: image.alt,
   })), [images]);
 
@@ -94,18 +91,17 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
   if (!images || images.length === 0) return null;
 
   const setLightboxOpen = (open: boolean, index?: number) => {
-    withPillMorph(() => flushSync(() => {
-      if (index !== undefined) {
-        setSelectedIndex(index);
-        lastViewed.current = index;
-      }
-      // On close, the carousel moves to the last photo shown in the lightbox
-      if (!open) mainApi?.scrollTo(lastViewed.current, true);
-      setIsOpen(open);
-    }));
+    if (index !== undefined) {
+      setSelectedIndex(index);
+      lastViewed.current = index;
+    }
+    // On close, the carousel moves to the last photo shown in the lightbox
+    if (!open) mainApi?.scrollTo(lastViewed.current, true);
+    setIsOpen(open);
   };
 
-  const handleImageClick = (index: number) => {
+  const handleImageClick = (index: number, src?: string) => {
+    setPlaceholder(src);
     setLightboxOpen(true, index);
 
     trackEvent('photo_lightbox_open', {
@@ -135,7 +131,7 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
                   <button
                     type="button"
                     aria-label={`View full image: ${image.alt}`}
-                    onClick={() => handleImageClick(index)}
+                    onClick={(e) => handleImageClick(index, pagePhoto(e))}
                     className="w-full block overflow-hidden rounded-2xl border border-border bg-surface-secondary shadow-sm aspect-[4/3] relative flex items-center justify-center cursor-pointer p-0 focus-visible:ring-2 focus-visible:ring-ring outline-none"
                   >
                     {shouldLoad && (
@@ -159,12 +155,9 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
           })}
         </CarouselContent>
 
-        {/* Small pill (arrows only); it morphs into the lightbox's ‹ 1 of N › pill */}
+        {/* Small pill (arrows only) */}
         {images.length > 1 && (
-          <div
-            className="absolute bottom-4 right-4 z-10 hidden md:flex items-center gap-1 p-1 rounded-full glass select-none [view-transition-class:lightbox-pill]"
-            style={{ viewTransitionName: isOpen ? undefined : pillName }}
-          >
+          <div className="absolute bottom-4 right-4 z-10 hidden md:flex items-center gap-1 p-1 rounded-full glass select-none">
             <button
               type="button"
               onClick={() => mainApi?.scrollPrev()}
@@ -196,7 +189,7 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
         startIndex={selectedIndex}
         onIndexChange={handleLightboxIndex}
         title={`${galleryName} gallery`}
-        pillTransitionName={pillName}
+        placeholder={placeholder}
       />
     </>
   )

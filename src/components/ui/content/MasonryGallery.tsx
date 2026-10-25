@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Lightbox } from "./Lightbox"
+import { Lightbox, pagePhoto } from "./Lightbox"
 
 export interface GalleryImage {
   src: string;
@@ -32,18 +32,21 @@ const trackEvent = (eventName: string, params: Record<string, any>) => {
 export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }: MasonryGalleryProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedIndex, setSelectedIndex] = React.useState(0)
+  const [placeholder, setPlaceholder] = React.useState<string>()
 
-  // The lightbox uses the large image, with smaller sizes for phones
+  // The lightbox uses the large image, with smaller sizes for phones. The large one goes
+  // first: if a page size has the same width, the browser keeps the first of the two.
   const lightboxImages = React.useMemo(() => images.map((image) => ({
     src: image.fullSrc,
-    srcset: image.srcset ? `${image.srcset}, ${image.fullSrc} 1600w` : undefined,
+    srcset: image.srcset ? `${image.fullSrc} ${image.width}w, ${image.srcset}` : undefined,
     alt: image.alt,
   })), [images]);
 
   if (!images || images.length === 0) return null;
 
-  const handleImageClick = (index: number) => {
+  const handleImageClick = (index: number, src?: string) => {
     setSelectedIndex(index);
+    setPlaceholder(src);
     setIsOpen(true);
 
     trackEvent('photo_lightbox_open', {
@@ -63,7 +66,7 @@ export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }
             <button
               type="button"
               aria-label={`View full image: ${image.alt}`}
-              onClick={() => handleImageClick(index)}
+              onClick={(e) => handleImageClick(index, pagePhoto(e))}
               className="w-full h-full block p-0 m-0 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-500 text-left relative"
             >
               <img
@@ -89,6 +92,7 @@ export function MasonryGallery({ images, galleryName = "Uncategorized Gallery" }
         onOpenChange={setIsOpen}
         startIndex={selectedIndex}
         title={`${galleryName} gallery`}
+        placeholder={placeholder}
       />
     </>
   )

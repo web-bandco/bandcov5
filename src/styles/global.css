@@ -977,13 +977,6 @@ body[data-scroll-locked] {
   }
 }
 
-/* Lightbox pill morph: both snapshots stretch to fill the pill as it moves and
-   resizes, so the small on-page pill grows smoothly into the ‹ 1 of N › pill */
-::view-transition-old(*.lightbox-pill),
-::view-transition-new(*.lightbox-pill) {
-  height: 100%;
-}
-
 /* Accordions (see src/lib/accordion.ts): the chevron turns as soon as an item
    starts to open or close, and the content fades in as the item opens */
 details > summary .accordion-icon {
@@ -1017,6 +1010,25 @@ details[data-accordion-item][open] > :not(summary) {
   details[data-accordion-item][open] > :not(summary) {
     animation: none;
   }
+}
+
+/* Theme switch (see ThemeToggle): the whole page cross-fades as one picture. During
+   the switch only movement transitions run, so a moving carousel slide or a fading
+   photo carries on; colour transitions are left out, so no part changes colour before
+   or after the rest. The page-change parts (main, header) join the page picture. */
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition-property: transform, translate, scale, rotate, opacity, filter, width, left, right !important;
+}
+
+html.theme-switching [data-astro-transition-scope] {
+  view-transition-name: none;
+}
+
+html.theme-switching::view-transition-old(root),
+html.theme-switching::view-transition-new(root) {
+  animation-duration: var(--transition-slow);
 }
 
 /* Page changes (see BaseLayout): the old page fades out and the new one fades in

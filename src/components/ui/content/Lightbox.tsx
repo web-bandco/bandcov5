@@ -21,22 +21,14 @@ interface LightboxProps {
   onIndexChange?: (index: number) => void;
   /** Accessible name for the dialog */
   title: string;
-  /** view-transition-name shared with a pill on the page, so that pill morphs into this one */
-  pillTransitionName?: string;
+  /** The page's copy of the start image, shown until the large one loads */
+  placeholder?: string;
 }
 
-/**
- * Runs a lightbox open/close update inside a View Transition where the browser
- * supports it, so an on-page pill with the same view-transition-name morphs into
- * the lightbox pill (and back). Elsewhere, or with reduced motion, it just updates.
- */
-export function withPillMorph(update: () => void) {
-  const doc = document as Document & { startViewTransition?: (callback: () => void) => unknown }
-  if (!doc.startViewTransition || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    update()
-    return
-  }
-  doc.startViewTransition(update)
+/** The photo in a clicked element, if the page has finished loading it (for `placeholder`) */
+export const pagePhoto = (e: React.MouseEvent<HTMLElement>) => {
+  const img = e.currentTarget.querySelector("img")
+  return img?.complete && img.naturalWidth ? img.currentSrc : undefined
 }
 
 /**
@@ -53,17 +45,17 @@ export function Lightbox({ open, onOpenChange, title, ...body }: LightboxProps) 
       >
         <DialogTitle className="sr-only">{title}</DialogTitle>
         {/* Mounted each time the lightbox opens, so it starts on the chosen image */}
-        <LightboxBody {...body} open={open} close={() => onOpenChange(false)} />
+        <LightboxBody {...body} close={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   )
 }
 
-interface LightboxBodyProps extends Omit<LightboxProps, "onOpenChange" | "title"> {
+interface LightboxBodyProps extends Omit<LightboxProps, "open" | "onOpenChange" | "title"> {
   close: () => void;
 }
 
-function LightboxBody({ images, open, startIndex, onIndexChange, pillTransitionName, close }: LightboxBodyProps) {
+function LightboxBody({ images, startIndex, onIndexChange, placeholder, close }: LightboxBodyProps) {
   const [initialIndex] = React.useState(startIndex)
   const [api, setApi] = React.useState<CarouselApi>()
   const [index, setIndex] = React.useState(startIndex)
@@ -188,13 +180,20 @@ function LightboxBody({ images, open, startIndex, onIndexChange, pillTransitionN
         className="w-full h-full"
       >
         <CarouselContent className="h-full ml-0">
-          {images.map((image, i) => (
+          {images.map((image, i) => {
+            // The start image fades in over the page's copy of the photo, which hides once the fade ends
+            const preview = i === initialIndex ? placeholder : undefined
+            return (
             <CarouselItem key={i} className="relative flex h-[100dvh] items-center justify-center pl-0">
               {/* Clicking the dark area around the image closes the viewer */}
               <div className="absolute inset-0" onClick={close} aria-hidden="true" />
 
-              {requested.has(i) && !loaded.has(i) && (
+              {requested.has(i) && !loaded.has(i) && !preview && (
                 <Spinner className="absolute w-10 h-10 text-white/70 animate-spin" />
+              )}
+
+              {preview && (
+                <img src={preview} alt="" aria-hidden="true" draggable={false} className={`absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-0 delay-300 ${loaded.has(i) ? "opacity-0" : ""}`} />
               )}
 
               {requested.has(i) && (
@@ -210,16 +209,15 @@ function LightboxBody({ images, open, startIndex, onIndexChange, pillTransitionN
                 />
               )}
             </CarouselItem>
-          ))}
+            )
+          })}
         </CarouselContent>
       </Carousel>
       </div>
 
       {images.length > 1 && (
         <div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[250] flex items-center gap-4 px-4 py-2 rounded-full glass glass-dark select-none [view-transition-class:lightbox-pill]"
-          style={{ viewTransitionName: open && pillTransitionName ? pillTransitionName : undefined }}
-        >
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[250] flex items-center gap-4 px-4 py-2 rounded-full glass glass-dark select-none">
           <button
             type="button"
             onClick={() => api?.scrollPrev()}

@@ -2,7 +2,7 @@ import * as React from "react"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures" 
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/shadcn/carousel"
-import { Lightbox } from "./Lightbox"
+import { Lightbox, pagePhoto } from "./Lightbox"
 import type { ProductImage } from "@/lib/sanity"
 
 interface ProductGalleryProps {
@@ -20,6 +20,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
   // Mobile carousel slides only load once they are next to the one in view
   const [loadedSlides, setLoadedSlides] = React.useState<Set<number>>(() => new Set([0]));
   const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
+  const [placeholder, setPlaceholder] = React.useState<string>();
   const lightboxImages = React.useMemo(
     () => images.map((img, i) => ({ src: img.full, alt: `${title} ${i + 1}` })),
     [images, title]
@@ -73,8 +74,9 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
     }
   }, [activeIndex, isMobile]);
 
-  const handleImageClick = (index: number) => {
+  const handleImageClick = (index: number, src?: string) => {
     setActiveIndex(index);
+    setPlaceholder(src);
     if (!isMobile) setIsLightboxOpen(true);
   };
 
@@ -135,7 +137,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
         
         <div 
           className={`w-full bg-surface-secondary rounded-2xl overflow-hidden hover-lift ${cursorClass}`}
-          onClick={() => handleImageClick(0)}
+          onClick={(e) => handleImageClick(0, pagePhoto(e))}
         >
           <img
             src={images[0].src}
@@ -157,7 +159,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
                   <div 
                     key={actualIndex}
                     className={`w-full bg-surface-secondary rounded-2xl overflow-hidden break-inside-avoid hover-lift ${cursorClass}`}
-                    onClick={() => handleImageClick(actualIndex)}
+                    onClick={(e) => handleImageClick(actualIndex, pagePhoto(e))}
                   >
                     <img src={img.src} srcSet={img.srcset} sizes={GRID_SIZES} alt={`${title} Detail ${actualIndex}`} className="w-full aspect-[3/4] object-cover rounded-2xl" loading="lazy" />
                   </div>
@@ -202,6 +204,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           startIndex={activeIndex}
           onIndexChange={setActiveIndex}
           title={`${title} image viewer`}
+          placeholder={placeholder}
         />
       )}
     </div>

@@ -71,6 +71,9 @@ const { class: className } = Astro.props;
     }
   }
 
+  // Counts theme switches, so only the latest one ends the switching state
+  let switches = 0;
+
   function initThemeToggle() {
     const toggle = document.getElementById('theme-toggle');
     if (!toggle) return;
@@ -80,15 +83,26 @@ const { class: className } = Astro.props;
     toggle.parentNode?.replaceChild(newToggle, toggle);
 
     newToggle.addEventListener('click', () => {
-      const isDark = document.documentElement.classList.contains('dark');
+      const root = document.documentElement;
+      const dark = !root.classList.contains('dark');
+      const apply = () => root.classList.toggle('dark', dark);
 
-      if (isDark) {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
+      // While switching, no part of the page runs its own colour transition (see
+      // global.css), so every part changes colour at the same time
+      root.classList.add('theme-switching');
+      const id = ++switches;
+      const done = () => { if (id === switches) root.classList.remove('theme-switching'); };
+
+      if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        // The whole page cross-fades from the old theme to the new one as one picture
+        document.startViewTransition(apply).finished.finally(done);
       } else {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
+        apply();
+        root.getBoundingClientRect(); // apply the new colours before transitions come back
+        done();
       }
+
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
     });
   }
 
