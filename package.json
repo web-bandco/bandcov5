@@ -1,6 +1,6 @@
 {
   "name": "bandcov5",
-  "version": "5.5.2",
+  "version": "5.5.2a",
   "description": "Brighton and Co Version 5.",
   "type": "module",
   "author": "Harry B",
@@ -114,6 +114,6 @@
     "sharp@0.34.5": true,
     "esbuild@0.28.2": true,
     "fsevents@2.3.3": true,
-    "workerd@1.20261012.1": true
+    "workerd@1.20261019.1": true
   }
 }
