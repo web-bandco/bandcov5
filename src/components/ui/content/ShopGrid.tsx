@@ -94,7 +94,7 @@ function ProductCard({ product, isPriority }: { product: ShopProduct, isPriority
       </figure>
 
       <div className="flex flex-col flex-grow px-1">
-        <h2 className="text-sm md:text-base font-semibold text-foreground leading-snug line-clamp-2">
+        <h2 className="text-sm md:text-base font-semibold text-foreground leading-snug line-clamp-2 underline-offset-4 group-focus-visible:underline">
           {product.title}
         </h2>
         {/* mt-auto pushes the price to the bottom, aligning it with all other items in the row */}

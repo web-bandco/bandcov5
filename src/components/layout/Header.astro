@@ -300,7 +300,8 @@ const buttonId = `${menuId}-button`;
   </div>
 
   {/* Mobile Menu: positioned just below the header bar (top-full), so the header keeps its
-      own height and its square background and blur stay out from behind the menu's rounded corners */}
+      own height and its square background and blur stay out from behind the menu's rounded corners.
+      The bar menu has only a bottom border, so it joins the header as one surface */}
   {
     showMobileMenu &&
       layout !== 'minimal' &&
@@ -311,7 +312,7 @@ const buttonId = `${menuId}-button`;
             'absolute inset-x-0 top-full hidden origin-top scale-y-0 opacity-0 shadow-[0_16px_32px_-16px_rgba(0,0,0,0.25)] md:hidden',
             isFloating
               ? 'rounded-b-2xl bg-background/95 backdrop-blur-xl'
-              : 'border border-border bg-background rounded-b-3xl'
+              : 'border-b border-border bg-background rounded-b-3xl'
           )}
           role="navigation"
           aria-label="Mobile navigation"
@@ -325,7 +326,7 @@ const buttonId = `${menuId}-button`;
             'absolute inset-x-0 top-full hidden origin-top scale-y-0 opacity-0 shadow-[0_16px_32px_-16px_rgba(0,0,0,0.25)] md:hidden',
             isFloating
               ? 'rounded-b-2xl bg-background/95 backdrop-blur-xl'
-              : 'border border-border bg-background rounded-b-3xl'
+              : 'border-b border-border bg-background rounded-b-3xl'
           )}
           role="navigation"
           aria-label="Mobile navigation"
@@ -426,10 +427,14 @@ const buttonId = `${menuId}-button`;
           header.classList.add('!bg-background');
         }
 
+        // The faded page is also inert: out of Tab order and hidden from screen readers.
+        // main ~ footer is the site footer (a blog post has its own footer inside main)
         const mainContent = document.querySelector('main');
-        const footer = document.querySelector('footer');
-        if (mainContent) mainContent.classList.add('mobile-menu-blur');
-        if (footer) footer.classList.add('mobile-menu-blur');
+        const footer = document.querySelector<HTMLElement>('main ~ footer');
+        if (mainContent) mainContent.classList.add('mobile-menu-fade', 'mobile-menu-blur');
+        if (footer) footer.classList.add('mobile-menu-fade', 'mobile-menu-blur');
+        if (mainContent) mainContent.inert = true;
+        if (footer) footer.inert = true;
 
         menu!.classList.remove('hidden', 'animate-menu-up', 'opacity-0', 'scale-y-0');
         menu!.classList.add('animate-menu-down');
@@ -457,12 +462,16 @@ const buttonId = `${menuId}-button`;
         }
 
         const mainContent = document.querySelector('main');
-        const footer = document.querySelector('footer');
+        const footer = document.querySelector<HTMLElement>('main ~ footer');
         if (mainContent) mainContent.classList.remove('mobile-menu-blur');
         if (footer) footer.classList.remove('mobile-menu-blur');
+        if (mainContent) mainContent.inert = false;
+        if (footer) footer.inert = false;
 
         setTimeout(() => {
           menu!.classList.add('hidden', 'opacity-0', 'scale-y-0');
+          if (mainContent) mainContent.classList.remove('mobile-menu-fade');
+          if (footer) footer.classList.remove('mobile-menu-fade');
           if (backdrop) {
             backdrop.classList.add('pointer-events-none');
           }
@@ -479,7 +488,7 @@ const buttonId = `${menuId}-button`;
 
           isOpen = false;
           isAnimating = false;
-        }, 200);
+        }, 250);
       }
 
       function toggle() {
@@ -504,6 +513,12 @@ const buttonId = `${menuId}-button`;
 
       menu.querySelectorAll('a').forEach((link) => {
         link.addEventListener('click', close);
+      });
+
+      // The menu and its button are hidden from md (768px) up, so close the menu there,
+      // or the page would stay faded and inert with no way to close it
+      window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
+        if (e.matches) close();
       });
     });
   }
@@ -674,7 +689,11 @@ const buttonId = `${menuId}-button`;
   .mobile-menu-blur {
     opacity: 0.3;
     filter: blur(4px);
-    transition: opacity 200ms, filter 200ms;
+  }
+
+  /* Stays on until the menu has closed, so the page fades back in instead of snapping */
+  .mobile-menu-fade {
+    transition: opacity 250ms, filter 250ms;
   }
 
   /* ===== Floating header: scroll state ===== */

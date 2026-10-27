@@ -421,7 +421,7 @@
 
   .animate-menu-up {
     transform-origin: top;
-    animation: menu-up 0.2s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    animation: menu-up 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   @keyframes menu-down {
@@ -460,6 +460,7 @@
      .hover-lift lifts the element itself; .hover-lift-child lifts an element when
      its .group parent is hovered (e.g. a shop card's photo). Only applies on
      devices with a mouse, and reduced-motion users get the shadow without the movement.
+     Keyboard focus on a .group lifts its .hover-lift-child too, on every device.
      Tune the effect site-wide here. */
   .hover-lift,
   .hover-lift-child {
@@ -475,9 +476,15 @@
     }
   }
 
+  .group:focus-visible .hover-lift-child {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hover-lift:not(:disabled):hover,
-    .group:hover .hover-lift-child {
+    .group:hover .hover-lift-child,
+    .group:focus-visible .hover-lift-child {
       transform: none;
     }
   }
@@ -1046,10 +1053,11 @@ html.theme-switching::view-transition-new(root) {
   }
 }
 
-/* Scroll reveal: .reveal fades an element in with a small rise as it enters the
+/* Scroll reveal: .reveal moves an element up into place as it enters the
    screen. .reveal-children does the same for each child of a grid, a little later
    for each column. CSS only: browsers without scroll-driven animations, and
-   visitors who ask for less motion, see the content at once. */
+   visitors who ask for less motion, see the content at once. No fade: text keeps
+   full contrast at every point (PageSpeed Insights measures part-faded text). */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     .reveal,
@@ -1074,7 +1082,6 @@ html.theme-switching::view-transition-new(root) {
 
 @keyframes reveal {
   from {
-    opacity: 0;
     translate: 0 24px;
   }
 }
@@ -1097,5 +1104,20 @@ img[data-fade=out] {
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation: none !important;
+  }
+}
+
+/* Reduced motion, site wide: when a visitor's device asks for less motion, every
+   animation and transition finishes at once and scrolling jumps. 0.01ms (not none)
+   keeps end states and the animationend/transitionend events that scripts wait for.
+   Loading spinners keep turning, so a wait still shows. Carousels: see shadcn/carousel.tsx */
+@media (prefers-reduced-motion: reduce) {
+  *:not(.animate-spin),
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

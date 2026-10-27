@@ -17,8 +17,8 @@
 
   --foreground: #161616;             /* 16.7:1 — WCAG AAA */
   --foreground-secondary: #2D3540;   /* 11.4:1 — WCAG AAA */
-  --foreground-muted: #4B5563;       /*  7.0:1 — WCAG AAA */
-  --foreground-subtle: #5A6472;      /*  5.5:1 — WCAG AA (4.8:1 on tertiary) */
+  --foreground-muted: #3F4753;       /*  8.7:1 — WCAG AAA */
+  --foreground-subtle: #4B5563;      /*  7.0:1 — WCAG AA (6.1:1 on tertiary) */
 
   --border: #D5DEE9;
   --border-strong: #B8C4D2;

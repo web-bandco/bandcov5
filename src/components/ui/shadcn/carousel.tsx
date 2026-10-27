@@ -51,10 +51,15 @@ function Carousel({
   children,
   ...props
 }: React.ComponentProps<"div"> & CarouselProps) {
+  // Reduced motion: buttons and arrow keys change slides at once (swipes still follow the finger)
+  const reduceMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
       axis: orientation === "horizontal" ? "x" : "y",
+      ...(reduceMotion ? { duration: 0 } : {}),
     },
     plugins
   )

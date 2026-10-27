@@ -66,8 +66,8 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
 
   React.useEffect(() => {
     if (isMobile && thumbnailsRef.current[activeIndex]) {
+      // Smooth (or instant for reduced motion) through the strip's scroll-smooth class
       thumbnailsRef.current[activeIndex]?.scrollIntoView({
-        behavior: 'smooth',
         inline: 'center',
         block: 'nearest'
       });
@@ -113,7 +113,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
         </Carousel>
 
         {images.length > 1 && (
-          <div className="flex flex-row gap-3 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-1">
+          <div className="flex flex-row gap-3 overflow-x-auto scroll-smooth pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-1">
             {images.map((img, i) => (
               <button
                 key={i}

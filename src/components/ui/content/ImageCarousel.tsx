@@ -116,6 +116,7 @@ export function ImageCarousel({ images, galleryName = "Uncategorized Gallery", s
     <>
       <Carousel
         setApi={setMainApi}
+        aria-label={galleryName}
         opts={{ align: "start", loop: true }}
         plugins={[WheelGesturesPlugin()]}
         className="w-full relative"

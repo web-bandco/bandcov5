@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import '@/styles/global.css';
 import SEO from '@/components/seo/SEO.astro';
 import JsonLd from '@/components/seo/JsonLd.astro';
@@ -11,8 +10,7 @@ import type { WebSite, Organization, WithContext } from 'schema-dts';
 import siteConfig from '@/config/site.config';
 import Footer from '@/components/layout/Footer.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
-import lightLogo from '@/assets/branding/logo-full.png';
-import darkLogo from '@/assets/branding/logo-full-dark.png';
+import Logo from '@/components/ui/marketing/Logo/Logo.astro';
 import packageData from '../../package.json';
 import { getPolicy } from '@/config/policies.config';
 import ExternalLink from '@/components/ui/content/ExternalLink.astro';
@@ -164,10 +162,10 @@ const pageTransition = { forwards: pageFade, backwards: pageFade };
       showSocial={false} 
       showCopyright={false}
     >
-      {/* COLUMN 1: Logo & Tagline (Injected via slots) */}
-      <a href="/" slot="logo" class="block mb-2" data-analytics-nav="Footer" data-nav-label="Logo Home Link">
-        <Image src={lightLogo} alt="Brighton and Co" width={192} class="h-10 w-auto dark:hidden" />
-        <Image src={darkLogo} alt="Brighton and Co" width={192} class="h-10 w-auto hidden dark:block" />
+      {/* COLUMN 1: Logo & Tagline (Injected via slots). Same logo as the header: live text follows the theme */}
+      <a href="/" slot="logo" class="flex w-fit items-center gap-2 mb-2" data-analytics-nav="Footer" data-nav-label="Logo Home Link">
+        <Logo size="md" />
+        <span class="font-display text-xl font-bold tracking-tight text-accent">{siteConfig.name}</span>
       </a>
       <span slot="tagline" class="block leading-relaxed">
         Brighton and Co - made by Harry B. Showcasing personal projects, hobbies, interests and more.
@@ -178,7 +176,7 @@ const pageTransition = { forwards: pageFade, backwards: pageFade };
         
         {/* Column 2: Quick Links */}
         <div class="space-y-[var(--space-stack-md)]">
-          <h3 class="font-semibold text-sm text-foreground">Quick Links</h3>
+          <h2 class="font-semibold text-sm text-foreground">Quick Links</h2>
           <ul class="space-y-2">
             <li><a href="/about" data-analytics-nav="Footer" data-nav-label="About" class="text-sm text-foreground-muted hover:text-foreground transition-colors">About</a></li>
             <li><a href="/shop" data-analytics-nav="Footer" data-nav-label="Shop" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Shop</a></li>
@@ -190,7 +188,7 @@ const pageTransition = { forwards: pageFade, backwards: pageFade };
 
         {/* Column 3: Social Links */}
         <div class="space-y-[var(--space-stack-md)]">
-          <h3 class="font-semibold text-sm text-foreground">Connect</h3>
+          <h2 class="font-semibold text-sm text-foreground">Connect</h2>
           <ul class="space-y-2">
             <li>
               <ExternalLink data-analytics-nav="Footer" data-nav-label="Twitter" disableHover href="https://twitter.com/itsharryb_" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
@@ -220,7 +218,7 @@ const pageTransition = { forwards: pageFade, backwards: pageFade };
             one column with a horizontal line */}
         <div class="col-span-2 md:col-span-1 grid grid-cols-2 gap-x-6 md:block">
           <div class="space-y-[var(--space-stack-md)]">
-            <h3 class="font-semibold text-sm text-foreground">Site Info</h3>
+            <h2 class="font-semibold text-sm text-foreground">Site Info</h2>
             <div class="space-y-2 text-sm text-foreground-muted">
               <p>Version: <span class="font-mono bg-surface-secondary px-1.5 py-0.5 rounded-md border border-border">v{packageData.version}</span></p>
               <div class="pt-1 space-y-1">
