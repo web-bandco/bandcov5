@@ -50,7 +50,7 @@ export const product = defineType({
       type: 'array',
       of: [{ type: 'string' }],
       options: {
-        list: ['Cotton', 'Merino Wool', 'Polyamide', 'Polyester'],
+        list: ['Acrylic', 'Cotton', 'Elastane', 'Merino Wool', 'Polyamide', 'Polyester', 'Spandex', 'Wool'],
       }
     }),
     defineField({
