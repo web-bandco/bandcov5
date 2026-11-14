@@ -1,0 +1,138 @@
+/* =============================================================================
+   Brighton and Co brand
+   =============================================================================
+   Loads after the Velocity default theme (see theme.css), so these values win.
+   Tokens that are not set here keep the Velocity value.
+   Contrast figures are WCAG 2.2 ratios. Light mode is measured on the page
+   (#F2F6FC), dark mode on the page (#161616).
+   ============================================================================= */
+
+:root {
+  /* Brand scale - logo teal. 400, 600, 700 and 900 are the theme colours.
+     500 gives at least 3:1 on light and dark pages and cards. */
+  --brand-50: #EDFAFB;
+  --brand-100: #D7F3F7;
+  --brand-200: #ACE7EE;
+  --brand-300: #72D6E2;
+  --brand-400: #15BACA;  /* dark-mode accent */
+  --brand-500: #119BA8;
+  --brand-600: #0E7C86;  /* light-mode accent */
+  --brand-700: #006666;
+  --brand-800: #104D59;
+  --brand-900: #193747;
+
+  /* Brand fills (Button variant="brand", .brand-section): white on 600 is 5.0:1 */
+  --brand-fill: var(--brand-600);
+  --brand-fill-hover: var(--brand-700);
+  --brand-ink: #FFFFFF;
+
+  --background: #F2F6FC;
+  --background-secondary: #E9EFF7;
+  --background-tertiary: #DFE7F1;
+  --background-elevated: #FFFFFF;
+
+  --foreground: #161616;             /* 16.7:1 */
+  --foreground-secondary: #2D3540;   /* 11.4:1 */
+  --foreground-muted: #3F4753;       /*  8.7:1 */
+  --foreground-subtle: #4B5563;      /*  7.0:1 */
+
+  --border: #D5DEE9;
+  --border-strong: #B8C4D2;
+  --border-subtle: #E2E9F2;
+
+  --primary: #0E7C86;                /* white text on it 5.0:1 */
+  --primary-hover: #0B6B74;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #E9EFF7;
+  --secondary-hover: #DFE7F1;
+  --secondary-foreground: #161616;
+
+  /* Accent text passes 4.5:1 on every light surface: page 5.8, card 6.2,
+     section 5.4, tertiary 5.0, accent-light 5.4. (#0E7C86 was 4.3 on sections.) */
+  --accent: #0B6B74;
+  --accent-hover: #006666;
+  --accent-light: var(--brand-100);
+
+  --muted: #E9EFF7;
+  --muted-foreground: #5A6472;       /*  5.5:1 */
+
+  --card: #FFFFFF;
+  --card-border: #D5DEE9;
+
+  --input-bg: #FFFFFF;
+  --input-border: #B8C4D2;
+  --input-focus: #0E7C86;
+  --ring: #0E7C86;                   /*  4.6:1, focus rings need 3:1 */
+
+  --gradient-start: #E9EFF7;
+  --gradient-end: #F2F6FC;
+
+  --surface-invert: #161616;
+  --surface-invert-secondary: #1E2124;
+  --surface-invert-tertiary: #2C3036;
+  --on-invert: #F2F6FC;              /* 16.7:1 */
+  --on-invert-secondary: #D0D6DE;    /* 12.4:1 */
+  --on-invert-muted: #A3ACB9;        /*  7.9:1 */
+  --border-invert: #2C3036;
+  --border-invert-strong: #3A4048;
+
+  /* Corners: 16px cards */
+  --theme-radius-lg: 1rem;
+  --theme-radius-xl: 1rem;
+}
+
+.dark {
+  --brand-fill: var(--brand-400);    /* #161616 text on it 7.7:1 */
+  --brand-fill-hover: var(--brand-300);
+  --brand-ink: #161616;
+
+  --background: #161616;
+  --background-secondary: #1B1D20;
+  --background-tertiary: #24282D;
+  --background-elevated: #1E2124;
+
+  --foreground: #F2F6FC;             /* 16.7:1 */
+  --foreground-secondary: #D0D6DE;   /* 12.4:1 */
+  --foreground-muted: #A3ACB9;       /*  7.9:1 */
+  --foreground-subtle: #8B95A3;      /*  6.0:1 */
+
+  --border: #2C3036;
+  --border-strong: #3A4048;
+  --border-subtle: #22262B;
+
+  --primary: #15BACA;                /* #161616 text on it 7.7:1 */
+  --primary-hover: #3CC5D3;
+  --primary-foreground: #161616;
+
+  --secondary: #24282D;
+  --secondary-hover: #2C3036;
+  --secondary-foreground: #F2F6FC;
+
+  --accent: #15BACA;                 /*  7.7:1 */
+  --accent-hover: #3CC5D3;
+  --accent-light: var(--brand-900);
+
+  --muted: #22262B;
+  --muted-foreground: #A3ACB9;       /*  7.9:1 */
+
+  --card: #1E2124;
+  --card-border: #2C3036;
+
+  --input-bg: #1E2124;
+  --input-border: #3A4048;
+  --input-focus: #15BACA;
+  --ring: #15BACA;
+
+  --gradient-start: #161616;
+  --gradient-end: #1E2124;
+
+  --surface-invert: #1E2124;
+  --surface-invert-secondary: #24282D;
+  --surface-invert-tertiary: #2C3036;
+  --on-invert: #F2F6FC;              /* 14.9:1 on #1E2124 */
+  --on-invert-secondary: #D0D6DE;
+  --on-invert-muted: #A3ACB9;        /*  7.1:1 on #1E2124 */
+  --border-invert: #2C3036;
+  --border-invert-strong: #3A4048;
+}

@@ -25,7 +25,11 @@ export interface RouteDefinition {
 
 export const routes = {
   home: { path: '' },
+  about: { path: 'about' },
+  shop: { path: 'shop' },
   blog: { path: 'blog' },
+  photography: { path: 'photography' },
+  contact: { path: 'contact' },
   search: { path: 'search', slugs: { es: 'buscar', fr: 'recherche' } },
 } satisfies Record<string, RouteDefinition>;
 
@@ -43,8 +47,11 @@ export interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { label: 'nav.blog', route: 'blog', order: 1 },
-  { label: 'nav.search', route: 'search', order: 2 },
+  { label: 'About', route: 'about', order: 1 },
+  { label: 'Shop', route: 'shop', order: 2 },
+  { label: 'Blog', route: 'blog', order: 3 },
+  { label: 'Photography', route: 'photography', order: 4 },
+  { label: 'Contact', route: 'contact', order: 5 },
 ];
 
 export interface HeaderAction {
@@ -69,10 +76,7 @@ export const headerConfig: {
 
 /** Defaults for <Footer />. */
 export const footerConfig: { extraLinks: NavItem[] } = {
-  extraLinks: [
-    // A small credit for the starter. Remove it whenever you like.
-    { label: 'footer.builtWith', href: 'https://deployvelocity.com', external: true, order: 100 },
-  ],
+  extraLinks: [],
 };
 
 /** Navigation items sorted by order. */

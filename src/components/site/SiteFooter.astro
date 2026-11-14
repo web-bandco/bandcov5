@@ -1,5 +1,6 @@
 ---
-/**
+/** velocity-allow-hardcoded: this site has one language (English).
+ *
  * Your site's footer. Every layout renders this file, so a change here reaches
  * every page, and upgrades never overwrite it.
  *
@@ -7,9 +8,105 @@
  * spread wins on every page.
  */
 import type { ComponentProps } from 'astro/types';
+import { Image } from 'astro:assets';
+import { PUBLIC_CONSENT_ENABLED } from 'astro:env/client';
 import Footer from '@/components/layout/Footer.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import LinktreeIcon from '@/components/site/LinktreeIcon.astro';
+import siteConfig from '@/config/site.config';
+import { getNavItems, routes } from '@/config/nav.config';
+import logomark from '@/assets/branding/logomark.png';
+import logomarkDark from '@/assets/branding/logomark-dark.png';
+import pkg from '../../../package.json';
 
 type Props = ComponentProps<typeof Footer>;
+
+const quickLinks = getNavItems().map((item) => ({
+  label: item.label,
+  href: item.route ? `/${routes[item.route].path}` : (item.href ?? '/'),
+}));
+
+const connect = [
+  { label: 'Twitter', href: 'https://twitter.com/itsharryb_', icon: 'twitter' },
+  { label: 'GitHub', href: 'https://github.com/web-bandco', icon: 'github' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/harry-brighton/', icon: 'linkedin' },
+  { label: 'Linktree', href: 'https://linktr.ee/brightonandco' },
+];
+
+// v5.5.3 style for release numbers; preview builds show as written.
+const version = /^\d/.test(pkg.version) ? `v${pkg.version}` : pkg.version;
+
+const link = 'text-sm text-foreground-muted transition-colors hover:text-foreground';
 ---
 
-<Footer {...Astro.props} layout="simple" />
+<Footer
+  {...Astro.props}
+  layout="columns"
+  columns={4}
+  background="secondary"
+  showSocial={false}
+  showCopyright={false}
+  tagline="Brighton and Co - made by Harry B. Showcasing personal projects, hobbies, interests and more."
+>
+  <a href="/" slot="logo" class="mb-2 flex w-fit items-center gap-2">
+    <Image src={logomark} alt="" layout="fixed" width={24} height={24} class="dark:hidden" />
+    <Image src={logomarkDark} alt="" layout="fixed" width={24} height={24} class="hidden dark:block" />
+    <span class="font-display text-xl font-bold tracking-tight text-accent">{siteConfig.name}</span>
+  </a>
+
+  <Fragment slot="columns">
+    <div class="space-y-[var(--space-stack-md)]">
+      <h2 class="text-sm font-semibold text-foreground">Quick Links</h2>
+      <ul class="space-y-2">
+        {quickLinks.map((item) => <li><a href={item.href} class={link}>{item.label}</a></li>)}
+      </ul>
+    </div>
+
+    <div class="space-y-[var(--space-stack-md)]">
+      <h2 class="text-sm font-semibold text-foreground">Connect</h2>
+      <ul class="space-y-2">
+        {
+          connect.map((item) => (
+            <li>
+              <a href={item.href} target="_blank" rel="noopener noreferrer" class:list={[link, 'flex items-center gap-2']}>
+                {item.icon ? <Icon name={item.icon} size="sm" /> : <LinktreeIcon />}
+                {item.label}
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="grid grid-cols-2 gap-x-6 md:block">
+      <div class="space-y-[var(--space-stack-md)]">
+        <h2 class="text-sm font-semibold text-foreground">Site Info</h2>
+        <div class="space-y-2 text-sm text-foreground-muted">
+          <p>
+            Version: <span class="rounded-md border border-border bg-background px-1.5 py-0.5 font-mono">{version}</span>
+          </p>
+          <p>&copy; {new Date().getFullYear()} <span class="whitespace-nowrap">Brighton and Co.</span></p>
+          <p>All rights reserved.</p>
+        </div>
+      </div>
+      <div class="flex flex-col items-start gap-1 border-l border-border pl-6 md:mt-4 md:border-l-0 md:border-t md:pl-0 md:pt-2">
+        <a href="/about/privacy" class:list={[link, 'block py-1']}>Privacy Policy</a>
+        <a href="/about#policies" class:list={[link, 'block py-1']}>Policy Hub</a>
+        {
+          PUBLIC_CONSENT_ENABLED && (
+            <button type="button" data-cookie-settings class:list={[link, 'block cursor-pointer py-1']}>
+              Cookie Preferences
+            </button>
+          )
+        }
+      </div>
+    </div>
+  </Fragment>
+</Footer>
+
+<script>
+  document.querySelector('[data-cookie-settings]')?.addEventListener('click', () => {
+    (window as unknown as { openConsentSettings?: () => void }).openConsentSettings?.();
+  });
+</script>

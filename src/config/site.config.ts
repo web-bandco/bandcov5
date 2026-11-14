@@ -31,7 +31,7 @@ export interface SiteConfig {
   /**
    * Branding configuration
    * Logo files: Replace SVGs in src/assets/branding/
-   * Favicon: Replace in public/favicon.svg
+   * Favicon: public/favicon.svg (light) and public/favicon-dark.svg (dark, see SiteHeader)
    */
   /**
    * Theme for visitors who haven't chosen one with the toggle: 'system' follows
@@ -60,11 +60,11 @@ export interface SiteConfig {
 const siteConfig: SiteConfig = {
   // Your site's identity. Used in page titles, metadata, structured data,
   // the web manifest and share images.
-  name: 'My Site',
-  description: 'A website built with Astro and Tailwind CSS',
-  url: SITE_URL || 'https://example.com',
-  author: 'Your Name',
-  email: 'hello@example.com',
+  name: 'B&Co',
+  description: 'Brighton and Co - the personal website of Harry Brighton',
+  url: SITE_URL || 'https://brightonandco.co.uk',
+  author: 'Harry B',
+  email: 'contact@web.bandco.uk',
   // Optional business details, used in structured data and the GoogleMap component:
   // phone: '+1 (555) 123-4567',
   // address: {
@@ -75,11 +75,17 @@ const siteConfig: SiteConfig = {
   //   country: 'US',
   // },
   // Your profiles (GitHub, LinkedIn, X...). Listed as `sameAs` in structured data.
-  socialLinks: [],
-  // twitter: {
-  //   site: '@yourhandle',
-  //   creator: '@yourhandle',
-  // },
+  socialLinks: [
+    'https://github.com/web-bandco',
+    'https://www.vinted.co.uk/member/272494517',
+    'https://www.linkedin.com/in/harry-brighton-8a2b971a4/',
+    'https://www.ebay.co.uk/usr/itsharryb',
+    'https://instagram.com/ItsHarryB_',
+  ],
+  twitter: {
+    site: '@ItsHarryB_',
+    creator: '@ItsHarryB_',
+  },
   verification: {
     google: GOOGLE_SITE_VERIFICATION,
     bing: BING_SITE_VERIFICATION,
@@ -88,13 +94,13 @@ const siteConfig: SiteConfig = {
   // Replace the SVG files there with your own.
   branding: {
     logo: {
-      alt: 'My Site',
+      alt: 'Brighton and Co',
     },
     favicon: {
       svg: '/favicon.svg',
     },
     colors: {
-      themeColor: '#F94C10',
+      themeColor: '#009ec2',
       backgroundColor: '#ffffff',
     },
   },

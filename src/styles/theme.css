@@ -7,3 +7,6 @@
    ============================================================================= */
 
 @import './themes/default.css';
+
+/* Brighton and Co brand (loads last, so it wins) */
+@import './brand.css';

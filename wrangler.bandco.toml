@@ -9,3 +9,5 @@ preview_urls = true
 [assets]
 directory = "./dist"
 not_found_handling = "404-page"
+# Serve about/index.html at /about, and redirect /about/ to /about (the live URLs).
+html_handling = "drop-trailing-slash"

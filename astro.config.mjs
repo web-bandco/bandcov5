@@ -44,12 +44,12 @@ function fontsourceVariable({ name, pkg, cssVariable, weight, fallbacks }) {
 const searchPages = new Set(
   locales.map((locale) => {
     const slug = routes.search?.slugs?.[locale] ?? routes.search?.path ?? 'search';
-    return locale === defaultLocale ? `/${slug}/` : `/${locale}/${slug}/`;
+    return locale === defaultLocale ? `/${slug}` : `/${locale}/${slug}`;
   }),
 );
 
 export default defineConfig({
-  site: process.env.SITE_URL || 'https://example.com',
+  site: process.env.SITE_URL || 'https://brightonandco.co.uk',
 
   // Locales come from src/i18n/locales.mjs (one list for routing, UI and sitemap).
   // The default locale has no URL prefix; others live under /<locale>/.
@@ -61,6 +61,10 @@ export default defineConfig({
 
   // Fully static site: no server adapter and no Astro Actions.
   output: 'static',
+
+  // Keep the live URLs: /about, not /about/. Cloudflare serves about/index.html at
+  // /about (html_handling in wrangler.bandco.toml).
+  trailingSlash: 'never',
 
   // Velocity doesn't use Astro sessions. Opting out (Astro 7.2+) stops adapters
   // from provisioning session storage. Remove this line to use Astro.session.

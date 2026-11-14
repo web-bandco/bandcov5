@@ -42,12 +42,18 @@
 - `wrangler.bandco.toml` (added by the handoff pull request) has the same settings as the old `wrangler.toml`, plus `preview_urls = true`. Velocity owns `wrangler.toml` and replaces it (name `velocity`, folder `./dist/client`), so the Cloudflare deploy commands must use `--config wrangler.bandco.toml`.
 - Claude Code reaches Cloudflare through `.mcp.json` (server `https://mcp.cloudflare.com/mcp`), with `workers-scripts.write` and `workers-ci.write` scopes. Ask Harry before any write.
 - Velocity 2.6 `astro.config.mjs` picks an adapter from `integrations/deploy-target.mjs`. On Cloudflare it sees `WORKERS_CI` and loads `@astrojs/cloudflare`. Remove the adapter and cache lines for a static build.
-- URLs need `trailingSlash: 'never'` and `build.format: 'file'` in `astro.config.mjs`.
+- URLs: `trailingSlash: 'never'` in `astro.config.mjs`, with the normal folder output (not `build.format: 'file'`, which makes the Velocity SEO code write `.html` canonical URLs). `html_handling = "drop-trailing-slash"` in `wrangler.bandco.toml` serves `about/index.html` at `/about` and redirects `/about/` to `/about`.
+- Colours: light `--accent` is `#0B6B74` (not `#0E7C86`), so accent text passes 4.5:1 on every light surface. This replaces the old `--accent-strong` token. Buttons (`--primary`) and focus rings keep `#0E7C86`.
+- Logo: the old SVG logo files were the Velocity orange logo. The header and footer use `<Image>` of `logomark.png` and `logomark-dark.png`. The 4 SVG files in `src/assets/branding/` hold a small PNG, for share images and `<Logo>`. Do not use `<Logo>` on pages: it puts the PNG data into each page.
+- Favicon: `public/favicon.svg` and `favicon-dark.svg` hold the 64px PNGs. A script in `SiteHeader.astro` changes the favicon with the theme toggle.
+- Version in `package.json`: `preview-6.0.0` (not semver, but npm accepts it). The footer adds "v" only when the version starts with a number.
 - Phase 2 (14 November 2026): the static build writes to `./dist`, which agrees with `wrangler.bandco.toml`. The trial passed with npm 10.9.2 `ci`, `WORKERS_CI` set, and a Wrangler 4.158.0 dry run.
 - The Velocity `.gitignore` ignores `package-lock.json` and does not ignore `.wrangler/`. Do not edit it. `package-lock.json` is tracked with `git add -f` (necessary one time only). `.wrangler/` is in `.git/info/exclude` on Windows.
 - `eslint .` also checks `bandco-shop/` with its own config. It passes only when `bandco-shop/node_modules` is installed.
 - `npm run validate` fails at `check:agent` until the Privacy page exists (Phase 4), because the consent banner links to `/about/privacy`. Lint, type check, unit tests and build pass.
-- A fresh install reports 27 known vulnerabilities (3 high). The old `fflate` and `minimatch` overrides are gone. Check this after Phase 2.
+- A fresh install reports 27 known vulnerabilities (3 high). None reach visitors (static site, build-time packages only). Decision (14 November 2026): fix them in Phase 6 with option 1, because packages will change during the upgrade.
+- A second language would make Velocity server-render the 404 page, which needs an adapter. No second language is planned.
+- Wrangler is a dev dependency (`^4.162.0`, fixed by `package-lock.json`), so Cloudflare does not download a new version on each build.
 - Sanity: project `63lsf8co`, dataset `shop-dataset1`, fetched at build time. Not yet known: whether a Sanity webhook calls a Cloudflare deploy hook.
 
 ## Progress
@@ -67,14 +73,15 @@
 - [x] Static build: adapter and `src/actions/` removed. Newsletter band removed from `src/views/BlogIndexView.astro`.
 - [x] `npm run build` and `npm run test` pass
 - [x] Consent `mode: 'strict'` set early (from Phase 5)
-- [ ] First preview build works
+- [x] First preview build works (14 Nov 2026, commit `438409b`)
 
 ### Phase 3: Brand
-- [ ] `src/styles/brand.css` and `theme.css`
-- [ ] Logo and favicons
-- [ ] `site.config.ts` and `nav.config.ts`
-- [ ] Site header and footer
-- [ ] `astro.config.mjs` URL settings
+- [x] `src/styles/brand.css` and `theme.css`
+- [x] Logo and favicons
+- [x] `site.config.ts` and `nav.config.ts`
+- [x] Site header and footer
+- [x] `astro.config.mjs` URL settings (and `wrangler.bandco.toml` `html_handling`)
+- [ ] Preview checked on PC and phone: https://upgrade-velocity-2-6-bandcov5.hbemails.workers.dev
 
 ### Phase 4: Pages (tick the "Must keep" items in the page-by-page review)
 - [ ] Policies: AI, Privacy, Terms
@@ -86,16 +93,19 @@
 - [ ] Shop and product pages
 - [ ] Home
 - [ ] Search page on
+- [ ] Preview checked on PC and phone: https://upgrade-velocity-2-6-bandcov5.hbemails.workers.dev
 
 ### Phase 5: Analytics, consent and security
 - [ ] GA4 strict consent, 2 categories, page-view check
 - [ ] CSP allows Google, Web3Forms and hCaptcha only where used
 - [ ] `_redirects` and `_headers`
+- [ ] Preview checked on PC and phone: https://upgrade-velocity-2-6-bandcov5.hbemails.workers.dev
 
 ### Phase 6: Test and go live
 - [ ] `npm run validate`, `npm run test:e2e`, `npm run check:agent`
 - [ ] Old and new sitemaps compared
 - [ ] Preview checked on Windows, Mac and a phone, light and dark
+- [ ] Vulnerabilities (option 1): run `npm audit` again. Remove `@astrojs/node`, `@astrojs/vercel` and `@astrojs/netlify`. Add overrides `fflate ^0.7.5`, `minimatch ^11.0.1`, and `postcss-selector-parser ^6.1.5` scoped to `@tailwindcss/typography` only. Test with npm 10.9.2 `ci`, lint, tests and build. Compare `dist/_astro` and `dist/og` with the build before.
 - [ ] Pull request merged, live site checked
 
 ### After the upgrade: Mac (last step)
@@ -344,7 +354,7 @@ Do these steps in the VSCode integrated terminal. The commands work in PowerShel
 3. Fill in `src/config/site.config.ts`: name, URL, description, social links, theme colour, `defaultTheme`.
 4. Set the navigation in `src/config/nav.config.ts`.
 5. Set up the header and footer through `src/components/site/SiteHeader.astro` and `SiteFooter.astro`.
-6. Keep the build settings that your URLs need, in `astro.config.mjs`: `trailingSlash: 'never'` and `build.format: 'file'`. Remove the adapter set-up (see the Cloudflare section).
+6. Keep the build settings that your URLs need: `trailingSlash: 'never'` in `astro.config.mjs`, and `html_handling = "drop-trailing-slash"` in `wrangler.bandco.toml` (not `build.format: 'file'`; see Facts). Remove the adapter set-up (see the Cloudflare section).
 7. Run `npm run dev`. Check the empty site in light and dark mode. Commit.
 
 ### Phase 4: Move the pages, one at a time
@@ -383,7 +393,7 @@ For each page:
 5. Merge. Cloudflare builds and deploys `master`.
 6. After 1 week with no problems, remove the old worktree: `git worktree remove ../bandcov5-old`. Delete `../velocity-fresh`.
 
-**Future Velocity upgrades:** On a new branch, run `npx create-velocity-astro@latest upgrade --dry-run`, then `npx create-velocity-astro@latest upgrade`. Because you did not edit Velocity files, there are no conflicts.
+**Future Velocity upgrades:** On a new branch, run `npx create-velocity-astro@latest upgrade --dry-run`, then `npx create-velocity-astro@latest upgrade`. Because you did not edit Velocity files, there are no conflicts. After the upgrade, remove the 3 server adapters again (`npm uninstall @astrojs/node @astrojs/vercel @astrojs/netlify`), and check that `astro.config.mjs` still has no adapter.
 
 ## Cloudflare steps
 

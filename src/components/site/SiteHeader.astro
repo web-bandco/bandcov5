@@ -1,5 +1,6 @@
 ---
-/**
+/** velocity-allow-hardcoded: this site has one language (English).
+ *
  * Your site's header. Every layout renders this file, so a change here reaches
  * every page, and upgrades never overwrite it.
  *
@@ -7,9 +8,49 @@
  * header isn't fixed, or isn't 4rem tall, set --header-offset in your theme.
  */
 import type { ComponentProps } from 'astro/types';
+import { Image } from 'astro:assets';
 import Header from '@/components/layout/Header.astro';
+import ThemeToggle from '@/components/layout/ThemeToggle.astro';
+import Button from '@/components/ui/form/Button/Button.astro';
+import LinktreeIcon from '@/components/site/LinktreeIcon.astro';
+import siteConfig from '@/config/site.config';
+import logomark from '@/assets/branding/logomark.png';
+import logomarkDark from '@/assets/branding/logomark-dark.png';
 
 type Props = ComponentProps<typeof Header>;
 ---
 
-<Header position="fixed" size="lg" showActiveState showCta {...Astro.props} />
+<Header position="fixed" size="lg" showActiveState showCta={false} {...Astro.props}>
+  <a href="/" slot="logo" class="flex items-center gap-2">
+    <Image src={logomark} alt="" layout="fixed" width={24} height={24} loading="eager" class="dark:hidden" />
+    <Image src={logomarkDark} alt="" layout="fixed" width={24} height={24} loading="eager" class="hidden dark:block" />
+    <span class="font-display text-xl font-bold tracking-tight text-accent">{siteConfig.name}</span>
+  </a>
+
+  <Fragment slot="actions">
+    <ThemeToggle />
+    <Button
+      variant="ghost"
+      size="sm"
+      icon
+      href="https://linktr.ee/brightonandco"
+      target="_blank"
+      aria-label="Brighton and Co on Linktree (opens in a new tab)"
+    >
+      <LinktreeIcon />
+    </Button>
+  </Fragment>
+</Header>
+
+<script>
+  // Favicon follows the theme toggle, not only the system setting.
+  const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+  if (icon) {
+    const root = document.documentElement;
+    const update = () => {
+      icon.href = root.classList.contains('dark') ? '/favicon-dark.svg' : '/favicon.svg';
+    };
+    update();
+    new MutationObserver(update).observe(root, { attributes: true, attributeFilter: ['class'] });
+  }
+</script>
