@@ -56,6 +56,9 @@
 - Wrangler is a dev dependency (`^4.162.0`, fixed by `package-lock.json`), so Cloudflare does not download a new version on each build.
 - Policy pages: `src/components/policy/` holds `PolicyLayout.astro`, `PolicyCard.astro` and `clauses.ts` (`src/layouts/` and `src/lib/` are Velocity-owned). Sections are native `<details>` with the Velocity Accordion card style. The contents list wraps (no drag script). Decision to review after the page is done.
 - Velocity floating cookie button (`#consent-reopener`) is hidden in `brand.css`. The footer link and the Privacy Policy button reopen the settings.
+- Photos: `src/components/site/PhotoCarousel.astro` (Velocity Carousel; each photo opens the lightbox) and `PhotoLightbox.astro` (native `<dialog>`, CSS scroll snap, one short script). Use them for Photography and Shop too. Not included, for later: swipe down to close (option B, 14 November 2026), and loop from the last photo to the first (Velocity Carousel stops at the ends).
+- `src/components/site/SiteCta.astro`: the shared "Explore more of Brighton and Co" band (Velocity CTA).
+- Source photos are reduced to 2560px, JPEG quality 85, before they are added (About: 20.8 MB to 2.3 MB).
 - External links: the old "Leaving B&Co" dialog is removed (14 November 2026). Links open in a new tab and say so to screen readers. It can be rebuilt later as a project-owned component.
 - Privacy Policy v1.1.0 (14 November 2026): clause 4.3 now describes `strict` consent mode. Change the `updated` date in `src/config/policies.config.ts` to the go-live date when the upgrade is merged.
 - Sanity: project `63lsf8co`, dataset `shop-dataset1`, fetched at build time. Not yet known: whether a Sanity webhook calls a Cloudflare deploy hook.
@@ -90,7 +93,7 @@
 ### Phase 4: Pages (tick the "Must keep" items in the page-by-page review)
 - [x] Policies: AI, Privacy, Terms (text identical to live, except Privacy clause 4.3, now v1.1.0)
 - [x] 404 (random memoji, Go Back, old copy; 404 analytics event left for Phase 5)
-- [ ] About
+- [x] About (Velocity Section, Faq and CTA; photo carousels with the new lightbox; Version 6 text)
 - [ ] Blog index and posts
 - [ ] Contact
 - [ ] Photography, holiday galleries, holiday gallery

@@ -1,0 +1,169 @@
+---
+/**
+ * PhotoLightbox (velocity-allow-hardcoded: this site has one language, English)
+ * Full-size photo viewer on a native <dialog>: the browser handles Esc, focus and
+ * the page behind it. Photos sit in a CSS scroll-snap row, so swiping works with
+ * no extra code. The script opens it from any [data-lightbox-open] button in the
+ * same [data-photo-gallery], adds next / previous / arrow keys and the counter,
+ * and loads each full-size photo only when it (or a neighbour) is shown.
+ */
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+
+interface Props {
+  label: string;
+  photos: { src: string; width: number; height: number; alt: string }[];
+}
+
+const { label, photos } = Astro.props;
+const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white';
+---
+
+<dialog class="lightbox" aria-label={label} data-lightbox>
+  <div class="lightbox-track" data-lightbox-track>
+    {photos.map((photo) => (
+      <figure class="lightbox-slide">
+        <img data-src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} decoding="async" draggable="false" />
+      </figure>
+    ))}
+  </div>
+
+  <button type="button" class:list={[round, 'absolute right-4 top-4']} aria-label="Close image viewer" data-lightbox-close>
+    <Icon name="x" size="md" />
+  </button>
+
+  {photos.length > 1 && (
+    <div class="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-black/60 p-1.5 text-white">
+      <button type="button" class={round} aria-label="Previous image" data-lightbox-prev>
+        <Icon name="chevron-left" size="md" />
+      </button>
+      <span class="px-2 text-sm font-bold tabular-nums tracking-wider" aria-live="polite" data-lightbox-count></span>
+      <button type="button" class={round} aria-label="Next image" data-lightbox-next>
+        <Icon name="chevron-right" size="md" />
+      </button>
+    </div>
+  )}
+</dialog>
+
+<style>
+  .lightbox {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(0 0 0 / 0.96);
+    overflow: hidden;
+  }
+
+  .lightbox::backdrop {
+    background: transparent;
+  }
+
+  .lightbox-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+
+  .lightbox-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lightbox-slide {
+    display: grid;
+    place-items: center;
+    margin: 0;
+    padding: 4.5rem 1rem 6rem;
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  /* Fit the screen, clear of the close button (top) and the controls (bottom) */
+  .lightbox-slide img {
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100dvh - 10.5rem);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    user-select: none;
+  }
+
+  /* Keep the page behind still while the viewer is open */
+  :global(html:has(dialog.lightbox[open])) {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox-track {
+      scroll-behavior: auto;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-photo-gallery]').forEach((gallery) => {
+    const dialog = gallery.querySelector<HTMLDialogElement>('[data-lightbox]');
+    const track = dialog?.querySelector<HTMLElement>('[data-lightbox-track]');
+    if (!dialog || !track) return;
+
+    const images = [...track.querySelectorAll('img')];
+    const count = dialog.querySelector('[data-lightbox-count]');
+    let index = 0;
+
+    // Load the shown photo and its neighbours
+    const load = (i: number) => {
+      for (const n of [i - 1, i, i + 1]) {
+        const img = images[n];
+        if (img && !img.src) img.src = img.dataset.src ?? '';
+      }
+    };
+    const show = (i: number) => {
+      index = Math.max(0, Math.min(images.length - 1, i));
+      load(index);
+      if (count) count.textContent = `${index + 1} / ${images.length}`;
+    };
+    const go = (i: number) => track.scrollTo({ left: Math.max(0, Math.min(images.length - 1, i)) * track.clientWidth });
+
+    gallery.querySelectorAll<HTMLElement>('[data-lightbox-open]').forEach((button) => {
+      button.addEventListener('click', () => {
+        dialog.showModal();
+        show(Number(button.dataset.lightboxOpen));
+        track.scrollTo({ left: index * track.clientWidth, behavior: 'instant' });
+      });
+    });
+
+    track.addEventListener('scroll', () => {
+      if (!dialog.open) return;
+      const i = Math.round(track.scrollLeft / track.clientWidth);
+      if (i !== index) show(i);
+    }, { passive: true });
+
+    dialog.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => go(index - 1));
+    dialog.querySelector('[data-lightbox-next]')?.addEventListener('click', () => go(index + 1));
+    dialog.querySelector('[data-lightbox-close]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') { event.preventDefault(); go(index - 1); }
+      if (event.key === 'ArrowRight') { event.preventDefault(); go(index + 1); }
+    });
+    // A click on the dark area (not the photo or a button) closes the viewer
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog || (event.target as Element).classList.contains('lightbox-slide')) dialog.close();
+    });
+
+    // On close, the page carousel moves to the last photo shown
+    dialog.addEventListener('close', () => {
+      const pageTrack = gallery.querySelector<HTMLElement>('[data-carousel-track]');
+      const first = pageTrack?.children[0] as HTMLElement | undefined;
+      const slide = pageTrack?.children[index] as HTMLElement | undefined;
+      if (pageTrack && first && slide) pageTrack.scrollTo({ left: slide.offsetLeft - first.offsetLeft, behavior: 'instant' });
+    });
+  });
+</script>

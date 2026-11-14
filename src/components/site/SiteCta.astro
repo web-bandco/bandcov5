@@ -1,0 +1,39 @@
+---
+/**
+ * SiteCta (velocity-allow-hardcoded: this site has one language, English)
+ * The "Explore more of Brighton and Co" band at the end of a page, on the
+ * Velocity CTA component.
+ */
+import { Image } from 'astro:assets';
+import CTA from '@/components/ui/marketing/CTA/CTA.astro';
+import Button from '@/components/ui/form/Button/Button.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import logomark from '@/assets/branding/logomark.png';
+import logomarkDark from '@/assets/branding/logomark-dark.png';
+---
+
+<CTA id="cta" variant="default" size="md" maxWidth="lg">
+  <Fragment slot="logo">
+    <Image src={logomark} alt="" layout="fixed" width={96} height={96} class="mx-auto dark:hidden" />
+    <Image src={logomarkDark} alt="" layout="fixed" width={96} height={96} class="mx-auto hidden dark:block" />
+  </Fragment>
+
+  <h2 slot="heading">
+    Explore more of <span class="text-accent">Brighton and Co</span>
+  </h2>
+
+  <p slot="description">
+    Discover the latest items from the Shop - or look at some photography.
+  </p>
+
+  <Fragment slot="actions">
+    <Button href="/shop" size="lg">
+      <Icon name="handbag" size="sm" />
+      Browse the Shop
+    </Button>
+    <Button href="/photography" variant="outline" size="lg">
+      <Icon name="camera" size="sm" />
+      View Photography
+    </Button>
+  </Fragment>
+</CTA>
