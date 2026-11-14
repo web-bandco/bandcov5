@@ -54,6 +54,9 @@
 - A fresh install reports 27 known vulnerabilities (3 high). None reach visitors (static site, build-time packages only). Decision (14 November 2026): fix them in Phase 6 with option 1, because packages will change during the upgrade.
 - A second language would make Velocity server-render the 404 page, which needs an adapter. No second language is planned.
 - Wrangler is a dev dependency (`^4.162.0`, fixed by `package-lock.json`), so Cloudflare does not download a new version on each build.
+- Policy pages: `src/components/policy/` holds `PolicyLayout.astro`, `PolicyCard.astro` and `clauses.ts` (`src/layouts/` and `src/lib/` are Velocity-owned). Sections are native `<details>` with the Velocity Accordion card style. The contents list wraps (no drag script). Decision to review after the page is done.
+- External links: the old "Leaving B&Co" dialog is removed (14 November 2026). Links open in a new tab and say so to screen readers. It can be rebuilt later as a project-owned component.
+- Privacy Policy v1.1.0 (14 November 2026): clause 4.3 now describes `strict` consent mode. Change the `updated` date in `src/config/policies.config.ts` to the go-live date when the upgrade is merged.
 - Sanity: project `63lsf8co`, dataset `shop-dataset1`, fetched at build time. Not yet known: whether a Sanity webhook calls a Cloudflare deploy hook.
 
 ## Progress
@@ -81,10 +84,10 @@
 - [x] `site.config.ts` and `nav.config.ts`
 - [x] Site header and footer
 - [x] `astro.config.mjs` URL settings (and `wrangler.bandco.toml` `html_handling`)
-- [ ] Preview checked on PC and phone: https://upgrade-velocity-2-6-bandcov5.hbemails.workers.dev
+- [x] Preview checked on PC and phone (14 Nov 2026, commit `963d10a`)
 
 ### Phase 4: Pages (tick the "Must keep" items in the page-by-page review)
-- [ ] Policies: AI, Privacy, Terms
+- [x] Policies: AI, Privacy, Terms (text identical to live, except Privacy clause 4.3, now v1.1.0)
 - [ ] 404
 - [ ] About
 - [ ] Blog index and posts

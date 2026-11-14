@@ -106,7 +106,10 @@ const link = 'text-sm text-foreground-muted transition-colors hover:text-foregro
 </Footer>
 
 <script>
-  document.querySelector('[data-cookie-settings]')?.addEventListener('click', () => {
-    (window as unknown as { openConsentSettings?: () => void }).openConsentSettings?.();
+  // Every Cookie Preferences button (footer, policy pages) opens the consent settings.
+  document.addEventListener('click', (event) => {
+    if ((event.target as Element).closest?.('[data-cookie-settings]')) {
+      (window as unknown as { openConsentSettings?: () => void }).openConsentSettings?.();
+    }
   });
 </script>
