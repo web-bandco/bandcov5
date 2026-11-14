@@ -136,3 +136,9 @@
   --border-invert: #2C3036;
   --border-invert-strong: #3A4048;
 }
+
+/* Hide Velocity's floating cookie button. The footer "Cookie Preferences" link
+   and the Privacy Policy button reopen the settings instead. */
+#consent-reopener {
+  display: none;
+}
