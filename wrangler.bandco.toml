@@ -1,0 +1,11 @@
+# Cloudflare Workers config for bandcov5.
+# Velocity owns wrangler.toml and replaces it on upgrades, so the Cloudflare
+# build commands use this file: npx wrangler deploy --config wrangler.bandco.toml
+name = "bandcov5"
+compatibility_date = "2026-05-05"
+compatibility_flags = ["nodejs_compat"]
+preview_urls = true
+
+[assets]
+directory = "./dist"
+not_found_handling = "404-page"
