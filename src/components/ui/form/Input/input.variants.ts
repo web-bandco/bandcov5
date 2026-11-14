@@ -2,11 +2,11 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 export const inputVariants = cva(
   [
-    'w-full rounded-full border',
+    'w-full rounded-lg border',
     'transition-colors duration-(--transition-fast)',
     'focus-visible:outline-none focus-visible:ring-2',
     'disabled:cursor-not-allowed disabled:opacity-50',
-    'bg-card border-border',
+    'bg-background border-border',
     'placeholder:text-muted-foreground',
     'focus-visible:ring-ring',
   ],

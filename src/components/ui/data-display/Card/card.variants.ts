@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
 export const cardVariants = cva(
-  ['rounded-xl'],
+  ['rounded-xl', 'transition-all duration-200 ease-out'],
   {
     variants: {
       variant: {
@@ -18,8 +18,7 @@ export const cardVariants = cva(
         lg: 'p-8',
       },
       hover: {
-        // Lifts on hover (see .hover-lift in global.css)
-        true: 'hover-lift cursor-pointer',
+        true: 'hover:border-border-strong hover:shadow-md hover:-translate-y-0.5 cursor-pointer',
       },
     },
     defaultVariants: {

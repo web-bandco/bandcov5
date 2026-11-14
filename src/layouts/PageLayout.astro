@@ -2,10 +2,11 @@
 /**
  * PageLayout
  * Layout wrapper for standard content pages (non-landing)
- * Uses the Header with content page configuration; the footer comes from BaseLayout
+ * Uses Header + Footer with content page configuration
  */
 import BaseLayout from './BaseLayout.astro';
-import Header from '@/components/layout/Header.astro';
+import SiteHeader from '@/components/site/SiteHeader.astro';
+import SiteFooter from '@/components/site/SiteFooter.astro';
 
 interface Props {
   title?: string;
@@ -14,9 +15,11 @@ interface Props {
   imageAlt?: string;
   noindex?: boolean;
   nofollow?: boolean;
+  /** Include this page in the Pagefind site search index (default: true) */
+  searchable?: boolean;
 }
 
-const { title, description, image, imageAlt, noindex, nofollow } = Astro.props;
+const { title, description, image, imageAlt, noindex, nofollow, searchable = true } = Astro.props;
 ---
 
 <BaseLayout
@@ -27,27 +30,12 @@ const { title, description, image, imageAlt, noindex, nofollow } = Astro.props;
   noindex={noindex}
   nofollow={nofollow}
 >
-  <slot name="head" slot="head" />
+  <SiteHeader slot="header" />
 
-  <Header
-    slot="header"
-    position="fixed"
-    size="lg"
-    showActiveState
-    showCta={false}
-    extraNav={[]}
-    actions={[
-      {
-        icon: 'brand-linktree',
-        href: 'https://linktr.ee/brightonandco',
-        label: 'View on Linktree',
-        iconOnly: true,
-        target: '_blank',
-      },
-    ]}
-  />
-
-  <div class="min-h-screen pt-16">
+  <!-- BaseLayout already renders <main>; this wrapper only offsets the fixed header -->
+  <div class="min-h-screen pt-(--header-offset)" data-pagefind-body={searchable ? '' : undefined}>
     <slot />
   </div>
+
+  <SiteFooter slot="footer" />
 </BaseLayout>

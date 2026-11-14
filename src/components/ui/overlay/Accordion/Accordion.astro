@@ -9,10 +9,8 @@ import { accordionItemVariants, accordionTriggerVariants } from './accordion.var
 import Icon from '../../primitives/Icon/Icon.astro';
 
 interface AccordionItem {
-  id?: string;
   title: string;
-  // UPDATED: Now accepts either a single string or an array of strings
-  content: string | string[];
+  content: string;
   defaultOpen?: boolean;
 }
 
@@ -34,15 +32,11 @@ const groupName = exclusive ? `accordion-${Math.random().toString(36).slice(2, 9
 <div class={cn('w-full', className)} data-accordion={exclusive ? 'exclusive' : undefined}>
   {items.map((item) => (
     <details
-      data-accordion-item
-      id={item.id}
       class={cn(accordionItemVariants({ variant }))}
       open={item.defaultOpen}
       name={groupName}
     >
       <summary
-        data-track-ui="Accordion Expand"
-        data-track-label={item.title}
         class={cn(
           accordionTriggerVariants({ size }),
           'cursor-pointer list-none [&::-webkit-details-marker]:hidden',
@@ -52,28 +46,19 @@ const groupName = exclusive ? `accordion-${Math.random().toString(36).slice(2, 9
         <Icon
           name="chevron-down"
           size="sm"
-          class="accordion-icon shrink-0 text-foreground-muted"
+          class="accordion-icon shrink-0 text-foreground-muted transition-transform duration-200"
         />
       </summary>
       <div class="pb-4 text-sm text-foreground-muted leading-relaxed">
-        {/* UPDATED: Map over the array if multiple paragraphs are provided */}
-        {Array.isArray(item.content) ? (
-          <div class="space-y-4">
-            {item.content.map((paragraph) => (
-              <div set:html={paragraph} />
-            ))}
-          </div>
-        ) : (
-          <p>{item.content}</p>
-        )}
+        {item.content}
       </div>
     </details>
   ))}
 </div>
 
-<script>
-  import { initAccordions } from '@/lib/accordion';
-
-  // Runs on first load and after every view transition
-  document.addEventListener('astro:page-load', initAccordions);
-</script>
+<style>
+  /* :global because Icon renders the svg outside this component's style scope */
+  details[open] > summary :global(.accordion-icon) {
+    transform: rotate(180deg);
+  }
+</style>

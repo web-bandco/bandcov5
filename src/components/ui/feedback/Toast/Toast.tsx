@@ -13,7 +13,6 @@ interface Toast {
 }
 
 interface ToastContextValue {
-[x: string]: any;
   toast: (options: Omit<Toast, 'id'>) => void;
   dismiss: (id: string) => void;
 }
@@ -106,7 +105,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
       </div>
       <button
         type="button"
-        className="shrink-0 p-1 -mr-1 -mt-1 rounded-full text-foreground-muted hover:text-foreground transition-colors"
+        className="shrink-0 p-1 -mr-1 -mt-1 rounded-md text-foreground-muted hover:text-foreground transition-colors"
         onClick={handleDismiss}
         aria-label="Dismiss"
       >
@@ -131,24 +130,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  // ✅ NEW: Listen for custom events triggered by vanilla Astro scripts
-  useEffect(() => {
-    const handleCustomToast = (e: Event) => {
-      const event = e as CustomEvent<Omit<Toast, 'id'>>;
-      toast(event.detail);
-    };
-
-    window.addEventListener('show-toast', handleCustomToast);
-    return () => window.removeEventListener('show-toast', handleCustomToast);
-  }, [toast]);
-
   return (
     <ToastContext.Provider value={{ toast, dismiss }}>
       {children}
       {/* Toast container */}
-      {/* ACCESSIBILITY FIX: Removed prohibited aria-live and aria-label attributes */}
       <div
         className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-[420px] w-full pointer-events-none"
+        aria-live="polite"
+        aria-label="Notifications"
       >
         {toasts.map((t) => (
           <ToastItem key={t.id} toast={t} onDismiss={dismiss} />
@@ -157,3 +146,5 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     </ToastContext.Provider>
   );
 }
+
+export default ToastProvider;

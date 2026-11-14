@@ -1,8 +1,8 @@
 /* =============================================================================
-   B&Co Design Tokens - Colors
+   Velocity Design Tokens - Colors
    =============================================================================
-   Brings together the primitive color scales and the site theme.
+   Primitive color scales. The active theme loads after every token file, so a
+   theme can override any token. To switch themes, edit src/styles/theme.css.
    ============================================================================= */
 
 @import './primitives.css';
-@import '../themes/default.css';

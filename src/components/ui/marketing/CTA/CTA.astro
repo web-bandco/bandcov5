@@ -13,7 +13,7 @@ interface Props extends HTMLAttributes<'section'> {
 
 const {
   variant = 'default',
-  size = 'sm',
+  size = 'lg',
   maxWidth = 'lg',
   id,
   class: className,
@@ -21,7 +21,7 @@ const {
 } = Astro.props;
 
 const sectionStyles = {
-  default: 'cta-band',
+  default: 'bg-background',
   invert: 'invert-section bg-background text-foreground',
 };
 

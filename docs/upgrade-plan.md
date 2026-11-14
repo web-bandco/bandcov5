@@ -17,7 +17,7 @@
 
 | Topic | Decision |
 | --- | --- |
-| Method | Option B: a fresh Velocity 2.6.2 project on branch `upgrade/velocity-2.6`, then rebuild each page. |
+| Method | Option B: a fresh Velocity 2.6.4 project on branch `upgrade/velocity-2.6`, then rebuild each page. |
 | Velocity files | Never edit Velocity-owned files (the `files.safe` list in `velocity-manifest.json`, and `.velocity.json` hashes). Put changes only in files that Velocity gives to the project. |
 | Build | Fully static. No server adapter. No Astro Actions (`src/actions/` removed). |
 | Contact form | Keep Web3Forms with hCaptcha. Do not use the Velocity `ContactForm` or `NewsletterForm`. |
@@ -33,7 +33,7 @@
 
 ## Facts (checked 11 November 2026)
 
-- `.velocity.json` on `master`: Velocity 1.0.0, made 2026-05-05. Target: Velocity 2.6.2 (released 2026-11-09).
+- `.velocity.json` on `master`: Velocity 1.0.0, made 2026-05-05. Target: Velocity 2.6.4 (the CLI gave 2.6.4 on 14 November 2026, not 2.6.2).
 - `master` (v5.5.3a) already uses Astro 7.0.3, Tailwind 4.3 and ESLint 10.
 - 48 of the 156 Velocity 1.0.0 files on `master` were changed by Harry. Do not copy these files across. Rebuild their effect in project-owned files.
 - Cloudflare: Worker `bandcov5`, Workers Builds, automatic builds on. `master` runs `npx wrangler deploy`. Other branches run `npx wrangler versions upload`. Preview URLs are on. Build caching is on (both triggers). Build command `npm run build`, root `/`.
@@ -43,24 +43,30 @@
 - Claude Code reaches Cloudflare through `.mcp.json` (server `https://mcp.cloudflare.com/mcp`), with `workers-scripts.write` and `workers-ci.write` scopes. Ask Harry before any write.
 - Velocity 2.6 `astro.config.mjs` picks an adapter from `integrations/deploy-target.mjs`. On Cloudflare it sees `WORKERS_CI` and loads `@astrojs/cloudflare`. Remove the adapter and cache lines for a static build.
 - URLs need `trailingSlash: 'never'` and `build.format: 'file'` in `astro.config.mjs`.
+- Phase 2 (14 November 2026): the static build writes to `./dist`, which agrees with `wrangler.bandco.toml`. The trial passed with npm 10.9.2 `ci`, `WORKERS_CI` set, and a Wrangler 4.158.0 dry run.
+- The Velocity `.gitignore` ignores `package-lock.json` and does not ignore `.wrangler/`. Do not edit it. `package-lock.json` is tracked with `git add -f` (necessary one time only). `.wrangler/` is in `.git/info/exclude` on Windows.
+- `eslint .` also checks `bandco-shop/` with its own config. It passes only when `bandco-shop/node_modules` is installed.
+- `npm run validate` fails at `check:agent` until the Privacy page exists (Phase 4), because the consent banner links to `/about/privacy`. Lint, type check, unit tests and build pass.
+- A fresh install reports 27 known vulnerabilities (3 high). The old `fflate` and `minimatch` overrides are gone. Check this after Phase 2.
 - Sanity: project `63lsf8co`, dataset `shop-dataset1`, fetched at build time. Not yet known: whether a Sanity webhook calls a Cloudflare deploy hook.
 
 ## Progress
 
 ### Before Phase 1
 - [x] Merge the handoff pull request (this file, `CLAUDE.md`, `wrangler.bandco.toml`) into `master`.
-- [ ] In Cloudflare, set the deploy command to `npx wrangler deploy --config wrangler.bandco.toml`, and the other-branch command to `npx wrangler versions upload --config wrangler.bandco.toml`. Push a small change to `master`. Check that the live site still deploys. (14 Nov 2026: both commands changed. `master` rebuilt and deployed with the new command. Branch preview still to test.)
+- [x] In Cloudflare, set the deploy command to `npx wrangler deploy --config wrangler.bandco.toml`, and the other-branch command to `npx wrangler versions upload --config wrangler.bandco.toml`. Push a small change to `master`. Check that the live site still deploys. (14 Nov 2026: both commands changed. `master` rebuilt and deployed with the new command. Branch `upgrade/velocity-2.6` built a preview with the new command.)
 - [x] Commit `.mcp.json` to `master`, if it is not committed yet.
 
 ### Phase 1: Prepare
-- [ ] Node 24 on Windows and Mac (Windows done: v24.22.1. Mac to do.)
+- [x] Node 24 on Windows (v24.22.1). The upgrade is done on Windows only. The Mac steps are at the end of this list.
 - [x] Worktree `../bandcov5-old` on `master` (detached)
 - [x] Branch `upgrade/velocity-2.6`
 
-### Phase 2: Fresh 2.6.2 project
-- [ ] Scaffold, copy, `npm install`
-- [ ] Static build: adapter and `src/actions/` removed
-- [ ] `npm run build` and `npm run test` pass
+### Phase 2: Fresh 2.6.4 project
+- [x] Scaffold, copy, `npm install`
+- [x] Static build: adapter and `src/actions/` removed. Newsletter band removed from `src/views/BlogIndexView.astro`.
+- [x] `npm run build` and `npm run test` pass
+- [x] Consent `mode: 'strict'` set early (from Phase 5)
 - [ ] First preview build works
 
 ### Phase 3: Brand
@@ -91,6 +97,15 @@
 - [ ] Old and new sitemaps compared
 - [ ] Preview checked on Windows, Mac and a phone, light and dark
 - [ ] Pull request merged, live site checked
+
+### After the upgrade: Mac (last step)
+- [ ] Install Node 24 LTS. Check with `node -v`.
+- [ ] Run `git switch master`, then `git pull`.
+- [ ] Delete `node_modules`, then run `npm install`.
+- [ ] Copy `.env` from Windows (Git does not hold it).
+- [ ] Add `.wrangler/` to `.git/info/exclude` (the Velocity `.gitignore` does not ignore it).
+- [ ] Run `npm run build`. It must pass.
+- [ ] Optional: in Claude Code, run `/mcp` and authenticate `cloudflare`.
 
 ---
 

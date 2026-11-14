@@ -1,26 +1,26 @@
 ---
 import { cn } from '@/lib/cn';
+import { getLocale, useTranslations } from '@/i18n';
 
 interface Props {
   class?: string;
 }
 
 const { class: className } = Astro.props;
+const t = useTranslations(getLocale(Astro));
 ---
 
 <button
   type="button"
   id="theme-toggle"
-  data-track-ui="Theme Toggle"
-  data-track-label="Dark/Light Mode Switch"
   class={cn(
-    'inline-flex items-center justify-center rounded-full p-2',
+    'inline-flex items-center justify-center rounded-md p-2',
     'text-muted-foreground hover:text-foreground hover:bg-secondary',
     'transition-colors duration-(--transition-fast)',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     className
   )}
-  aria-label="Toggle theme"
+  aria-label={t('a11y.toggleTheme')}
 >
   <!-- Sun icon (shown in dark mode) -->
   <svg
@@ -58,61 +58,27 @@ const { class: className } = Astro.props;
 </button>
 
 <script>
-  function applyTheme() {
-    // 1. Check local storage, fallback to system preference
-    const theme = localStorage.getItem('theme') || 
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    
-    // 2. Apply the correct class to the HTML document
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }
-
-  // Counts theme switches, so only the latest one ends the switching state
-  let switches = 0;
-
   function initThemeToggle() {
     const toggle = document.getElementById('theme-toggle');
+
     if (!toggle) return;
 
-    // Remove old listeners to prevent duplicates during navigation
-    const newToggle = toggle.cloneNode(true);
-    toggle.parentNode?.replaceChild(newToggle, toggle);
+    toggle.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.contains('dark');
 
-    newToggle.addEventListener('click', () => {
-      const root = document.documentElement;
-      const dark = !root.classList.contains('dark');
-      const apply = () => root.classList.toggle('dark', dark);
-
-      // While switching, no part of the page runs its own colour transition (see
-      // global.css), so every part changes colour at the same time
-      root.classList.add('theme-switching');
-      const id = ++switches;
-      const done = () => { if (id === switches) root.classList.remove('theme-switching'); };
-
-      if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        // The whole page cross-fades from the old theme to the new one as one picture
-        document.startViewTransition(apply).finished.finally(done);
+      if (isDark) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
       } else {
-        apply();
-        root.getBoundingClientRect(); // apply the new colours before transitions come back
-        done();
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
       }
-
-      localStorage.setItem('theme', dark ? 'dark' : 'light');
     });
   }
 
-  // Run immediately to prevent flash of light mode
-  applyTheme();
+  // Run on initial load
   initThemeToggle();
 
-  // Re-run the theme application AND button attachment after every page transition
-  document.addEventListener('astro:after-swap', () => {
-    applyTheme();
-    initThemeToggle();
-  });
+  // Re-run after Astro page transitions
+  document.addEventListener('astro:after-swap', initThemeToggle);
 </script>

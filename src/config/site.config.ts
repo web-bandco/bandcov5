@@ -1,3 +1,8 @@
+/**
+ * Site configuration — this file is yours. Velocity upgrades never overwrite it.
+ *
+ * Built with Velocity by Southwell Media: https://github.com/southwellmedia/velocity
+ */
 import { SITE_URL, GOOGLE_SITE_VERIFICATION, BING_SITE_VERIFICATION } from 'astro:env/server';
 
 export interface SiteConfig {
@@ -10,7 +15,7 @@ export interface SiteConfig {
   address?: {
     street: string;
     city: string;
-    region: string;
+    state: string;
     zip: string;
     country: string;
   };
@@ -28,6 +33,11 @@ export interface SiteConfig {
    * Logo files: Replace SVGs in src/assets/branding/
    * Favicon: Replace in public/favicon.svg
    */
+  /**
+   * Theme for visitors who haven't chosen one with the toggle: 'system' follows
+   * their operating system (the default), 'light' or 'dark' fixes it.
+   */
+  defaultTheme?: 'system' | 'light' | 'dark';
   branding: {
     /** Logo alt text for accessibility */
     logo: {
@@ -48,51 +58,43 @@ export interface SiteConfig {
 }
 
 const siteConfig: SiteConfig = {
-  name: 'B&Co',
-  description: 'Brighton and Co - the personal website of Harry Brighton',
-  url: SITE_URL || 'https://brightonandco.co.uk',
-  author: 'Harry B',
-  // Demo contact info - replace with your actual business details
-  email: 'contact@web.bandco.uk',
-  phone: '',
-  address: {
-    street: '',
-    city: '',
-    region: 'Yorkshire',
-    zip: '',
-    country: 'United Kingdom',
-  },
-  socialLinks: [
-    'https://github.com/web-bandco',
-    'https://www.vinted.co.uk/member/272494517',
-    'https://www.linkedin.com/in/harry-brighton-8a2b971a4/',
-    'https://www.ebay.co.uk/usr/itsharryb',
-    'https://instagram.com/ItsHarryB_',
-  ],
-  // Twitter metadata - update with your actual handles or remove
+  // Your site's identity. Used in page titles, metadata, structured data,
+  // the web manifest and share images.
+  name: 'My Site',
+  description: 'A website built with Astro and Tailwind CSS',
+  url: SITE_URL || 'https://example.com',
+  author: 'Your Name',
+  email: 'hello@example.com',
+  // Optional business details, used in structured data and the GoogleMap component:
+  // phone: '+1 (555) 123-4567',
+  // address: {
+  //   street: '123 Main St',
+  //   city: 'Your City',
+  //   state: 'ST',
+  //   zip: '00000',
+  //   country: 'US',
+  // },
+  // Your profiles (GitHub, LinkedIn, X...). Listed as `sameAs` in structured data.
+  socialLinks: [],
   // twitter: {
   //   site: '@yourhandle',
   //   creator: '@yourhandle',
   // },
-  twitter: {
-    site: '@ItsHarryB_',
-    creator: '@ItsHarryB_',
-  },
   verification: {
     google: GOOGLE_SITE_VERIFICATION,
     bing: BING_SITE_VERIFICATION,
   },
-  // Branding: Logo files live in src/assets/branding/
-  // Replace the SVG files there with your own branding
+  // Branding: logo files live in src/assets/branding/.
+  // Replace the SVG files there with your own.
   branding: {
     logo: {
-      alt: 'Brighton and Co',
+      alt: 'My Site',
     },
     favicon: {
-      svg: '/bncofavicon-light.png',
+      svg: '/favicon.svg',
     },
     colors: {
-      themeColor: '#009ec2',
+      themeColor: '#F94C10',
       backgroundColor: '#ffffff',
     },
   },

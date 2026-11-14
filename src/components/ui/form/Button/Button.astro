@@ -2,26 +2,40 @@
 import type { HTMLAttributes } from 'astro/types';
 import { cn } from '@/lib/cn';
 import { isExternalUrl } from '@/lib/utils';
-import { buttonVariants } from './button.variants';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import { buttonUnstyled, buttonVariants } from './button.variants';
 
 interface Props extends HTMLAttributes<'button'> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'destructive';
+  variant?: 'brand' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'destructive';
   size?: 'sm' | 'md' | 'lg';
+  /**
+   * Drop Button's own look (colour, size, radius, weight, hover) and style it
+   * entirely with `class`. It stays a Button: link handling, loading, icons,
+   * the focus ring and the disabled state all still apply.
+   */
+  unstyled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
   href?: string;
   target?: string;
   icon?: boolean;
+  /** Icon name shown before the label */
+  leadingIcon?: string;
+  /** Icon name shown after the label */
+  trailingIcon?: string;
 }
 
 const {
   variant = 'primary',
   size = 'md',
+  unstyled = false,
   loading = false,
   fullWidth = false,
   href,
   target,
   icon = false,
+  leadingIcon,
+  trailingIcon,
   class: className,
   disabled,
   ...attrs
@@ -37,7 +51,7 @@ const isDisabled = disabled || loading;
 const isDisabledLink = href && isDisabled;
 
 const classes = cn(
-  buttonVariants({ variant, size, fullWidth, icon }),
+  unstyled ? cn(buttonUnstyled, fullWidth && 'w-full') : buttonVariants({ variant, size, fullWidth, icon }),
   isDisabledLink && 'pointer-events-none',
   className
 );
@@ -72,5 +86,7 @@ const classes = cn(
       </svg>
     ) : null
   }
+  {leadingIcon && <Icon name={leadingIcon} size="sm" />}
   <slot />
+  {trailingIcon && <Icon name={trailingIcon} size="sm" />}
 </Element>

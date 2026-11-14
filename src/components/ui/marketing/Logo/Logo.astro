@@ -1,14 +1,22 @@
 ---
 /**
  * Logo Component
+ *
+ * To customize: Replace the SVG files in src/assets/branding/
+ * - logomark.svg       → Icon for light backgrounds
+ * - logomark-dark.svg  → Icon for dark backgrounds
+ * - logo-full.svg      → Full logo for light backgrounds
+ * - logo-full-dark.svg → Full logo for dark backgrounds
+ *
+ * The files render inline, so they can use currentColor and CSS variables such as
+ * var(--logo-accent) to follow the theme.
  */
 import siteConfig from '@/config/site.config';
-import { Image } from 'astro:assets';
 
-import logomark from '@/assets/branding/logomark.png';
-import logomarkDark from '@/assets/branding/logomark-dark.png';
-import logoFull from '@/assets/branding/logo-full.png'; // Update extension if using .svg/.jpg
-import logoFullDark from '@/assets/branding/logo-full-dark.png';
+import logomark from '@/assets/branding/logomark.svg?raw';
+import logomarkDark from '@/assets/branding/logomark-dark.svg?raw';
+import logoFull from '@/assets/branding/logo-full.svg?raw';
+import logoFullDark from '@/assets/branding/logo-full-dark.svg?raw';
 
 interface Props {
   /** Size preset */
@@ -17,90 +25,42 @@ interface Props {
   forceDark?: boolean;
   /** Use full logo instead of logomark */
   variant?: 'logomark' | 'full';
+  /** Hide from screen readers. Use when the site name is shown next to the logo. */
+  decorative?: boolean;
   /** Additional CSS classes */
   class?: string;
-  /** Optional loading behavior override */
-  loading?: 'lazy' | 'eager';
-  /** Optional network priority override */
-  fetchpriority?: 'high' | 'low' | 'auto';
 }
 
 const {
   size = 'md',
   forceDark = false,
   variant = 'logomark',
+  decorative = false,
   class: className,
-  loading = 'lazy',
-  fetchpriority = 'auto'
 } = Astro.props;
 
 const lightLogo = variant === 'full' ? logoFull : logomark;
 const darkLogo = variant === 'full' ? logoFullDark : logomarkDark;
 
 const sizeClasses: Record<string, string> = {
-  sm: variant === 'full' ? 'h-8 w-auto' : 'h-5 w-5',       
-  md: variant === 'full' ? 'h-10 w-auto' : 'h-6 w-6',       
-  lg: variant === 'full' ? 'h-12 w-auto' : 'h-8 w-8',       
-  xl: variant === 'full' ? 'h-16 w-auto' : 'h-12 w-12',    
-  '2xl': variant === 'full' ? 'h-24 w-auto' : 'h-24 w-24', 
+  sm: 'h-5 w-5',
+  md: 'h-6 w-6',
+  lg: 'h-8 w-8',
+  xl: 'h-12 w-12',
+  '2xl': 'h-24 w-24',
 };
 
-// Mathematically mapped base CSS pixel widths
-const logomarkWidths: Record<string, number> = {
-  sm: 20, md: 24, lg: 32, xl: 48, '2xl': 96,
-};
-
-const fullLogoWidths: Record<string, number> = {
-  sm: 135,
-  md: 167, // Perfectly calibrated to the PSI rendered dimension
-  lg: 200,
-  xl: 260,
-  '2xl': 400,
-};
-
-const widthMap = variant === 'full' ? fullLogoWidths : logomarkWidths;
 const sizeClass = sizeClasses[size] || sizeClasses.md;
-const targetWidth = widthMap[size] || widthMap.md;
+const alt = decorative ? '' : siteConfig.branding.logo.alt;
 ---
 
-<span class:list={['inline-block', className]}>
+<span class:list={['inline-block', className]} role={decorative ? undefined : 'img'} aria-label={alt || undefined} aria-hidden={decorative ? 'true' : undefined}>
   {forceDark ? (
-    <Image
-      src={darkLogo}
-      alt={siteConfig.branding.logo.alt || "Logo"}
-      width={targetWidth}
-      densities={[1, 1.5, 2]}
-      format="avif"
-      quality={60}
-      loading={loading}
-      fetchpriority={fetchpriority}
-      class:list={[sizeClass]}
-    />
-) : (
+    <span class:list={[sizeClass, 'block [&>svg]:size-full']} set:html={darkLogo} />
+  ) : (
     <Fragment>
-      <Image
-        src={lightLogo}
-        alt={siteConfig.branding.logo.alt || "Logo"}
-        width={targetWidth}
-        densities={[1, 1.5, 2]}
-        format="avif"
-        quality={60}
-        loading={loading}
-        fetchpriority={fetchpriority}
-        class:list={[sizeClass, 'block dark:hidden']}
-      />
-      <Image
-        src={darkLogo}
-        alt=""
-        width={targetWidth}
-        densities={[1, 1.5, 2]}
-        format="avif"
-        quality={60}
-        loading={loading}
-        fetchpriority={fetchpriority}
-        class:list={[sizeClass, 'hidden dark:block']}
-        aria-hidden="true"
-      />
+      <span class:list={[sizeClass, 'block dark:hidden [&>svg]:size-full']} set:html={lightLogo} />
+      <span class:list={[sizeClass, 'hidden dark:block [&>svg]:size-full']} set:html={darkLogo} />
     </Fragment>
   )}
 </span>

@@ -2,10 +2,14 @@
 /**
  * LandingLayout
  * Layout wrapper for landing-style pages (marketing, demo, showcase)
- * Uses the inverted Header; the footer comes from BaseLayout
+ * Uses Header + Footer with landing-specific configuration
+ *
+ * This layout is part of the "demo" layer - it can be optionally installed
+ * via CLI for users who want the full landing page experience.
  */
 import BaseLayout from './BaseLayout.astro';
-import Header from '@/components/layout/Header.astro';
+import SiteHeader from '@/components/site/SiteHeader.astro';
+import SiteFooter from '@/components/site/SiteFooter.astro';
 
 interface Props {
   title?: string;
@@ -37,23 +41,9 @@ const {
   nofollow={nofollow}
   includeOrgSchema={includeOrgSchema}
 >
-  <Header
-    slot="header"
-    position="fixed"
-    size="lg"
-    showCta={false}
-    colorScheme="invert"
-    extraNav={[]}
-    actions={[
-      {
-        icon: 'brand-linktree',
-        href: 'https://linktr.ee/brightonandco',
-        label: 'View on Linktree',
-        iconOnly: true,
-        target: '_blank',
-      },
-    ]}
-  />
+  <SiteHeader slot="header" />
 
   <slot />
+
+  <SiteFooter slot="footer" background="secondary" showCopyright={false} />
 </BaseLayout>

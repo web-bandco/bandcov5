@@ -3,10 +3,8 @@ import { cn } from '@/lib/cn';
 import { accordionItemVariants, accordionTriggerVariants } from './accordion.variants';
 
 interface AccordionItem {
-  id?: string;
   title: string;
-  // UPDATED: Now accepts either a single string or an array of strings
-  content: string | string[];
+  content: string;
   defaultOpen?: boolean;
 }
 
@@ -57,7 +55,7 @@ export function Accordion({
         const panelId = `${id}-panel-${index}`;
 
         return (
-          <div key={index} id={item.id} className={cn(accordionItemVariants({ variant }))}>
+          <div key={index} className={cn(accordionItemVariants({ variant }))}>
             <button
               id={triggerId}
               type="button"
@@ -96,16 +94,7 @@ export function Accordion({
               hidden={!isOpen}
               className="pb-4 text-sm text-foreground-muted leading-relaxed"
             >
-              {Array.isArray(item.content) ? (
-                <div className="space-y-4">
-                  {item.content.map((paragraph, pIndex) => (
-                    // FIXED: Renders the raw HTML strings safely
-                    <div key={pIndex} dangerouslySetInnerHTML={{ __html: paragraph }} />
-                  ))}
-                </div>
-              ) : (
-                <div dangerouslySetInnerHTML={{ __html: item.content }} />
-              )}
+              {item.content}
             </div>
           </div>
         );

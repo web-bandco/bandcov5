@@ -3,14 +3,15 @@ node_modules/
 
 # Build output
 dist/
+
+# Files saved by `create-velocity-astro upgrade`
+.velocity-backup/
+.matrix/
 .vercel/
 .netlify/
 
 # Astro
 .astro/
-
-# Cloudflare Wrangler local state (cache from `wrangler dev`)
-.wrangler/
 
 # Environment variables
 .env
@@ -52,11 +53,13 @@ test-results/
 # Pagefind
 public/pagefind/
 
-# Claude Code
-.claude/
+# Claude Code (local state only; project skills are committed)
+.claude/*
+!.claude/skills/
 
 
-
+# npm lockfile (pnpm only)
+package-lock.json
 
 # Internal docs
 southwell-astro-boilerplate-docs.md

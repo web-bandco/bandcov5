@@ -4,19 +4,14 @@ import SEO from '@/components/seo/SEO.astro';
 import JsonLd from '@/components/seo/JsonLd.astro';
 import Analytics from '@/components/layout/Analytics.astro';
 import ConsentBanner from '@/components/ui/overlay/ConsentBanner';
-import { ClientRouter } from 'astro:transitions';
+import { Font } from 'astro:assets';
 import { createWebsiteSchema, createOrganizationSchema } from '@/lib/schema';
 import type { WebSite, Organization, WithContext } from 'schema-dts';
 import siteConfig from '@/config/site.config';
-import Footer from '@/components/layout/Footer.astro';
-import Icon from '@/components/ui/primitives/Icon/Icon.astro';
-import Logo from '@/components/ui/marketing/Logo/Logo.astro';
-import packageData from '../../package.json';
-import { getPolicy } from '@/config/policies.config';
-import ExternalLink from '@/components/ui/content/ExternalLink.astro';
-import ExternalLinkDialog from '@/components/ui/content/ExternalLinkDialog.astro';
-
-const privacyPolicy = getPolicy('privacy');
+import InlineScript from '@/components/seo/InlineScript.astro';
+import themeScript from './theme-script.js?raw';
+import { fontData } from 'astro:assets';
+import { withTrailingSlash, defaultLocale, getAlternates, getLocale, getLocaleTag, useTranslations, type Locale } from '@/i18n';
 
 interface Props {
   title?: string;
@@ -32,6 +27,8 @@ interface Props {
   noindex?: boolean;
   nofollow?: boolean;
   includeOrgSchema?: boolean;
+  /** hreflang alternates. Defaults to the matching route in every enabled locale. */
+  alternates?: { locale: Locale; href: string }[];
 }
 
 const {
@@ -43,7 +40,15 @@ const {
   noindex = false,
   nofollow = false,
   includeOrgSchema = false,
+  alternates = getAlternates(Astro.url.pathname),
 } = Astro.props;
+
+const locale = getLocale(Astro);
+const t = useTranslations(locale);
+// Every family registered in astro.config.mjs. The first one is preloaded as the body font.
+const fontVariables = Object.keys(fontData) as (keyof typeof fontData)[];
+const bodyFont = fontVariables[0] && fontData[fontVariables[0]]?.[0]?.src[0]?.url;
+const xDefault = alternates.find((a) => a.locale === defaultLocale);
 
 // Build JSON-LD schemas
 const schemas: Array<WithContext<WebSite> | WithContext<Organization>> = [createWebsiteSchema()];
@@ -51,30 +56,26 @@ if (includeOrgSchema) {
   schemas.push(createOrganizationSchema());
 }
 
-// Page changes: the old page fades out quickly, and the new one fades in with a
-// small rise (keyframes in global.css). The header stays still (see Header.astro).
-const pageFade = {
-  old: { name: 'page-out', duration: '150ms', easing: 'cubic-bezier(0.4, 0, 1, 1)', fillMode: 'both' },
-  new: { name: 'page-in', duration: '250ms', easing: 'cubic-bezier(0, 0, 0.2, 1)', fillMode: 'both' },
-};
-const pageTransition = { forwards: pageFade, backwards: pageFade };
+// Read loosely: projects created before defaultTheme existed have no such field in their SiteConfig type.
+const configuredTheme = (siteConfig as { defaultTheme?: string }).defaultTheme;
+const defaultTheme = configuredTheme === 'light' || configuredTheme === 'dark' ? configuredTheme : 'system';
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang={getLocaleTag(locale)} class="scroll-smooth" data-default-theme={defaultTheme}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Page-specific head content, e.g. resource hints (before the inline CSS so they're seen early) -->
-    <slot name="head" />
+    <!-- Fonts (Astro Fonts API: self-hosted, preloaded, metric-matched fallbacks) -->
+    {/* Preload only the Latin face. Other subsets load when a page needs them. */}
+    {bodyFont && <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />}
+    {fontVariables.map((cssVariable) => <Font cssVariable={cssVariable} />)}
 
-    <!-- Dynamic Favicon (ID added for the script below to target) -->
-    <link id="dynamic-favicon" rel="icon" type="image/png" sizes="64x64" href="/bncofavicon-light.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href={siteConfig.branding.favicon.svg} />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content={siteConfig.branding.colors.themeColor} />
 
     <!-- SEO -->
@@ -88,6 +89,12 @@ const pageTransition = { forwards: pageFade, backwards: pageFade };
       nofollow={nofollow}
     />
 
+    <!-- Alternate languages (only when more than one locale is enabled) -->
+    {alternates.map((alt) => (
+      <link rel="alternate" hreflang={getLocaleTag(alt.locale)} href={new URL(withTrailingSlash(alt.href), Astro.site)} />
+    ))}
+    {xDefault && <link rel="alternate" hreflang="x-default" href={new URL(withTrailingSlash(xDefault.href), Astro.site)} />}
+
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title={`${siteConfig.name} RSS Feed`} href="/rss.xml" />
 
@@ -97,205 +104,27 @@ const pageTransition = { forwards: pageFade, backwards: pageFade };
     <!-- Analytics (loads if PUBLIC_GA_MEASUREMENT_ID or PUBLIC_GTM_ID is set) -->
     <Analytics />
 
-    <!-- Client-side routing for view transitions -->
-    <ClientRouter />
-
     <!-- Theme script (runs before render to prevent flash) -->
-    <script is:inline>
-      (function () {
-        const theme = localStorage.getItem('theme');
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (theme === 'dark' || (!theme && systemDark)) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      })();
-    </script>
-
-    <!-- Dynamic Favicon Script -->
-    <script is:inline>
-      function initDynamicFavicon() {
-        const favicon = document.getElementById('dynamic-favicon');
-        if (!favicon) return;
-
-        const updateFavicon = () => {
-          const isDark = document.documentElement.classList.contains('dark');
-          favicon.href = isDark ? '/bncofavicon-dark.png' : '/bncofavicon-light.png';
-        };
-
-        // 1. Set immediately
-        updateFavicon();
-
-        // 2. Watch for theme toggles
-        const observer = new MutationObserver(updateFavicon);
-        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-      }
-
-      // Run on initial load and handle Astro's View Transitions
-      initDynamicFavicon();
-      document.addEventListener('astro:after-swap', initDynamicFavicon);
-    </script>
+    <InlineScript code={themeScript} />
   </head>
 
   <body class="min-h-screen bg-background text-foreground antialiased">
     <!-- Skip to content link -->
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
     >
-      Skip to content
+      {t('a11y.skipToContent')}
     </a>
 
     <slot name="header" />
 
-    <main id="main-content" class="flex-1" transition:animate={pageTransition}>
+    <main id="main-content" class="flex-1">
       <slot />
     </main>
 
-    <Footer 
-      slot="footer" 
-      layout="columns"
-      columns={4} 
-      background="secondary" 
-      showSocial={false} 
-      showCopyright={false}
-    >
-      {/* COLUMN 1: Logo & Tagline (Injected via slots). Same logo as the header: live text follows the theme */}
-      <a href="/" slot="logo" class="flex w-fit items-center gap-2 mb-2" data-analytics-nav="Footer" data-nav-label="Logo Home Link">
-        <Logo size="md" />
-        <span class="font-display text-xl font-bold tracking-tight text-accent">{siteConfig.name}</span>
-      </a>
-      <span slot="tagline" class="block leading-relaxed">
-        Brighton and Co - made by Harry B. Showcasing personal projects, hobbies, interests and more.
-      </span>
+    <slot name="footer" />
 
-      {/* COLUMNS 2, 3 & 4 (Injected via the 'columns' slot to override default linkGroups) */}
-      <Fragment slot="columns">
-        
-        {/* Column 2: Quick Links */}
-        <div class="space-y-[var(--space-stack-md)]">
-          <h2 class="font-semibold text-sm text-foreground">Quick Links</h2>
-          <ul class="space-y-2">
-            <li><a href="/about" data-analytics-nav="Footer" data-nav-label="About" class="text-sm text-foreground-muted hover:text-foreground transition-colors">About</a></li>
-            <li><a href="/shop" data-analytics-nav="Footer" data-nav-label="Shop" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Shop</a></li>
-            <li><a href="/blog" data-analytics-nav="Footer" data-nav-label="Blog" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Blog</a></li>
-            <li><a href="/photography" data-analytics-nav="Footer" data-nav-label="Photography" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Photography</a></li>
-            <li><a href="/contact" data-analytics-nav="Footer" data-nav-label="Contact" class="text-sm text-foreground-muted hover:text-foreground transition-colors">Contact</a></li>
-          </ul>
-        </div>
-
-        {/* Column 3: Social Links */}
-        <div class="space-y-[var(--space-stack-md)]">
-          <h2 class="font-semibold text-sm text-foreground">Connect</h2>
-          <ul class="space-y-2">
-            <li>
-              <ExternalLink data-analytics-nav="Footer" data-nav-label="Twitter" disableHover href="https://twitter.com/itsharryb_" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-                <Icon name="twitter" size="sm" /> Twitter
-              </ExternalLink>
-            </li>
-            <li>
-              <ExternalLink data-analytics-nav="Footer" data-nav-label="GitHub" disableHover href="https://github.com/web-bandco" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-                <Icon name="github" size="sm" /> GitHub
-              </ExternalLink>
-            </li>
-            <li>
-              <ExternalLink data-analytics-nav="Footer" data-nav-label="LinkedIn" disableHover href="https://www.linkedin.com/in/harry-brighton/" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-                <Icon name="linkedin" size="sm" /> LinkedIn
-              </ExternalLink>
-            </li>
-            <li>
-              <ExternalLink data-analytics-nav="Footer" data-nav-label="Linktree" disableHover href="https://linktr.ee/brightonandco" class="group flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground transition-colors">
-                <Icon name="brand-linktree" size="sm" /> Linktree
-              </ExternalLink>
-            </li>
-          </ul>
-        </div>
-
-        {/* Column 4: Site Info & Meta. On phones it spans the full width as two columns
-            (details | policy links) with a vertical line between them; from md it is
-            one column with a horizontal line */}
-        <div class="col-span-2 md:col-span-1 grid grid-cols-2 gap-x-6 md:block">
-          <div class="space-y-[var(--space-stack-md)]">
-            <h2 class="font-semibold text-sm text-foreground">Site Info</h2>
-            <div class="space-y-2 text-sm text-foreground-muted">
-              <p>Version: <span class="font-mono bg-surface-secondary px-1.5 py-0.5 rounded-md border border-border">v{packageData.version}</span></p>
-              <div class="pt-1 space-y-1">
-              <p>&copy; {new Date().getFullYear()} <span class="whitespace-nowrap">Brighton and Co.</span></p>
-              <p>All rights reserved.</p>
-           </div>
-            </div>
-          </div>
-          {/* Privacy Policy, Policy Hub (all policies) & Cookie Preferences */}
-          <div class="flex flex-col items-start gap-1 border-l border-border/50 pl-6 md:mt-4 md:border-l-0 md:border-t md:pl-0 md:pt-2">
-              <a href={privacyPolicy.href} data-analytics-nav="Footer" data-nav-label="Privacy Policy" class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
-                Privacy Policy
-              </a>
-              <a href="/about#policies" data-analytics-nav="Footer" data-nav-label="Policy Hub" class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1">
-                Policy Hub
-              </a>
-              <button 
-                type="button" 
-                data-analytics-nav="Footer" 
-                data-nav-label="Cookie Preferences"
-                onclick="window.openConsentSettings && window.openConsentSettings()" 
-                class="text-sm text-foreground-muted hover:text-foreground transition-colors block py-1 cursor-pointer"
-              >
-                Cookie Preferences
-              </button>
-            </div>
-        </div>
-        
-      </Fragment>
-
-      {/* OVERRIDE: Hide the bottom bar since we moved copyright to Column 4 */}
-      <div slot="bottom" class="hidden"></div>
-    </Footer>
-
-    <ExternalLinkDialog />
     <ConsentBanner />
-
-    {/* Photos fade in as they load, instead of a sudden appearance */}
-    <script>
-      import { initImageFade } from '@/lib/image-fade';
-      document.addEventListener('astro:page-load', initImageFade);
-    </script>
-
-    {/* ── NAVIGATION & UI INTERACTION TRACKING ──
-        One document-level listener each, registered once, so they keep working
-        across page navigations without re-binding (or double-counting) */}
-    <script>
-      const sendEvent = (name: string, params: Record<string, string>) => {
-        const w = window as any;
-        if (typeof w.gtag === 'function') w.gtag('event', name, params);
-        else if (w.dataLayer) w.dataLayer.push({ event: name, ...params });
-      };
-
-      document.addEventListener('click', (e) => {
-        const target = e.target as Element;
-
-        const navLink = target.closest('[data-analytics-nav]');
-        if (navLink) {
-          sendEvent('site_navigation', {
-            event_category: 'Site Routing',
-            event_label: navLink.getAttribute('data-nav-label') || 'Unknown Link',
-            link_url: navLink.getAttribute('href') || 'Button/Action',
-            ui_section: navLink.getAttribute('data-analytics-nav') || 'Unknown Section',
-            source_page: window.location.pathname,
-          });
-        }
-
-        const uiTarget = target.closest('[data-track-ui]');
-        if (uiTarget) {
-          sendEvent('ui_interaction', {
-            event_category: 'UI Engagement',
-            ui_action: uiTarget.getAttribute('data-track-ui') || 'Unknown Interaction',
-            ui_label: uiTarget.getAttribute('data-track-label') || (uiTarget.textContent || '').trim().substring(0, 50),
-            source_page: window.location.pathname,
-          });
-        }
-      }, { passive: true });
-    </script>
   </body>
 </html>
