@@ -48,14 +48,14 @@
 ## Progress
 
 ### Before Phase 1
-- [ ] Merge the handoff pull request (this file, `CLAUDE.md`, `wrangler.bandco.toml`) into `master`.
-- [ ] In Cloudflare, set the deploy command to `npx wrangler deploy --config wrangler.bandco.toml`, and the other-branch command to `npx wrangler versions upload --config wrangler.bandco.toml`. Push a small change to `master`. Check that the live site still deploys.
-- [ ] Commit `.mcp.json` to `master`, if it is not committed yet.
+- [x] Merge the handoff pull request (this file, `CLAUDE.md`, `wrangler.bandco.toml`) into `master`.
+- [ ] In Cloudflare, set the deploy command to `npx wrangler deploy --config wrangler.bandco.toml`, and the other-branch command to `npx wrangler versions upload --config wrangler.bandco.toml`. Push a small change to `master`. Check that the live site still deploys. (14 Nov 2026: both commands changed. `master` rebuilt and deployed with the new command. Branch preview still to test.)
+- [x] Commit `.mcp.json` to `master`, if it is not committed yet.
 
 ### Phase 1: Prepare
-- [ ] Node 24 on Windows and Mac
-- [ ] Worktree `../bandcov5-old` on `master`
-- [ ] Branch `upgrade/velocity-2.6`
+- [ ] Node 24 on Windows and Mac (Windows done: v24.22.1. Mac to do.)
+- [x] Worktree `../bandcov5-old` on `master` (detached)
+- [x] Branch `upgrade/velocity-2.6`
 
 ### Phase 2: Fresh 2.6.2 project
 - [ ] Scaffold, copy, `npm install`
@@ -154,7 +154,7 @@ Option B is the better choice for your site. Your view that Option A is "whack-a
 
 1. Make the branch `upgrade/velocity-2.6` from `master`.
 2. Make a fresh 2.6.2 project with the CLI in a temporary folder. Copy it into the branch. The CLI writes a new `.velocity.json` with the correct file hashes for future upgrades.
-3. Keep the old site open beside the new one. Use a Git worktree: `git worktree add ../bandcov5-old master`. VSCode can open both folders. You copy from the old folder to the new one.
+3. Keep the old site open beside the new one. Use a Git worktree: `git worktree add --detach ../bandcov5-old master`. VSCode can open both folders. You copy from the old folder to the new one.
 4. Keep `bandco-shop/` (Sanity Studio) as it is. It is separate and the upgrade does not affect it.
 5. When all pages pass, merge the branch into `master` with a pull request.
 
@@ -304,7 +304,7 @@ Do these steps in the VSCode integrated terminal. The commands work in PowerShel
 
 1. Install Node.js 24 LTS on both computers (from nodejs.org, or with `nvm`). Check with `node -v`. It must show `v24` or at minimum `v22.23.4`.
 2. In VSCode, open the bandcov5 folder. Make sure there are no uncommitted changes. Run `git switch master` and `git pull`.
-3. Make a copy of the old site for reference, beside the repository: `git worktree add ../bandcov5-old master. In VSCode, use **File > Add Folder to Workspace** to show bandcov5-old` next to `bandcov5`.
+3. Make a copy of the old site for reference, beside the repository: `git worktree add --detach ../bandcov5-old master`. Use `--detach`, because Git does not let `master` be checked out in 2 folders. Do not commit in `bandcov5-old`. In VSCode, use **File > Add Folder to Workspace** to show `bandcov5-old` next to `bandcov5`.
 4. Make the branch: `git switch -c upgrade/velocity-2.6`.
 5. Do the Cloudflare steps in Phase 1 of the next section (Node version and preview builds).
 
