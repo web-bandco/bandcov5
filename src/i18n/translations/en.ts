@@ -148,6 +148,15 @@ const en = {
     },
   },
 
+  // B&Co blog copy (overrides the Velocity defaults in ui.ts)
+  blog: {
+    titleBefore: 'The',
+    titleHighlight: 'B&Co',
+    titleAfter: 'Blog',
+    lead: 'Look below for the latest articles and updates',
+    backToBlog: 'Back to Blog',
+  },
+
   about: {
     hero: {
       badge: 'Our Story',

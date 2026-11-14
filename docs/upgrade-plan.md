@@ -57,6 +57,7 @@
 - Policy pages: `src/components/policy/` holds `PolicyLayout.astro`, `PolicyCard.astro` and `clauses.ts` (`src/layouts/` and `src/lib/` are Velocity-owned). Sections are native `<details>` with the Velocity Accordion card style. The contents list wraps (no drag script). Decision to review after the page is done.
 - Velocity floating cookie button (`#consent-reopener`) is hidden in `brand.css`. The footer link and the Privacy Policy button reopen the settings.
 - Photos: `src/components/site/PhotoCarousel.astro` (Velocity Carousel; each photo opens the lightbox) and `PhotoLightbox.astro` (native `<dialog>`, CSS scroll snap, one short script). Use them for Photography and Shop too. Not included, for later: swipe down to close (option B, 14 November 2026), and loop from the last photo to the first (Velocity Carousel stops at the ends).
+- Blog: `src/views/BlogIndexView.astro` (centred hero, Featured, All posts, SiteCta). Copy in `blog` keys in `src/i18n/translations/en.ts`. Option for later: a Version 5 / Version 6 filter on the blog index (Velocity ToggleGroup, native radio buttons, CSS only). Add it with the first Version 6 post.
 - `src/components/site/SiteCta.astro`: the shared "Explore more of Brighton and Co" band (Velocity CTA).
 - Source photos are reduced to 2560px, JPEG quality 85, before they are added (About: 20.8 MB to 2.3 MB).
 - External links: the old "Leaving B&Co" dialog is removed (14 November 2026). Links open in a new tab and say so to screen readers. It can be rebuilt later as a project-owned component.
@@ -94,7 +95,7 @@
 - [x] Policies: AI, Privacy, Terms (text identical to live, except Privacy clause 4.3, now v1.1.0)
 - [x] 404 (random memoji, Go Back, old copy; 404 analytics event left for Phase 5)
 - [x] About (Velocity Section, Faq and CTA; photo carousels with the new lightbox; Version 6 text)
-- [ ] Blog index and posts
+- [x] Blog index and posts (Velocity BlogLayout, unchanged; 6 posts, same URLs; post headings changed from h1 to h2; 3 text fixes in the v5 launch post (2 spelling, 1 heading wording); share and article_scroll events left for Phase 5)
 - [ ] Contact
 - [ ] Photography, holiday galleries, holiday gallery
 - [ ] Shop and product pages
