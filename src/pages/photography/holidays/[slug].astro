@@ -1,0 +1,58 @@
+---
+/**
+ * One holiday gallery (velocity-allow-hardcoded: this site has one language, English)
+ * URL: /photography/holidays/<slug> (one page per file in src/content/holidays/)
+ */
+import type { CollectionEntry } from 'astro:content';
+import PageLayout from '@/layouts/PageLayout.astro';
+import { Hero } from '@/components/hero';
+import Section from '@/components/patterns/Section.astro';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import PhotoGallery from '@/components/site/PhotoGallery.astro';
+import SiteCta from '@/components/site/SiteCta.astro';
+import { getHolidays, holidayDate } from '@/components/site/photos';
+
+export async function getStaticPaths() {
+  const holidays = await getHolidays();
+  return holidays.map((holiday) => ({ params: { slug: holiday.id }, props: { holiday } }));
+}
+
+interface Props {
+  holiday: CollectionEntry<'holidays'>;
+}
+
+const { holiday } = Astro.props;
+const { title, location, date, images } = holiday.data;
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Photography', href: '/photography' },
+  { label: 'Holiday Galleries', href: '/photography/holidays' },
+  { label: title },
+];
+---
+
+<PageLayout title={`${title} - Photography`} description={`A collection of high-resolution photographs from ${title}, ${location}.`}>
+  <Hero layout="centered" size="sm">
+    <Badge slot="badge" pill pulse>Holiday Gallery</Badge>
+    <h1 slot="title">{title}</h1>
+    <p slot="description" class="flex items-center justify-center gap-2">
+      <Icon name="map-pin" size="sm" class="text-accent" />
+      {location} • {holidayDate(date)}
+    </p>
+  </Hero>
+
+  <Section class="border-t border-border">
+    <Breadcrumbs items={breadcrumbs} class="mb-8" />
+    <a href="/photography/holidays" class="mb-12 inline-flex items-center gap-2 text-sm font-medium text-foreground-muted transition-colors hover:text-foreground">
+      <Icon name="arrow-left" size="sm" />
+      Back to Holidays
+    </a>
+
+    <PhotoGallery label={title} photos={images.map(({ src, alt }) => ({ img: src, alt }))} />
+  </Section>
+
+  <SiteCta />
+</PageLayout>

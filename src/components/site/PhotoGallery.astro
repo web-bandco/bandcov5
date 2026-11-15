@@ -1,0 +1,50 @@
+---
+/**
+ * PhotoGallery (velocity-allow-hardcoded: this site has one language, English)
+ * A masonry grid of photos (CSS columns: 1, 2 or 3). Each photo opens the
+ * lightbox (PhotoLightbox) at full size. No React.
+ *
+ *   <PhotoGallery label="Prague" photos={[{ img, alt }]} />
+ */
+import type { ImageMetadata } from 'astro';
+import PhotoLightbox from '@/components/site/PhotoLightbox.astro';
+import { toGalleryImages } from '@/components/site/photos';
+
+interface Props {
+  /** Names the gallery and the lightbox for screen readers */
+  label: string;
+  photos: { img: ImageMetadata; alt: string }[];
+}
+
+const { label, photos } = Astro.props;
+const images = await toGalleryImages(photos);
+const sizes = '(min-width: 1280px) 395px, (min-width: 1024px) 31vw, (min-width: 640px) 46vw, calc(100vw - 48px)';
+---
+
+<div data-photo-gallery>
+  <ul class="columns-1 gap-6 sm:columns-2 lg:columns-3" aria-label={label}>
+    {images.map((image, index) => (
+      <li class="mb-6 break-inside-avoid">
+        <button
+          type="button"
+          data-lightbox-open={index}
+          class="block w-full cursor-pointer overflow-hidden rounded-2xl border border-border bg-background-secondary shadow-sm hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <span class="sr-only">View full image: </span>
+          <img
+            src={image.src}
+            srcset={image.srcset}
+            sizes={sizes}
+            alt={image.alt}
+            width={image.full.width}
+            height={image.full.height}
+            loading={index < 3 ? 'eager' : 'lazy'}
+            decoding="async"
+            class="block h-auto w-full"
+          />
+        </button>
+      </li>
+    ))}
+  </ul>
+  <PhotoLightbox label={label} photos={images.map((image) => image.full)} />
+</div>

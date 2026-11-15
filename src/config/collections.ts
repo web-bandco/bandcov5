@@ -14,4 +14,21 @@
  *       cover: image().optional(),
  *     });
  */
-export const siteCollections = {};
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+
+/** Holiday photo galleries: src/content/holidays/<slug>.md → /photography/holidays/<slug> */
+const holidays = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/holidays' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      location: z.string(),
+      date: z.coerce.date(),
+      coverImage: image(),
+      images: z.array(z.object({ src: image(), alt: z.string() })),
+    }),
+});
+
+export const siteCollections = { holidays };

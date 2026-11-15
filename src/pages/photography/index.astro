@@ -1,0 +1,102 @@
+---
+/**
+ * Photography page (velocity-allow-hardcoded: this site has one language, English)
+ * URL: /photography
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import { Hero } from '@/components/hero';
+import Section from '@/components/patterns/Section.astro';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import Button from '@/components/ui/form/Button/Button.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import PhotoCarousel from '@/components/site/PhotoCarousel.astro';
+import HolidayCard from '@/components/site/HolidayCard.astro';
+import SiteCta from '@/components/site/SiteCta.astro';
+import { getHolidays } from '@/components/site/photos';
+
+import cowImg from '@/assets/images/recent/cow.jpg';
+import ducklingsImg from '@/assets/images/recent/ducklings.jpg';
+import longhaircatImg from '@/assets/images/recent/longhaircat.jpg';
+import poppy2Img from '@/assets/images/more-cats/poppy2.jpg';
+import luna2Img from '@/assets/images/more-cats/luna2.jpg';
+import penny2Img from '@/assets/images/more-cats/penny2.jpg';
+import poppy3Img from '@/assets/images/more-cats/poppy3.jpg';
+
+const recentPhotos = [
+  { img: cowImg, alt: 'A black and white cow stood in a grassy field, framed by the evening sun.' },
+  { img: ducklingsImg, alt: 'Two ducklings side by side in a pond.' },
+  { img: longhaircatImg, alt: 'A long-haired cat sitting outside on some gravel.' },
+];
+
+const moreCatPhotos = [
+  { img: poppy2Img, alt: 'Poppy, a British Blue, laying on a windowsill.' },
+  { img: luna2Img, alt: 'Luna, curled up asleep.' },
+  { img: penny2Img, alt: 'Penny, a black cat, fast asleep.' },
+  { img: poppy3Img, alt: 'Poppy, a British Blue, fast asleep.' },
+];
+
+// Carousels take 3/5 of the content width from lg, full width (minus padding) below
+const carouselSizes = '(min-width: 1280px) 740px, (min-width: 1024px) 58vw, calc(100vw - 48px)';
+
+// The 3 newest holidays
+const recentHolidays = (await getHolidays()).slice(0, 3);
+---
+
+<PageLayout title="Photography" description="A selection of high-resolution original photography from Harry B.">
+  <Hero layout="centered" size="sm">
+    <Badge slot="badge" pill pulse>Some of my favourite photographs</Badge>
+    <h1 slot="title">My <span class="text-accent">Photography</span></h1>
+    <p slot="description">
+      A selection of some of my favourite photographs I've taken. From cats, to trips abroad, there are a lot of different photos to see here.
+    </p>
+  </Hero>
+
+  <Section tone="secondary" class="border-y border-border">
+    <div class="space-y-24">
+      <div class="flex flex-col items-center gap-8 lg:flex-row lg:gap-16">
+        <div class="w-full text-center lg:w-2/5 lg:text-left">
+          <h2 class="font-display text-4xl leading-[1.05] tracking-tight text-balance text-foreground">Some Recent Photos</h2>
+          <p class="mt-4 text-lg text-foreground-secondary">Some of my favourite photos I've taken recently.</p>
+        </div>
+        <div class="w-full lg:w-3/5">
+          <PhotoCarousel label="Recent Photos" photos={recentPhotos} sizes={carouselSizes} priority />
+        </div>
+      </div>
+
+      <div class="flex flex-col-reverse items-center gap-8 lg:flex-row lg:gap-16">
+        <div class="w-full lg:w-3/5">
+          <PhotoCarousel label="More Cat Photos" photos={moreCatPhotos} sizes={carouselSizes} />
+        </div>
+        <div class="w-full text-center lg:w-2/5 lg:text-right">
+          <h2 class="font-display text-4xl leading-[1.05] tracking-tight text-balance text-foreground">Some More Cat Photos</h2>
+          <p class="mt-4 text-lg text-foreground-secondary">More photos of my cats, of course.</p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <Section>
+    <div class="mb-12 flex flex-col items-center gap-5 text-center lg:items-start lg:text-left">
+      <div>
+        <h2 class="font-display text-4xl leading-[1.05] tracking-tight text-balance text-foreground">
+          <a href="/photography/holidays" class="rounded-lg outline-none transition-colors hover:text-foreground-muted focus-visible:ring-2 focus-visible:ring-ring">Holiday Galleries</a>
+        </h2>
+        <p class="mt-4 text-lg text-foreground-secondary">Select a destination below to view the full gallery.</p>
+      </div>
+      <Button href="/photography/holidays" variant="outline" size="sm">
+        View all Holidays
+        <Icon name="arrow-right" size="sm" />
+      </Button>
+    </div>
+
+    {recentHolidays.length > 0 ? (
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+        {recentHolidays.map((holiday) => <HolidayCard holiday={holiday} headingLevel="h3" />)}
+      </div>
+    ) : (
+      <p class="rounded-2xl border border-dashed border-border bg-background-secondary py-12 text-center text-foreground-muted">No holiday galleries have been added yet.</p>
+    )}
+  </Section>
+
+  <SiteCta />
+</PageLayout>

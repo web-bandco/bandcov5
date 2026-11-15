@@ -1,0 +1,49 @@
+---
+/**
+ * Holiday galleries index (velocity-allow-hardcoded: this site has one language, English)
+ * URL: /photography/holidays
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import { Hero } from '@/components/hero';
+import Section from '@/components/patterns/Section.astro';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import HolidayCard from '@/components/site/HolidayCard.astro';
+import SiteCta from '@/components/site/SiteCta.astro';
+import { getHolidays } from '@/components/site/photos';
+
+const holidays = await getHolidays();
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Photography', href: '/photography' },
+  { label: 'Holiday Galleries' },
+];
+---
+
+<PageLayout title="Holiday Galleries" description="A complete directory of all holiday and travel photography galleries.">
+  <Hero layout="centered" size="sm">
+    <Badge slot="badge" pill pulse>Travel Directory</Badge>
+    <h1 slot="title">Holiday <span class="text-accent">Galleries</span></h1>
+    <p slot="description">A complete archive of all my travel photography. Select a destination to view the full gallery.</p>
+  </Hero>
+
+  <Section class="border-t border-border">
+    <Breadcrumbs items={breadcrumbs} class="mb-8" />
+    <a href="/photography" class="mb-12 inline-flex items-center gap-2 text-sm font-medium text-foreground-muted transition-colors hover:text-foreground">
+      <Icon name="arrow-left" size="sm" />
+      Back to Photography
+    </a>
+
+    {holidays.length > 0 ? (
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+        {holidays.map((holiday) => <HolidayCard holiday={holiday} />)}
+      </div>
+    ) : (
+      <p class="rounded-2xl border border-dashed border-border bg-background-secondary py-12 text-center text-foreground-muted">No holiday galleries have been added yet.</p>
+    )}
+  </Section>
+
+  <SiteCta />
+</PageLayout>
