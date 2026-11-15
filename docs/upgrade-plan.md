@@ -58,6 +58,8 @@
 - Velocity floating cookie button (`#consent-reopener`) is hidden in `brand.css`. The footer link and the Privacy Policy button reopen the settings.
 - Photos: `src/components/site/PhotoCarousel.astro` (Velocity Carousel; each photo opens the lightbox) and `PhotoLightbox.astro` (native `<dialog>`, CSS scroll snap, one short script). Use them for Photography and Shop too. Not included, for later: swipe down to close (option B, 14 November 2026), and loop from the last photo to the first (Velocity Carousel stops at the ends).
 - Blog: `src/views/BlogIndexView.astro` (centred hero, Featured, All posts, SiteCta). Copy in `blog` keys in `src/i18n/translations/en.ts`. Option for later: a Version 5 / Version 6 filter on the blog index (Velocity ToggleGroup, native radio buttons, CSS only). Add it with the first Version 6 post.
+- Contact: `src/components/site/ContactForm.astro` adds Web3Forms and hCaptcha to the CSP for the Contact page only (script-src and form-action). Without JavaScript the form still posts to Web3Forms (hCaptcha cannot load then, so Web3Forms may refuse it).
+- Buttons: use `variant="brand"` for solid buttons. The Velocity default (`primary`) uses 90% opacity on hover, which gives 4.18:1 in light mode (below AA).
 - `src/components/site/SiteCta.astro`: the shared "Explore more of Brighton and Co" band (Velocity CTA).
 - Source photos are reduced to 2560px, JPEG quality 85, before they are added (About: 20.8 MB to 2.3 MB).
 - External links: the old "Leaving B&Co" dialog is removed (14 November 2026). Links open in a new tab and say so to screen readers. It can be rebuilt later as a project-owned component.
@@ -96,7 +98,7 @@
 - [x] 404 (random memoji, Go Back, old copy; 404 analytics event left for Phase 5)
 - [x] About (Velocity Section, Faq and CTA; photo carousels with the new lightbox; Version 6 text)
 - [x] Blog index and posts (Velocity BlogLayout, unchanged; 6 posts, same URLs; post headings changed from h1 to h2; 3 text fixes in the v5 launch post (2 spelling, 1 heading wording); share and article_scroll events left for Phase 5)
-- [ ] Contact
+- [x] Contact (Web3Forms and hCaptcha in src/components/site/ContactForm.astro; status line, no React toast; botcheck spam trap; generate_lead event left for Phase 5)
 - [ ] Photography, holiday galleries, holiday gallery
 - [ ] Shop and product pages
 - [ ] Home
@@ -111,6 +113,7 @@
 
 ### Phase 6: Test and go live
 - [ ] `npm run validate`, `npm run test:e2e`, `npm run check:agent`
+- [ ] E2E on a static build: `playwright.config.ts` (Velocity-owned) starts `dist/server/entry.mjs`, which a static build does not have. Run `npx astro preview`, then `E2E_PORT=<its port> npx playwright test`. Replace `tests/e2e/forms.spec.ts` (it tests the Velocity Action forms, which this site does not use) with a Web3Forms test that stops the request before it is sent.
 - [ ] Old and new sitemaps compared
 - [ ] Preview checked on Windows, Mac and a phone, light and dark
 - [ ] Vulnerabilities (option 1): run `npm audit` again. Remove `@astrojs/node`, `@astrojs/vercel` and `@astrojs/netlify`. Add overrides `fflate ^0.7.5`, `minimatch ^11.0.1`, and `postcss-selector-parser ^6.1.5` scoped to `@tailwindcss/typography` only. Test with npm 10.9.2 `ci`, lint, tests and build. Compare `dist/_astro` and `dist/og` with the build before.

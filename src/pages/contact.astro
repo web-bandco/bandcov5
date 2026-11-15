@@ -1,0 +1,97 @@
+---
+/**
+ * Contact page (velocity-allow-hardcoded: this site has one language, English)
+ * URL: /contact
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import { Hero } from '@/components/hero';
+import Section from '@/components/patterns/Section.astro';
+import Faq from '@/components/blocks/Faq.astro';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import Card from '@/components/ui/data-display/Card/Card.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import ContactForm from '@/components/site/ContactForm.astro';
+import SiteCta from '@/components/site/SiteCta.astro';
+import siteConfig from '@/config/site.config';
+
+const faqs = [
+  {
+    question: 'How can I contact B&Co?',
+    answer: 'Simply fill out the contact form on this page. Please include your name, email address, subject and your message.',
+  },
+  {
+    question: 'When will I receive a response?',
+    answer: 'The aim is to respond to all messages as soon as possible, but please allow up to 48 hours for a response, especially during busy periods.',
+  },
+  {
+    question: 'What if I have a general question about B&Co?',
+    answer: 'If you have a general question about Brighton and Co - especially about this site, you may find your answer on the About page.',
+  },
+];
+
+// The Twitter card shows only when a handle is set in site.config.ts
+const twitterHandle = siteConfig.twitter?.site;
+const reachOut = [
+  { icon: 'mail', label: 'Email', value: siteConfig.email, href: `mailto:${siteConfig.email}`, external: false },
+  { icon: 'github', label: 'GitHub', value: 'web-bandco', href: 'https://github.com/web-bandco', external: true },
+  ...(twitterHandle
+    ? [{ icon: 'twitter', label: 'Twitter', value: twitterHandle, href: `https://twitter.com/${twitterHandle.replace('@', '')}`, external: true }]
+    : []),
+];
+---
+
+<PageLayout title="Contact" description="Get in touch with Brighton and Co.">
+  <Hero layout="centered" size="sm">
+    <Badge slot="badge" pill pulse>Get in Touch</Badge>
+    <h1 slot="title">Contact <span class="text-accent">B&Co</span></h1>
+    <p slot="description">Have a question, suggestion, or just want to say hello? We'd love to hear from you.</p>
+  </Hero>
+
+  <Section tone="secondary" class="border-y border-border">
+    <div class="grid items-start gap-12 lg:grid-cols-2">
+      <Card padding="lg" class="bg-background">
+        <h2 class="mb-6 font-display text-2xl font-bold text-foreground">Send us a message</h2>
+        <ContactForm />
+      </Card>
+
+      <div class="flex flex-col gap-12">
+        <div>
+          <h2 class="mb-6 font-display text-2xl font-bold text-foreground">Quick answers</h2>
+          <Faq items={faqs} bare variant="card" size="md" exclusive schema={false} accordionClass="[&>details]:bg-background" />
+        </div>
+
+        <div>
+          <h2 class="mb-6 font-display text-2xl font-bold text-foreground">Other ways to reach us</h2>
+          <ul class="flex flex-col gap-4">
+            {reachOut.map((item) => (
+              <li>
+                <Card
+                  href={item.href}
+                  hover
+                  padding="sm"
+                  class="bg-background outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  {...(item.external && { target: '_blank', rel: 'noopener noreferrer' })}
+                >
+                  <span class="flex items-center gap-4">
+                    <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-500/10 text-accent">
+                      <Icon name={item.icon} size="md" />
+                    </span>
+                    <span class="flex flex-col">
+                      <span class="text-sm text-foreground-muted">{item.label}</span>
+                      <span class="font-medium text-foreground">
+                        {item.value}
+                        {item.external && <span class="sr-only">(opens in a new tab)</span>}
+                      </span>
+                    </span>
+                  </span>
+                </Card>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <SiteCta />
+</PageLayout>
