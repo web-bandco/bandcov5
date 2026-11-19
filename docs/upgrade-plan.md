@@ -60,6 +60,7 @@
 - Blog: `src/views/BlogIndexView.astro` (centred hero, Featured, All posts, SiteCta). Copy in `blog` keys in `src/i18n/translations/en.ts`. Option for later: a Version 5 / Version 6 filter on the blog index (Velocity ToggleGroup, native radio buttons, CSS only). Add it with the first Version 6 post.
 - Contact: `src/components/site/ContactForm.astro` adds Web3Forms and hCaptcha to the CSP for the Contact page only (script-src and form-action). Without JavaScript the form still posts to Web3Forms (hCaptcha cannot load then, so Web3Forms may refuse it).
 - Photography: helpers in `src/components/site/photos.ts` (`toGalleryImages`, `getHolidays`). To add a holiday: add the photos to `src/assets/images/holidays/<name>/` (resized by the image rule) and a file in `src/content/holidays/`. The page, the index card and the sitemap follow.
+- Shop: `src/components/site/shop.ts` reads Sanity at build time with `fetch` (public dataset, no token). The `master` deploy hook rebuilds the site when Sanity changes. Option for site finalisation (Harry, 19 November 2026): change back to the Sanity packages (`@sanity/client`, `@sanity/image-url`). Shop red: `--shop-gradient` in `brand.css` (#E8004D to #E1273A, 4.6:1 with white text; the live #FF0055 gives 3.90:1 and #FF2E43 gives 3.67:1). Vinted and eBay logos: `StoreIcon.astro` (Simple Icons paths, like the Linktree logo).
 - Buttons: use `variant="brand"` for solid buttons. The Velocity default (`primary`) uses 90% opacity on hover, which gives 4.18:1 in light mode (below AA).
 - `src/components/site/SiteCta.astro`: the shared "Explore more of Brighton and Co" band (Velocity CTA).
 - Source photos are reduced to 2560px, JPEG quality 85, before they are added (About: 20.8 MB to 2.3 MB).
@@ -101,7 +102,7 @@
 - [x] Blog index and posts (Velocity BlogLayout, unchanged; 6 posts, same URLs; post headings changed from h1 to h2; 3 text fixes in the v5 launch post (2 spelling, 1 heading wording); share and article_scroll events left for Phase 5)
 - [x] Contact (Web3Forms and hCaptcha in src/components/site/ContactForm.astro; status line, no React toast; botcheck spam trap; generate_lead event left for Phase 5)
 - [x] Photography, holiday galleries, holiday gallery (holidays collection in src/config/collections.ts; PhotoCarousel, new CSS-only PhotoGallery and HolidayCard; no React; 39 photos resized 125 MB to 29 MB)
-- [ ] Shop and product pages
+- [x] Shop and product pages (Sanity read with plain fetch, no packages; filters and sort with Velocity Sheet, Checkbox and Select and one short script; CSS-only product gallery; shop red darkened for AA; no React)
 - [ ] Home
 - [ ] Search page on
 - [ ] Preview checked on PC and phone: https://upgrade-velocity-2-6-bandcov5.hbemails.workers.dev

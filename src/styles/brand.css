@@ -142,3 +142,9 @@
 #consent-reopener {
   display: none;
 }
+
+/* SHOP: B&Co red gradient (title and "Buy on ..." button). The live colours
+   #FF0055 -> #FF2E43, darkened just enough for white text to pass AA (4.62:1). */
+:root {
+  --shop-gradient: linear-gradient(135deg, #e8004d, #e1273a);
+}

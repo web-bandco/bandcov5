@@ -1,0 +1,173 @@
+---
+/**
+ * Shop page (velocity-allow-hardcoded: this site has one language, English)
+ * URL: /shop. Products come from Sanity at build time (src/components/site/shop.ts).
+ * Filters and sort: Velocity Sheet, Checkbox and Select, plus one short script.
+ */
+import { Image } from 'astro:assets';
+import PageLayout from '@/layouts/PageLayout.astro';
+import { Hero } from '@/components/hero';
+import Section from '@/components/patterns/Section.astro';
+import Sheet from '@/components/ui/overlay/Sheet/Sheet.astro';
+import Checkbox from '@/components/ui/form/Checkbox/Checkbox.astro';
+import Select from '@/components/ui/form/Select/Select.astro';
+import Button from '@/components/ui/form/Button/Button.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import ProductCard from '@/components/site/ProductCard.astro';
+import SiteCta from '@/components/site/SiteCta.astro';
+import { getProducts } from '@/components/site/shop';
+import shopLogo from '@/assets/branding/shoplogo.png';
+
+const products = await getProducts();
+
+const unique = (values: (string | undefined)[]) => [...new Set(values.filter(Boolean) as string[])].sort();
+const filterGroups = [
+  { name: 'store', title: 'Platform', values: ['Vinted', 'eBay'] },
+  { name: 'category', title: 'Category', values: unique(products.map((p) => p.category)) },
+  { name: 'size', title: 'Size', values: unique(products.map((p) => p.size)) },
+].filter((group) => group.values.length > 0);
+
+// The first option is the one shown at the start (products come newest first)
+const sortOptions = [
+  { value: 'date-desc', label: 'Newest First' },
+  { value: 'date-asc', label: 'Oldest First' },
+  { value: 'name-asc', label: 'Name: A to Z' },
+  { value: 'name-desc', label: 'Name: Z to A' },
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+];
+---
+
+<PageLayout
+  title="Shop"
+  description="Welcome to my digital storefront. Shop the complete pre-loved fashion and tech catalog from Vinted and eBay in one place."
+>
+
+  <Hero layout="centered" size="sm">
+    <span slot="badge" class="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-sm font-semibold text-accent">
+      New items just added!
+    </span>
+    <h1 slot="title" class="flex flex-col items-center gap-6">
+      <Image src={shopLogo} alt="SHOP: B&Co Logo" width={96} height={96} layout="fixed" loading="eager" fetchpriority="high" class="mb-2 h-24 w-24 object-contain drop-shadow-md" />
+      <span>SHOP: <span class="shop-text">B&CO</span></span>
+    </h1>
+    <p slot="description">Welcome to SHOP: B&Co. Below you can browse a selection of quality items sold on both Vinted and eBay.</p>
+  </Hero>
+
+  <Section class="border-t border-border">
+    <div data-shop>
+      <div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div>
+          <h2 class="font-display text-4xl leading-[1.05] tracking-tight text-balance text-foreground">View What's in Store</h2>
+          <p class="mt-4 text-lg text-foreground-secondary">Browse all available items below</p>
+        </div>
+        <div class="flex items-end gap-3">
+          <Button variant="outline" data-sheet-open="shop-filters" class="h-11 shrink-0">
+            <Icon name="sliders-horizontal" size="sm" />
+            Filters
+            <span class="hidden size-5 place-items-center rounded-full bg-brand-fill text-[11px] font-bold text-brand-ink" data-filter-count></span>
+          </Button>
+          <Select label="Sort by" name="sort" options={sortOptions} class="w-56" data-shop-sort />
+        </div>
+      </div>
+
+      <Sheet id="shop-filters" title="Filter" description="Refine the B&Co catalog.">
+        <div class="space-y-8">
+          {filterGroups.map((group) => (
+            <fieldset class="space-y-3">
+              <legend class="mb-3 w-full border-b border-border pb-2 text-sm font-semibold text-foreground">{group.title}</legend>
+              {group.values.map((value) => <Checkbox label={value} name={group.name} value={value} data-shop-filter={group.name} />)}
+            </fieldset>
+          ))}
+        </div>
+        <div slot="footer" class="flex w-full gap-3">
+          <Button variant="outline" class="flex-1" data-shop-clear disabled>
+            <Icon name="refresh-cw" size="sm" />
+            Clear Filters
+          </Button>
+          <Button variant="brand" class="flex-1" data-sheet-close>Show results</Button>
+        </div>
+      </Sheet>
+
+      <p class="sr-only" role="status" aria-live="polite" data-shop-status></p>
+
+      <ul class="grid w-full grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 md:gap-y-12 lg:grid-cols-4" data-shop-grid>
+        {products.map((product, index) => <ProductCard product={product} priority={index < 4} />)}
+      </ul>
+
+      <div class="hidden flex-col items-center justify-center rounded-3xl border border-border/50 bg-background-secondary px-4 py-24 text-center" data-shop-empty>
+        <div class="mb-6 grid size-16 place-items-center rounded-2xl bg-brand-500/10">
+          <Icon name="package-x" size="lg" class="text-accent" />
+        </div>
+        <h3 class="mb-2 text-xl font-bold text-foreground md:text-2xl">No matches found</h3>
+        <p class="max-w-sm text-foreground-muted">Try removing some filters to explore more of our catalog.</p>
+      </div>
+    </div>
+  </Section>
+
+  <SiteCta />
+</PageLayout>
+
+<style>
+  .shop-text {
+    background-image: var(--shop-gradient);
+    background-clip: text;
+    color: transparent;
+  }
+</style>
+
+<script>
+  const shop = document.querySelector<HTMLElement>('[data-shop]');
+  const grid = shop?.querySelector<HTMLElement>('[data-shop-grid]');
+  if (shop && grid) {
+    const cards = [...grid.querySelectorAll<HTMLElement>('[data-product]')];
+    const boxes = [...shop.querySelectorAll<HTMLInputElement>('[data-shop-filter]')];
+    const sort = shop.querySelector<HTMLSelectElement>('[data-shop-sort]');
+    const count = shop.querySelector<HTMLElement>('[data-filter-count]');
+    const clear = shop.querySelector<HTMLButtonElement>('[data-shop-clear]');
+    const empty = shop.querySelector<HTMLElement>('[data-shop-empty]');
+    const status = shop.querySelector<HTMLElement>('[data-shop-status]');
+
+    const compare: Record<string, (a: DOMStringMap, b: DOMStringMap) => number> = {
+      'name-asc': (a, b) => (a.title ?? '').localeCompare(b.title ?? ''),
+      'name-desc': (a, b) => (b.title ?? '').localeCompare(a.title ?? ''),
+      'price-asc': (a, b) => Number(a.price) - Number(b.price),
+      'price-desc': (a, b) => Number(b.price) - Number(a.price),
+      'date-asc': (a, b) => (a.created ?? '').localeCompare(b.created ?? ''),
+      'date-desc': (a, b) => (b.created ?? '').localeCompare(a.created ?? ''),
+    };
+
+    const update = () => {
+      // Within a group any ticked value matches; across groups all must match
+      const ticked: Record<string, string[]> = {};
+      for (const box of boxes) if (box.checked) (ticked[box.name] ??= []).push(box.value);
+      let shown = 0;
+      for (const card of cards) {
+        const match = Object.entries(ticked).every(([group, values]) => values.includes(card.dataset[group] ?? ''));
+        card.hidden = !match;
+        if (match) shown++;
+      }
+      const sorter = compare[sort?.value ?? 'date-desc'] ?? compare['date-desc'];
+      grid.append(...[...cards].sort((a, b) => sorter(a.dataset, b.dataset)));
+
+      const active = boxes.filter((box) => box.checked).length;
+      if (count) {
+        count.textContent = String(active);
+        count.classList.toggle('hidden', active === 0);
+        count.classList.toggle('grid', active > 0);
+      }
+      if (clear) clear.disabled = active === 0;
+      grid.classList.toggle('hidden', shown === 0);
+      empty?.classList.toggle('hidden', shown > 0);
+      empty?.classList.toggle('flex', shown === 0);
+      if (status) status.textContent = `${shown} ${shown === 1 ? 'item' : 'items'} shown`;
+    };
+
+    for (const box of boxes) box.addEventListener('change', update);
+    sort?.addEventListener('change', update);
+    clear?.addEventListener('click', () => {
+      for (const box of boxes) box.checked = false;
+      update();
+    });
+  }
+</script>

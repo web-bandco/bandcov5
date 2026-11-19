@@ -1,0 +1,62 @@
+---
+/**
+ * ProductGallery (velocity-allow-hardcoded: this site has one language, English)
+ * Product photos from Sanity. On a phone: a swipe row (CSS scroll snap).
+ * From lg: one large photo, then a 2-column grid. Each photo opens the
+ * lightbox (PhotoLightbox). No React and no extra script.
+ */
+import PhotoLightbox from '@/components/site/PhotoLightbox.astro';
+import { imageSize, imageUrl, srcset, type Product } from '@/components/site/shop';
+
+interface Props {
+  title: string;
+  images: Product['images'];
+}
+
+const { title, images } = Astro.props;
+
+const photos = images.map((image, index) => {
+  const { width, height } = imageSize(image);
+  const fullWidth = Math.min(1600, width);
+  return {
+    alt: `${title}, photo ${index + 1} of ${images.length}`,
+    src: imageUrl(image, 800),
+    srcset: srcset(image, [400, 640, 800, 1000, 1200, 1600]),
+    width,
+    height,
+    full: { src: imageUrl(image, fullWidth, 80), width: fullWidth, height: Math.round((height * fullWidth) / width), alt: `${title}, photo ${index + 1} of ${images.length}` },
+  };
+});
+---
+
+<div data-photo-gallery>
+  <ul
+    class="-mx-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
+    aria-label={`${title} photos`}
+  >
+    {photos.map((photo, index) => (
+      <li class:list={['w-[85%] shrink-0 snap-center sm:w-[60%] lg:w-auto', index === 0 && 'lg:col-span-2']}>
+        <button
+          type="button"
+          data-lightbox-open={index}
+          class="block w-full cursor-pointer overflow-hidden rounded-2xl border border-border bg-background-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <span class="sr-only">View full image: </span>
+          <img
+            src={photo.src}
+            srcset={photo.srcset}
+            sizes={index === 0 ? '(min-width: 1280px) 750px, (min-width: 1024px) 55vw, 85vw' : '(min-width: 1280px) 370px, (min-width: 1024px) 27vw, 85vw'}
+            alt={photo.alt}
+            width={photo.width}
+            height={photo.height}
+            loading={index < 2 ? 'eager' : 'lazy'}
+            fetchpriority={index === 0 ? 'high' : undefined}
+            decoding="async"
+            class="aspect-[3/4] h-auto w-full object-cover"
+          />
+        </button>
+      </li>
+    ))}
+  </ul>
+  <PhotoLightbox label={`${title} photos`} photos={photos.map((photo) => photo.full)} />
+</div>

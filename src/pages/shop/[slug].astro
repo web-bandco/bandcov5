@@ -1,0 +1,145 @@
+---
+/**
+ * Product page (velocity-allow-hardcoded: this site has one language, English)
+ * URL: /shop/<slug>, one page per Sanity product, built at build time.
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import Section from '@/components/patterns/Section.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import ProductGallery from '@/components/site/ProductGallery.astro';
+import StoreIcon from '@/components/site/StoreIcon.astro';
+import SiteCta from '@/components/site/SiteCta.astro';
+import { accordionItemVariants, accordionTriggerVariants } from '@/components/ui/overlay/Accordion/accordion.variants';
+import { cn } from '@/lib/cn';
+import { getProducts, type Product } from '@/components/site/shop';
+
+export async function getStaticPaths() {
+  const products = await getProducts();
+  return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+}
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Shop', href: '/shop' },
+  { label: product.title },
+];
+
+const keyDetails = [
+  { label: 'Condition', value: product.condition },
+  { label: 'Size', value: product.size },
+  { label: 'Fit', value: product.fit },
+  { label: 'Category', value: product.category },
+].filter((detail) => detail.value);
+
+const itemClass = accordionItemVariants({ variant: 'default' });
+const summaryClass = cn(accordionTriggerVariants({ size: 'lg' }), 'cursor-pointer list-none text-lg font-bold [&::-webkit-details-marker]:hidden');
+---
+
+<PageLayout title={`${product.title} | Shop`} description={product.description?.substring(0, 160)}>
+
+  <div class="border-b border-border bg-background-secondary py-4">
+    <div class="container max-w-7xl">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+  </div>
+
+  <Section>
+    <div class="grid grid-cols-1 items-start gap-10 md:gap-16 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_450px]">
+      <ProductGallery title={product.title} images={product.images} />
+
+      <div class="flex w-full flex-col space-y-10 lg:sticky lg:top-24">
+        <div class="space-y-4">
+          <span class="inline-flex items-center gap-2 rounded-full border border-border bg-background-secondary px-3 py-1 text-sm font-semibold text-foreground">
+            <StoreIcon store={product.storeName} />
+            {product.storeName}
+          </span>
+          <h1 class="text-2xl font-bold leading-tight tracking-tight text-foreground md:text-3xl lg:text-4xl">{product.title}</h1>
+          <p class="text-2xl font-bold text-foreground md:text-3xl">{product.price}</p>
+        </div>
+
+        <a
+          href={product.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="shop-button flex w-full items-center justify-center gap-2 rounded-xl py-4 text-lg font-bold text-white shadow-md hover-lift outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          Buy on {product.storeName}
+          <span class="sr-only">(opens in a new tab)</span>
+          <Icon name="external-link" size="md" />
+        </a>
+
+        {product.features && product.features.length > 0 && (
+          <div class="space-y-4">
+            <h2 class="text-lg font-bold text-foreground">Product features</h2>
+            <ul class="space-y-3">
+              {product.features.map((feature) => (
+                <li class="flex items-start gap-3 text-foreground-muted">
+                  <Icon name="check" size="md" class="mt-0.5 shrink-0 text-accent" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div class="border-t border-border">
+          {keyDetails.length > 0 && (
+            <details open class={itemClass}>
+              <summary class={summaryClass}>
+                Key Details
+                <Icon name="chevron-down" size="sm" class="product-chevron shrink-0 text-foreground-muted transition-transform duration-200" />
+              </summary>
+              <dl class="grid grid-cols-2 gap-x-4 gap-y-6 pb-5">
+                {keyDetails.map((detail) => (
+                  <div>
+                    <dt class="mb-1 text-sm font-semibold text-foreground">{detail.label}</dt>
+                    <dd class="text-sm text-foreground-muted">{detail.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </details>
+          )}
+
+          {product.description && (
+            <details class={itemClass}>
+              <summary class={summaryClass}>
+                Description
+                <Icon name="chevron-down" size="sm" class="product-chevron shrink-0 text-foreground-muted transition-transform duration-200" />
+              </summary>
+              <p class="whitespace-pre-wrap pb-5 leading-relaxed text-foreground-muted">{product.description}</p>
+            </details>
+          )}
+
+          {product.materials && product.materials.length > 0 && (
+            <details class={itemClass}>
+              <summary class={summaryClass}>
+                Materials
+                <Icon name="chevron-down" size="sm" class="product-chevron shrink-0 text-foreground-muted transition-transform duration-200" />
+              </summary>
+              <p class="pb-5 text-foreground-muted">{product.materials.join(', ')}</p>
+            </details>
+          )}
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <SiteCta />
+</PageLayout>
+
+<style>
+  .shop-button {
+    background-image: var(--shop-gradient);
+  }
+
+  details[open] > summary :global(.product-chevron) {
+    transform: rotate(180deg);
+  }
+</style>
