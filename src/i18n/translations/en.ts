@@ -2,7 +2,7 @@
  * Site copy — English (default locale).
  *
  * This file is yours: upgrades never overwrite it. Put page copy here and use
- * it with `const t = useTranslations(locale); t('home.hero.title')`.
+ * it with `const t = useTranslations(locale); t('blog.lead')`.
  * Any key from src/i18n/ui.ts can also be overridden here.
  *
  * Other locales live next to this file (es.ts, fr.ts, …). Missing keys fall
@@ -14,11 +14,6 @@ const en = {
   },
 
   meta: {
-    home: {
-      title: 'The Complete Astro Starter',
-      description:
-        'Design tokens, accessible components, SEO, and i18n configured from the first commit. Velocity ships what other starters leave as homework.',
-    },
     about: {
       title: 'About Us',
       description: 'Learn about Velocity and the team behind it.',
@@ -26,19 +21,6 @@ const en = {
     contact: {
       title: 'Contact Us',
       description: 'Get in touch with the Velocity team.',
-    },
-  },
-
-  home: {
-    hero: {
-      badge: 'v2.0 is live — now on Astro 7',
-      title: 'Your next site',
-      titleHighlight: 'starts here.',
-      description:
-        'Design tokens, accessible components, SEO, and i18n configured from the first commit. Velocity ships what other starters leave as homework.',
-      docs: 'View Docs',
-      github: 'View on GitHub',
-      socialProof: 'Shipped to production weekly.',
     },
   },
 

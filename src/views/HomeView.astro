@@ -1,43 +1,150 @@
 ---
 /**
- * Home page (starter). Replace this with your own content.
- * Rendered by src/pages/index.astro and src/pages/[lang]/index.astro.
+ * Home page (velocity-allow-hardcoded: this site has one language, English)
+ * Rendered by src/pages/index.astro.
  */
-import PageLayout from '@/layouts/PageLayout.astro';
-import Button from '@/components/ui/form/Button/Button.astro';
+import LandingLayout from '@/layouts/LandingLayout.astro';
+import Section from '@/components/patterns/Section.astro';
+import Card from '@/components/ui/data-display/Card/Card.astro';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
-import siteConfig from '@/config/site.config';
-import { localizeRoute, useTranslations, type Locale } from '@/i18n';
+import HomeCarousel from '@/components/site/HomeCarousel.astro';
+import QuickLinkCard from '@/components/site/QuickLinkCard.astro';
+import SiteCta from '@/components/site/SiteCta.astro';
+import { getPosts, getPostUrl } from '@/lib/blog';
+import type { Locale } from '@/i18n';
+
+import shopImg from '@/assets/images/home/card-shop.jpg';
+import photoImg from '@/assets/images/home/card-photography.jpg';
+import contactImg from '@/assets/images/home/card-contact.png';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
-const t = useTranslations(locale);
-const [before, after] = t('starter.description').split('{file}');
+
+const description =
+  'Brighton and Co is a personal website and hobby project, maintained by me (Harry B). It serves as the place to dive deeper into my hobby of website development, as well as a way to showcase my interests.';
+
+const quickLinks = [
+  {
+    href: '/shop',
+    image: shopImg,
+    icon: 'handbag',
+    title: 'SHOP: B&Co',
+    text: 'Browse the B&Co Vinted and eBay inventories — a curated variety of pre-loved items and tech.',
+    action: 'Visit Shop',
+    actionDetail: 'for B&Co inventories',
+  },
+  {
+    href: '/photography',
+    image: photoImg,
+    icon: 'camera',
+    title: 'Photography',
+    text: 'Explore my gallery of high-resolution, original photography.',
+    action: 'View Gallery',
+    actionDetail: 'of high-resolution photography',
+  },
+  {
+    href: '/contact',
+    image: contactImg,
+    icon: 'mail',
+    title: 'Get in Touch',
+    text: 'Have a question regarding an item, or just want to chat? Send me a message.',
+    action: 'Contact Me',
+    actionDetail: 'via our messaging form',
+  },
+];
+
+const features = [
+  'Completely personalised by me, Harry B.',
+  'Specially selected products from SHOP: B&Co Vinted and eBay.',
+  'High-resolution, original digital photography',
+];
+
+// The 3 newest posts tagged "Site Updates"
+const siteUpdates = (await getPosts(locale))
+  .filter((post) => post.data.tags.includes('Site Updates'))
+  .slice(0, 3)
+  .map((post) => {
+    const version = post.data.title.match(/Version\s+([\d.]+)/i)?.[1];
+    return {
+      label: version ? `B&Co V${version}` : 'Update',
+      date: post.data.publishedAt,
+      title: post.data.title,
+      description: post.data.description,
+      href: getPostUrl(post),
+    };
+  });
 ---
 
-<PageLayout title={t('starter.title')} description={siteConfig.description} searchable={false}>
-  <section class="py-24 md:py-32">
-    <div class="mx-auto max-w-3xl px-6 text-center">
-      <h1 class="font-display text-foreground text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-        {t('starter.heading')} <span class="text-brand-500">{siteConfig.name}</span>
-      </h1>
-      <p class="text-foreground-muted mx-auto mt-6 max-w-2xl text-lg">
-        {before}<code class="bg-secondary text-foreground rounded px-2 py-1 text-sm">src/views/HomeView.astro</code>{after}
-      </p>
-      <p class="text-foreground-muted mx-auto mt-3 max-w-2xl">{t('starter.agent')}</p>
-      <div class="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-        <Button href={localizeRoute('blog', locale)} size="lg">
-          {t('starter.readBlog')}
-          <Icon name="arrow-right" size="sm" />
-        </Button>
-        <Button href="https://docs.astro.build" target="_blank" variant="outline" size="lg">
-          {t('starter.astroDocs')}
-          <Icon name="external-link" size="sm" />
-        </Button>
-      </div>
+<LandingLayout title="Welcome to Brighton and Co" description={description}>
+  <HomeCarousel />
+
+  <Section id="explore" title="Explore Brighton and Co" lead="Choose below to get started">
+    <ul class="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
+      {quickLinks.map((link) => (
+        <li><QuickLinkCard {...link} /></li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section tone="secondary" class="border-t border-border">
+    <div class="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
+      <Card padding="lg" class="flex flex-col justify-between rounded-3xl lg:col-span-5">
+        <div>
+          <Badge pill pulse class="mb-6">Find out a bit about B&Co</Badge>
+          <h2 class="mb-4 text-2xl font-bold tracking-tight text-foreground md:text-3xl">What is B&Co?</h2>
+          <p class="mb-6 text-sm leading-relaxed text-foreground-muted md:text-base">
+            Brighton and Co (B&Co) is a personal website and hobby project, maintained by me (Harry B). It serves as the place to dive deeper into my hobby of website development, as well as a way to showcase my interests.
+          </p>
+          <ul class="mb-8 space-y-3 text-sm text-foreground" aria-label="Key features of B&Co">
+            {features.map((feature) => (
+              <li class="flex items-start gap-2">
+                <Icon name="check" size="sm" class="mt-0.5 shrink-0 text-accent" />
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="flex items-center justify-between border-t border-border/50 pt-6">
+          <span class="font-mono text-xs text-foreground-muted">Site Status: Ready!</span>
+          <a href="/about" class="inline-flex items-center gap-1 text-xs font-bold text-accent hover:underline">
+            Read More <span class="sr-only">about Brighton and Co</span>
+            <Icon name="arrow-right" size="xs" />
+          </a>
+        </div>
+      </Card>
+
+      <Card padding="lg" class="rounded-3xl lg:col-span-7">
+        <div class="mb-6 flex items-center gap-2 border-b border-border/50 pb-4">
+          <Icon name="bell" size="sm" class="text-accent" />
+          <h2 class="text-lg font-bold text-foreground">Site Updates</h2>
+        </div>
+        <ul class="divide-y divide-border/50">
+          {siteUpdates.map((update) => (
+            <li>
+              <a href={update.href} class="group flex flex-col gap-2 rounded-lg py-4 outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <span class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="rounded-full border border-accent/20 bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent">{update.label}</span>
+                  <time datetime={update.date.toISOString()} class="text-xs font-medium text-foreground-muted">
+                    {update.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </time>
+                </span>
+                <h3 class="text-base font-semibold text-foreground underline-offset-4 group-hover:underline">{update.title}</h3>
+                <p class="text-sm leading-relaxed text-foreground-muted">{update.description}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a href="/blog" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-accent hover:underline">
+          View all updates <span class="sr-only">on the blog</span>
+          <Icon name="arrow-right" size="xs" />
+        </a>
+      </Card>
     </div>
-  </section>
-</PageLayout>
+  </Section>
+
+  <SiteCta />
+</LandingLayout>

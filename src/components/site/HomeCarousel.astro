@@ -1,0 +1,269 @@
+---
+/**
+ * HomeCarousel (velocity-allow-hardcoded: this site has one language, English)
+ * The full-screen home hero: three slides of text that rotate every 8 seconds,
+ * each with its own background photo that fades in.
+ *
+ * - The slides sit in a CSS scroll-snap row, so swipe and trackpad scroll work
+ *   with no drag code.
+ * - The progress bar is a CSS animation. When it ends, the next slide shows, so
+ *   there is no timer. It stops (CSS only) while the pointer or keyboard focus is
+ *   in the carousel, and the pause button stops it, and the slow zoom, for good.
+ * - With reduced motion: no autoplay, no zoom and no fade (WCAG 2.2.2).
+ */
+import { Image } from 'astro:assets';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+import welcomeBg from '@/assets/images/home/hero-welcome.jpg';
+import shopBg from '@/assets/images/home/hero-shop.jpg';
+import photoBg from '@/assets/images/home/hero-photography.jpg';
+
+const backgrounds = [welcomeBg, shopBg, photoBg];
+const link =
+  'inline-flex items-center justify-center gap-2 rounded-full border border-white/25 bg-white/15 px-6 py-3 font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white';
+const control =
+  'grid size-10 place-items-center rounded-full text-white transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white';
+const heading = 'mb-4 text-3xl font-bold tracking-tight text-white drop-shadow-sm md:text-5xl';
+const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
+---
+
+<section class="home-hero relative flex h-[100dvh] w-full items-center justify-center overflow-hidden bg-black" aria-label="Introduction" data-home-hero>
+  <!-- Background photos: only the first loads at the start, the others after the page has loaded -->
+  <div class="pointer-events-none absolute inset-0">
+    {backgrounds.map((bg, index) => (
+      <Image
+        src={bg}
+        alt=""
+        hidden={index > 0}
+        loading={index === 0 ? 'eager' : 'lazy'}
+        fetchpriority={index === 0 ? 'high' : 'low'}
+        format="avif"
+        quality={50}
+        widths={[400, 640, 1024, 1366, 1920]}
+        sizes="100vw"
+        class:list={['home-bg absolute inset-0 h-full w-full object-cover', index === 0 && 'is-active']}
+        data-home-bg
+      />
+    ))}
+  </div>
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90 backdrop-blur-[2px]"></div>
+
+  <div class="relative z-10 mx-auto mt-16 w-full max-w-4xl px-4 sm:px-6 md:mt-0">
+    <div class="home-carousel" role="region" aria-roledescription="carousel" aria-label="Highlights" data-home-carousel>
+      <div class="relative overflow-hidden rounded-3xl border border-white/15 bg-black/35 text-center shadow-2xl backdrop-blur-xl">
+        <div class="home-track" aria-live="off" data-home-track>
+          <div class="home-slide" role="group" aria-roledescription="slide" aria-label="1 of 3">
+            <h1 class={heading}>Welcome to <span class="text-brand-400">B&Co</span></h1>
+            <p class={text}>Brighton and Co - A personal project made by Harry B, showcasing my photography and other interests.</p>
+            <a href="/about" class={link}>
+              Learn More <span class="sr-only">about Brighton and Co</span>
+              <Icon name="arrow-right" size="sm" />
+            </a>
+          </div>
+
+          <div class="home-slide" role="group" aria-roledescription="slide" aria-label="2 of 3">
+            <h2 class={heading}><span class="shop-text">SHOP</span>: B&Co</h2>
+            <p class={text}>Browse a selection of high quality pre-loved clothing and technology from SHOP: B&Co Vinted and eBay.</p>
+            <p class={text}>All items are packaged with care and posted securely. <span class="sr-only">All items are in excellent condition and shipped with care</span></p>
+            <a href="/shop" class={link}>
+              Visit the Shop <span class="sr-only">for B&Co inventories</span>
+              <Icon name="handbag" size="sm" />
+            </a>
+          </div>
+
+          <div class="home-slide" role="group" aria-roledescription="slide" aria-label="3 of 3">
+            <h2 class={heading}>My <span class="text-brand-400">Photography</span></h2>
+            <p class={text}>A dedicated gallery space showcasing my passion for photography, featuring high-resolution landscapes and other moments.</p>
+            <a href="/photography" class={link}>
+              View Gallery <span class="sr-only">of high-resolution photography</span>
+              <Icon name="camera" size="sm" />
+            </a>
+          </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 h-1.5 w-full bg-white/10">
+          <div class="home-progress h-full w-0 bg-brand-400" data-home-progress></div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-center">
+        <div class="flex items-center gap-1 rounded-full border border-white/15 bg-black/40 p-1 backdrop-blur-md">
+          <button type="button" class={control} aria-label="Previous slide" data-home-prev>
+            <Icon name="chevron-left" size="md" />
+          </button>
+          <button type="button" class={control} aria-label="Pause carousel" data-home-pause>
+            <span class="grid place-items-center" data-home-pause-icon><Icon name="pause" size="sm" /></span>
+            <span class="hidden place-items-center" data-home-play-icon><Icon name="play" size="sm" /></span>
+          </button>
+          <button type="button" class={control} aria-label="Next slide" data-home-next>
+            <Icon name="chevron-right" size="md" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a
+    href="#explore"
+    class="absolute bottom-8 left-1/2 z-20 grid size-12 -translate-x-1/2 place-items-center rounded-full border border-white/25 bg-white/15 text-white backdrop-blur-md transition-colors hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+    aria-label="Scroll down to explore more"
+  >
+    <Icon name="chevron-down" size="md" />
+  </a>
+</section>
+
+<style>
+  .home-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+
+  .home-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .home-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  @media (min-width: 768px) {
+    .home-slide {
+      padding: 4rem;
+    }
+  }
+
+  .shop-text {
+    background-image: var(--shop-gradient-bright);
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Background photos: the active one fades in, with a slow zoom */
+  .home-bg {
+    opacity: 0;
+    transform: scale(1.05);
+    transition: opacity 1s ease-in-out;
+    animation: home-zoom 30s ease-in-out infinite;
+  }
+
+  .home-bg.is-active {
+    opacity: 1;
+  }
+
+  @keyframes home-zoom {
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  /* The progress bar: when its animation ends, the script shows the next slide */
+  .home-progress.is-running {
+    animation: home-progress 8s linear forwards;
+  }
+
+  @keyframes home-progress {
+    to {
+      width: 100%;
+    }
+  }
+
+  /* Stop while the pointer or keyboard focus is in the carousel, and when paused */
+  .home-carousel:hover .home-progress,
+  .home-carousel:focus-within .home-progress,
+  [data-paused] .home-progress,
+  [data-paused] .home-bg {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-bg {
+      animation: none;
+    }
+  }
+
+  /* The global reduced-motion rule (in the utilities layer) ends animations at once.
+     After Play, keep the full 8 seconds. It must be in the same layer to win. */
+  @layer utilities {
+    @media (prefers-reduced-motion: reduce) {
+      .home-progress.is-running {
+        animation-duration: 8s !important;
+      }
+    }
+  }
+</style>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('[data-home-hero]');
+  const track = hero?.querySelector<HTMLElement>('[data-home-track]');
+  const progress = hero?.querySelector<HTMLElement>('[data-home-progress]');
+
+  if (hero && track && progress) {
+    const slides = [...track.children] as HTMLElement[];
+    const backgrounds = [...hero.querySelectorAll<HTMLImageElement>('[data-home-bg]')];
+    const pauseButton = hero.querySelector<HTMLButtonElement>('[data-home-pause]');
+    let index = 0;
+
+    // Start the 8-second progress bar again from zero
+    const restartProgress = () => {
+      progress.classList.remove('is-running');
+      void progress.offsetWidth;
+      progress.classList.add('is-running');
+    };
+
+    // Only the shown slide can be read by screen readers or reached with Tab
+    const show = (i: number) => {
+      index = i;
+      slides.forEach((slide, n) => { slide.inert = n !== i; });
+      backgrounds.forEach((bg, n) => {
+        if (n === i) bg.hidden = false;
+        bg.classList.toggle('is-active', n === i);
+      });
+      restartProgress();
+    };
+
+    // Go to a slide; after the last slide comes the first. A wrap jumps directly,
+    // so it does not pass through the middle slide.
+    const go = (i: number) => {
+      const next = (i + slides.length) % slides.length;
+      track.scrollTo({ left: next * track.clientWidth, behavior: next === i ? 'smooth' : 'instant' });
+    };
+
+    track.addEventListener('scroll', () => {
+      const i = Math.round(track.scrollLeft / track.clientWidth);
+      if (i !== index) show(i);
+    }, { passive: true });
+
+    progress.addEventListener('animationend', () => go(index + 1));
+    hero.querySelector('[data-home-prev]')?.addEventListener('click', () => go(index - 1));
+    hero.querySelector('[data-home-next]')?.addEventListener('click', () => go(index + 1));
+
+    const setPaused = (paused: boolean) => {
+      hero.toggleAttribute('data-paused', paused);
+      pauseButton?.setAttribute('aria-label', paused ? 'Play carousel' : 'Pause carousel');
+      hero.querySelector('[data-home-pause-icon]')?.classList.toggle('hidden', paused);
+      hero.querySelector('[data-home-play-icon]')?.classList.toggle('hidden', !paused);
+      // Screen readers announce slide changes only while the carousel does not rotate by itself
+      track.setAttribute('aria-live', paused ? 'polite' : 'off');
+    };
+    pauseButton?.addEventListener('click', () => setPaused(!hero.hasAttribute('data-paused')));
+
+    // Load the other background photos after the page has loaded
+    const reveal = () => backgrounds.forEach((bg) => { bg.hidden = false; });
+    if (document.readyState === 'complete') reveal();
+    else window.addEventListener('load', reveal, { once: true });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setPaused(true);
+    show(0);
+  }
+</script>

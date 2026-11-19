@@ -147,4 +147,6 @@
    #FF0055 -> #FF2E43, darkened just enough for white text to pass AA (4.62:1). */
 :root {
   --shop-gradient: linear-gradient(135deg, #e8004d, #e1273a);
+  /* The live colours, for text on a dark background (the home hero) */
+  --shop-gradient-bright: linear-gradient(135deg, #ff0055, #ff2e43);
 }
