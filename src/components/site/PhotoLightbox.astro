@@ -31,13 +31,15 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
     <Icon name="x" size="md" />
   </button>
 
+  <!-- Phone: one bar under the photo. From md: previous / next at the sides and the
+       counter at the top left, so the photo can use almost the full window height. -->
   {photos.length > 1 && (
-    <div class="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-black/60 p-1.5 text-white">
-      <button type="button" class={round} aria-label="Previous image" data-lightbox-prev>
+    <div class="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-black/60 p-1.5 text-white md:contents">
+      <button type="button" class:list={[round, 'md:absolute md:left-4 md:top-1/2 md:-translate-y-1/2']} aria-label="Previous image" data-lightbox-prev>
         <Icon name="chevron-left" size="md" />
       </button>
-      <span class="px-2 text-sm font-bold tabular-nums tracking-wider" aria-live="polite" data-lightbox-count></span>
-      <button type="button" class={round} aria-label="Next image" data-lightbox-next>
+      <span class="px-2 text-sm font-bold tabular-nums tracking-wider text-white md:absolute md:left-4 md:top-4 md:rounded-full md:bg-black/60 md:px-3 md:py-2.5" aria-live="polite" data-lightbox-count></span>
+      <button type="button" class:list={[round, 'md:absolute md:right-4 md:top-1/2 md:-translate-y-1/2']} aria-label="Next image" data-lightbox-next>
         <Icon name="chevron-right" size="md" />
       </button>
     </div>
@@ -94,6 +96,19 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
     height: auto;
     object-fit: contain;
     user-select: none;
+  }
+
+  /* From md the controls sit at the sides and the top, so the photo gets
+     (almost) the full window height, with room at the sides for the buttons */
+  @media (min-width: 768px) {
+    .lightbox-slide {
+      padding: 1rem 5rem;
+    }
+
+    .lightbox-slide img {
+      max-width: calc(100vw - 10rem);
+      max-height: calc(100dvh - 2rem);
+    }
   }
 
   /* Keep the page behind still while the viewer is open */
