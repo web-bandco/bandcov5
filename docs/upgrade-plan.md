@@ -105,7 +105,7 @@
 - [x] Photography, holiday galleries, holiday gallery (holidays collection in src/config/collections.ts; PhotoCarousel, new CSS-only PhotoGallery and HolidayCard; no React; 39 photos resized 125 MB to 29 MB)
 - [x] Shop and product pages (Sanity read with plain fetch, no packages; filters and sort with Velocity Sheet, Checkbox and Select and one short script; CSS-only product gallery; shop red darkened for AA; no React)
 - [x] Home (rotating hero on CSS scroll snap with pause, previous and next; 3 quick-link cards; What is B&Co; 3 newest Site Updates; SiteCta; no React; 6 photos 19.5 MB to 4.2 MB)
-- [ ] Search page on
+- [x] Search page on (Velocity Pagefind page; search icon in the header and Search in the footer Quick Links; result links without the end slash; controls and the CTA marked data-pagefind-ignore; English text in en.ts; 23 pages indexed, not Home, Blog list, Search or 404)
 - [ ] Preview checked on PC and phone: https://upgrade-velocity-2-6-bandcov5.hbemails.workers.dev
 
 ### Phase 5: Analytics, consent and security

@@ -21,10 +21,13 @@ import pkg from '../../../package.json';
 
 type Props = ComponentProps<typeof Footer>;
 
-const quickLinks = getNavItems().map((item) => ({
-  label: item.label,
-  href: item.route ? `/${routes[item.route].path}` : (item.href ?? '/'),
-}));
+const quickLinks = [
+  ...getNavItems().map((item) => ({
+    label: item.label,
+    href: item.route ? `/${routes[item.route].path}` : (item.href ?? '/'),
+  })),
+  { label: 'Search', href: `/${routes.search.path}` },
+];
 
 const connect = [
   { label: 'Twitter', href: 'https://twitter.com/itsharryb_', icon: 'twitter' },

@@ -43,7 +43,7 @@ const photos = images.map((image, index) => {
           data-lightbox-open={index}
           class="block w-full cursor-pointer overflow-hidden rounded-2xl border border-border bg-background-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <span class="sr-only">View full image: </span>
+          <span class="sr-only" data-pagefind-ignore>View full image: </span>
           <img
             src={photo.src}
             srcset={photo.srcset}

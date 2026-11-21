@@ -61,7 +61,7 @@ const sortOptions = [
           <h2 class="font-display text-4xl leading-[1.05] tracking-tight text-balance text-foreground">View What's in Store</h2>
           <p class="mt-4 text-lg text-foreground-secondary">Browse all available items below</p>
         </div>
-        <div class="flex items-end gap-3">
+        <div class="flex items-end gap-3" data-pagefind-ignore>
           <Button variant="outline" data-sheet-open="shop-filters" class="h-11 shrink-0">
             <Icon name="sliders-horizontal" size="sm" />
             Filters
@@ -71,6 +71,8 @@ const sortOptions = [
         </div>
       </div>
 
+      <!-- Controls and messages are not search content (data-pagefind-ignore) -->
+      <div data-pagefind-ignore>
       <Sheet id="shop-filters" title="Filter" description="Refine the B&Co catalog.">
         <div class="space-y-8">
           {filterGroups.map((group) => (
@@ -88,6 +90,7 @@ const sortOptions = [
           <Button variant="brand" class="flex-1" data-sheet-close>Show results</Button>
         </div>
       </Sheet>
+      </div>
 
       <p class="sr-only" role="status" aria-live="polite" data-shop-status></p>
 
@@ -95,7 +98,7 @@ const sortOptions = [
         {products.map((product, index) => <ProductCard product={product} priority={index < 4} />)}
       </ul>
 
-      <div class="hidden flex-col items-center justify-center rounded-3xl border border-border/50 bg-background-secondary px-4 py-24 text-center" data-shop-empty>
+      <div class="hidden flex-col items-center justify-center rounded-3xl border border-border/50 bg-background-secondary px-4 py-24 text-center" data-shop-empty data-pagefind-ignore>
         <div class="mb-6 grid size-16 place-items-center rounded-2xl bg-brand-500/10">
           <Icon name="package-x" size="lg" class="text-accent" />
         </div>

@@ -197,6 +197,13 @@ const en = {
       twitter: 'Twitter',
     },
   },
+
+  // Search page (overrides src/i18n/ui.ts)
+  search: {
+    description: 'Search the blog, photography, shop and pages.',
+    placeholder: 'Search posts, photos and the shop…',
+    unavailable: 'Search is not available at the moment. Please try again later.',
+  },
 };
 
 export type SiteStrings = typeof en;

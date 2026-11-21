@@ -124,7 +124,8 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
         const li = document.createElement('li');
         li.className = 'rounded-lg border border-border p-4 transition-colors hover:bg-background-secondary';
         const a = document.createElement('a');
-        a.href = result.url;
+        // Pagefind gives /page/; this site's URLs have no end slash (trailingSlash: 'never')
+        a.href = result.url.replace(/(.)\/$/, '$1');
         a.className = 'font-display text-lg font-semibold text-foreground hover:text-brand-600';
         a.textContent = result.meta.title ?? result.url;
         const p = document.createElement('p');
