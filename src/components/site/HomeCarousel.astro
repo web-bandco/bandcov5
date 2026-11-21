@@ -5,10 +5,14 @@
  * each with its own background photo that fades in.
  *
  * - The slides sit in a CSS scroll-snap row, so swipe and trackpad scroll work
- *   with no drag code.
+ *   with no drag code. The script adds a hidden copy of the last slide before the
+ *   first and of the first slide after the last, so the row loops continuously.
  * - The progress bar is a CSS animation. When it ends, the next slide shows, so
- *   there is no timer. It stops (CSS only) while the pointer or keyboard focus is
- *   in the carousel, and the pause button stops it, and the slow zoom, for good.
+ *   there is no timer. It stops while keyboard focus is in the carousel, and the
+ *   pause button stops it, and the slow zoom, until Play.
+ * - Controls (as on V5): one pill in the bottom-right corner of the card. A phone
+ *   shows only the pause button (visitors swipe). From md the arrows open when the
+ *   pointer or keyboard focus is on the carousel.
  * - With reduced motion: no autoplay, no zoom and no fade (WCAG 2.2.2).
  */
 import { Image } from 'astro:assets';
@@ -20,9 +24,7 @@ import photoBg from '@/assets/images/home/hero-photography.jpg';
 const backgrounds = [welcomeBg, shopBg, photoBg];
 const link =
   'inline-flex items-center justify-center gap-2 rounded-full border border-white/25 bg-white/15 px-6 py-3 font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white';
-const control =
-  'grid size-10 place-items-center rounded-full text-white transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white';
-const heading = 'mb-4 text-3xl font-bold tracking-tight text-white drop-shadow-sm md:text-5xl';
+const heading = 'mb-4 text-4xl font-bold tracking-tight text-white drop-shadow-sm md:text-6xl lg:text-7xl';
 const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
 ---
 
@@ -47,57 +49,55 @@ const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
   </div>
   <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90 backdrop-blur-[2px]"></div>
 
-  <div class="relative z-10 mx-auto mt-16 w-full max-w-4xl px-4 sm:px-6 md:mt-0">
-    <div class="home-carousel" role="region" aria-roledescription="carousel" aria-label="Highlights" data-home-carousel>
-      <div class="relative overflow-hidden rounded-3xl border border-white/15 bg-black/35 text-center shadow-2xl backdrop-blur-xl">
-        <div class="home-track" aria-live="off" data-home-track>
-          <div class="home-slide" role="group" aria-roledescription="slide" aria-label="1 of 3">
-            <h1 class={heading}>Welcome to <span class="text-brand-400">B&Co</span></h1>
-            <p class={text}>Brighton and Co - A personal project made by Harry B, showcasing my photography and other interests.</p>
-            <a href="/about" class={link}>
-              Learn More <span class="sr-only">about Brighton and Co</span>
-              <Icon name="arrow-right" size="sm" />
-            </a>
-          </div>
-
-          <div class="home-slide" role="group" aria-roledescription="slide" aria-label="2 of 3">
-            <h2 class={heading}><span class="shop-text">SHOP</span>: B&Co</h2>
-            <p class={text}>Browse a selection of high quality pre-loved clothing and technology from SHOP: B&Co Vinted and eBay.</p>
-            <p class={text}>All items are packaged with care and posted securely. <span class="sr-only">All items are in excellent condition and shipped with care</span></p>
-            <a href="/shop" class={link}>
-              Visit the Shop <span class="sr-only">for B&Co inventories</span>
-              <Icon name="handbag" size="sm" />
-            </a>
-          </div>
-
-          <div class="home-slide" role="group" aria-roledescription="slide" aria-label="3 of 3">
-            <h2 class={heading}>My <span class="text-brand-400">Photography</span></h2>
-            <p class={text}>A dedicated gallery space showcasing my passion for photography, featuring high-resolution landscapes and other moments.</p>
-            <a href="/photography" class={link}>
-              View Gallery <span class="sr-only">of high-resolution photography</span>
-              <Icon name="camera" size="sm" />
-            </a>
-          </div>
+  <div class="relative z-10 mx-auto mt-16 w-full max-w-5xl px-4 sm:px-6 md:mt-0">
+    <div class="home-carousel relative overflow-hidden rounded-3xl border border-white/15 bg-black/35 text-center shadow-2xl backdrop-blur-xl" role="region" aria-roledescription="carousel" aria-label="Highlights" data-home-carousel>
+      <div class="home-track" aria-live="off" data-home-track>
+        <div class="home-slide" role="group" aria-roledescription="slide" aria-label="1 of 3">
+          <h1 class={heading}>Welcome to <span class="text-brand-400">B&Co</span></h1>
+          <p class={text}>Brighton and Co - A personal project made by Harry B, showcasing my photography and other interests.</p>
+          <a href="/about" class={link}>
+            Learn More <span class="sr-only">about Brighton and Co</span>
+            <Icon name="arrow-right" size="sm" />
+          </a>
         </div>
 
-        <div class="absolute bottom-0 left-0 h-1.5 w-full bg-white/10">
-          <div class="home-progress h-full w-0 bg-brand-400" data-home-progress></div>
+        <div class="home-slide" role="group" aria-roledescription="slide" aria-label="2 of 3">
+          <h2 class={heading}><span class="shop-text">SHOP</span>: B&Co</h2>
+          <p class={text}>Browse a selection of high quality pre-loved clothing and technology from SHOP: B&Co Vinted and eBay.</p>
+          <a href="/shop" class={link}>
+            Visit the Shop <span class="sr-only">for B&Co inventories</span>
+            <Icon name="handbag" size="sm" />
+          </a>
+        </div>
+
+        <div class="home-slide" role="group" aria-roledescription="slide" aria-label="3 of 3">
+          <h2 class={heading}>My <span class="text-brand-400">Photography</span></h2>
+          <p class={text}>A dedicated gallery space showcasing my passion for photography, featuring high-resolution landscapes and other moments.</p>
+          <a href="/photography" class={link}>
+            View Gallery <span class="sr-only">of high-resolution photography</span>
+            <Icon name="camera" size="sm" />
+          </a>
         </div>
       </div>
 
-      <div class="mt-4 flex justify-center">
-        <div class="flex items-center gap-1 rounded-full border border-white/15 bg-black/40 p-1 backdrop-blur-md">
-          <button type="button" class={control} aria-label="Previous slide" data-home-prev>
+      <!-- Controls: centred on the pause button, so the pause button never moves when the arrows open -->
+      <div class="home-pill-anchor">
+        <div class="home-pill">
+          <button type="button" class="home-pill-btn home-pill-arrow" aria-label="Previous slide" data-home-prev>
             <Icon name="chevron-left" size="md" />
           </button>
-          <button type="button" class={control} aria-label="Pause carousel" data-home-pause>
+          <button type="button" class="home-pill-btn" aria-label="Pause carousel" data-home-pause>
             <span class="grid place-items-center" data-home-pause-icon><Icon name="pause" size="sm" /></span>
             <span class="hidden place-items-center" data-home-play-icon><Icon name="play" size="sm" /></span>
           </button>
-          <button type="button" class={control} aria-label="Next slide" data-home-next>
+          <button type="button" class="home-pill-btn home-pill-arrow" aria-label="Next slide" data-home-next>
             <Icon name="chevron-right" size="md" />
           </button>
         </div>
+      </div>
+
+      <div class="absolute bottom-0 left-0 h-1.5 w-full bg-white/10">
+        <div class="home-progress h-full w-0 bg-brand-400" data-home-progress></div>
       </div>
     </div>
   </div>
@@ -132,14 +132,14 @@ const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem 2rem;
+    padding: 3rem 2rem 4.5rem;
     scroll-snap-align: start;
     min-width: 0;
   }
 
   @media (min-width: 768px) {
     .home-slide {
-      padding: 4rem;
+      padding: 5rem 4rem 5.5rem;
     }
   }
 
@@ -147,6 +147,75 @@ const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
     background-image: var(--shop-gradient-bright);
     background-clip: text;
     color: transparent;
+  }
+
+  /* Controls pill in the bottom-right corner of the card */
+  .home-pill-anchor {
+    position: absolute;
+    z-index: 30;
+    right: 2.5rem; /* 1rem gap + half the pause-only pill (48px) */
+    bottom: 1rem;
+    width: 0;
+  }
+
+  .home-pill {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border: 1px solid rgb(255 255 255 / 0.15);
+    border-radius: 9999px;
+    background: rgb(0 0 0 / 0.4);
+    backdrop-filter: blur(12px);
+    color: white;
+  }
+
+  .home-pill-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 150ms ease-out;
+  }
+
+  .home-pill-btn:hover {
+    background-color: rgb(255 255 255 / 0.15);
+  }
+
+  .home-pill-btn:focus-visible {
+    box-shadow: inset 0 0 0 2px white;
+  }
+
+  /* Phones: pause button only */
+  .home-pill-arrow {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .home-pill-anchor {
+      right: 5.5rem; /* 1.5rem gap + half the open pill (3 x 40px + 8px) */
+      bottom: 1.5rem;
+    }
+
+    .home-pill-arrow {
+      display: grid;
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: width 260ms ease-out, opacity 200ms ease-out, background-color 150ms ease-out;
+    }
+
+    .home-carousel:hover .home-pill-arrow,
+    .home-carousel:focus-within .home-pill-arrow {
+      width: 40px;
+      opacity: 1;
+    }
   }
 
   /* Background photos: the active one fades in, with a slow zoom */
@@ -178,9 +247,8 @@ const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
     }
   }
 
-  /* Stop while the pointer or keyboard focus is in the carousel, and when paused */
-  .home-carousel:hover .home-progress,
-  .home-carousel:focus-within .home-progress,
+  /* Stop while keyboard focus (not a mouse click) is in the carousel, and when paused */
+  .home-carousel:has(:focus-visible) .home-progress,
   [data-paused] .home-progress,
   [data-paused] .home-bg {
     animation-play-state: paused;
@@ -210,9 +278,34 @@ const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
 
   if (hero && track && progress) {
     const slides = [...track.children] as HTMLElement[];
+    const count = slides.length;
     const backgrounds = [...hero.querySelectorAll<HTMLImageElement>('[data-home-bg]')];
     const pauseButton = hero.querySelector<HTMLButtonElement>('[data-home-pause]');
-    let index = 0;
+
+    // Hidden copies at each end, so the row can keep moving in one direction.
+    // A copy is not a heading and cannot be reached by screen readers or Tab.
+    const copy = (slide: HTMLElement) => {
+      const clone = slide.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll('h1, h2').forEach((h) => {
+        const p = document.createElement('p');
+        p.className = h.className;
+        p.innerHTML = h.innerHTML;
+        h.replaceWith(p);
+      });
+      clone.setAttribute('aria-hidden', 'true');
+      clone.inert = true;
+      return clone;
+    };
+    track.prepend(copy(slides[count - 1]));
+    track.append(copy(slides[0]));
+
+    // Positions in the row: 0 = copy of the last slide, 1..count = real slides, count + 1 = copy of the first.
+    // `target` is where the last button press goes, so quick presses add up.
+    let position = 1;
+    let target = 1;
+    const real = (p: number) => (p - 1 + count) % count;
+    const smooth: ScrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+    const scrollToPosition = (p: number, behavior: ScrollBehavior) => track.scrollTo({ left: p * track.clientWidth, behavior });
 
     // Start the 8-second progress bar again from zero
     const restartProgress = () => {
@@ -222,8 +315,9 @@ const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
     };
 
     // Only the shown slide can be read by screen readers or reached with Tab
-    const show = (i: number) => {
-      index = i;
+    const show = (p: number) => {
+      position = p;
+      const i = real(p);
       slides.forEach((slide, n) => { slide.inert = n !== i; });
       backgrounds.forEach((bg, n) => {
         if (n === i) bg.hidden = false;
@@ -232,21 +326,42 @@ const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
       restartProgress();
     };
 
-    // Go to a slide; after the last slide comes the first. A wrap jumps directly,
-    // so it does not pass through the middle slide.
-    const go = (i: number) => {
-      const next = (i + slides.length) % slides.length;
-      track.scrollTo({ left: next * track.clientWidth, behavior: next === i ? 'smooth' : 'instant' });
+    // On a copy, jump (no animation) to the real slide it shows
+    const leaveCopy = () => {
+      const p = position === 0 ? count : position === count + 1 ? 1 : position;
+      if (p !== position) {
+        position = p;
+        scrollToPosition(p, 'instant');
+      }
+      return p;
     };
 
+    const go = (step: number) => {
+      if (target === position) target = leaveCopy();
+      target = Math.max(0, Math.min(count + 1, target + step));
+      scrollToPosition(target, smooth);
+    };
+
+    let settle = 0;
     track.addEventListener('scroll', () => {
-      const i = Math.round(track.scrollLeft / track.clientWidth);
-      if (i !== index) show(i);
+      const p = Math.round(track.scrollLeft / track.clientWidth);
+      if (real(p) !== real(position)) show(p);
+      else position = p;
+      clearTimeout(settle);
+      settle = window.setTimeout(() => { target = leaveCopy(); }, 120);
     }, { passive: true });
 
-    progress.addEventListener('animationend', () => go(index + 1));
-    hero.querySelector('[data-home-prev]')?.addEventListener('click', () => go(index - 1));
-    hero.querySelector('[data-home-next]')?.addEventListener('click', () => go(index + 1));
+    // Keep the slide in place when the width changes (not when a phone's address bar moves)
+    let width = track.clientWidth;
+    window.addEventListener('resize', () => {
+      if (track.clientWidth === width) return;
+      width = track.clientWidth;
+      scrollToPosition(position, 'instant');
+    });
+
+    progress.addEventListener('animationend', () => go(1));
+    hero.querySelector('[data-home-prev]')?.addEventListener('click', () => go(-1));
+    hero.querySelector('[data-home-next]')?.addEventListener('click', () => go(1));
 
     const setPaused = (paused: boolean) => {
       hero.toggleAttribute('data-paused', paused);
@@ -264,6 +379,7 @@ const text = 'mb-8 max-w-2xl text-lg text-white/90 drop-shadow-sm md:text-xl';
     else window.addEventListener('load', reveal, { once: true });
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setPaused(true);
-    show(0);
+    scrollToPosition(1, 'instant');
+    show(1);
   }
 </script>

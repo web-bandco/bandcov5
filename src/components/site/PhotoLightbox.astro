@@ -87,26 +87,25 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
     min-width: 0;
   }
 
-  /* Fit the screen, clear of the close button (top) and the controls (bottom) */
+  /* Every photo fills the same box, whatever its resolution (a small photo is
+     enlarged). On a phone the box is clear of the close button and the controls. */
   .lightbox-slide img {
-    max-width: calc(100vw - 2rem);
-    max-height: calc(100dvh - 10.5rem);
-    width: auto;
-    height: auto;
+    width: calc(100vw - 2rem);
+    height: calc(100dvh - 10.5rem);
     object-fit: contain;
     user-select: none;
   }
 
-  /* From md the photo uses (almost) the full window height. The bottom pill may
-     overlap it; the side margins keep the close button clear of the photo. */
+  /* From md the photo uses the full window height. The bottom pill may overlap it;
+     the side margins keep the close button clear of the photo. */
   @media (min-width: 768px) {
     .lightbox-slide {
-      padding: 1rem 4.5rem;
+      padding: 0 4.5rem;
     }
 
     .lightbox-slide img {
-      max-width: calc(100vw - 9rem);
-      max-height: calc(100dvh - 2rem);
+      width: calc(100vw - 9rem);
+      height: 100dvh;
     }
   }
 
@@ -144,7 +143,12 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
       load(index);
       if (count) count.textContent = `${index + 1} / ${images.length}`;
     };
-    const go = (i: number) => track.scrollTo({ left: Math.max(0, Math.min(images.length - 1, i)) * track.clientWidth });
+    // After the last photo comes the first (and before the first, the last): a wrap jumps directly
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const go = (i: number) => {
+      const next = (i + images.length) % images.length;
+      track.scrollTo({ left: next * track.clientWidth, behavior: next === i && !reduceMotion ? 'smooth' : 'instant' });
+    };
 
     gallery.querySelectorAll<HTMLElement>('[data-lightbox-open]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -167,9 +171,21 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
       if (event.key === 'ArrowLeft') { event.preventDefault(); go(index - 1); }
       if (event.key === 'ArrowRight') { event.preventDefault(); go(index + 1); }
     });
-    // A click on the dark area (not the photo or a button) closes the viewer
+    // A click on the dark area (not the photo or a button) closes the viewer. The photo
+    // box is larger than the photo (object-fit: contain), so check the photo itself.
+    const onPhoto = (img: HTMLImageElement, x: number, y: number) => {
+      const box = img.getBoundingClientRect();
+      const nw = img.naturalWidth || Number(img.getAttribute('width'));
+      const nh = img.naturalHeight || Number(img.getAttribute('height'));
+      const scale = Math.min(box.width / nw, box.height / nh);
+      const w = nw * scale;
+      const h = nh * scale;
+      return Math.abs(x - (box.left + box.width / 2)) <= w / 2 && Math.abs(y - (box.top + box.height / 2)) <= h / 2;
+    };
     dialog.addEventListener('click', (event) => {
-      if (event.target === dialog || (event.target as Element).classList.contains('lightbox-slide')) dialog.close();
+      const target = event.target as Element;
+      if (target === dialog || target.classList.contains('lightbox-slide')) dialog.close();
+      if (target instanceof HTMLImageElement && !onPhoto(target, event.clientX, event.clientY)) dialog.close();
     });
 
     // On close, the page carousel moves to the last photo shown
