@@ -19,7 +19,8 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
 ---
 
 <dialog class="lightbox" aria-label={label} data-lightbox>
-  <div class="lightbox-track" data-lightbox-track>
+  <!-- Focusable, so keyboard users can scroll the photos (the arrow keys also work anywhere in the viewer) -->
+  <div class="lightbox-track focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white" tabindex="0" role="group" aria-label="Photos" data-lightbox-track>
     {photos.map((photo, index) => (
       <figure class="lightbox-slide">
         <img data-src={photo.src} data-index={index} alt={photo.alt} width={photo.width} height={photo.height} decoding="async" draggable="false" />
@@ -27,11 +28,17 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
     ))}
   </div>
 
-  <button type="button" class:list={[round, 'absolute right-4 top-4']} aria-label="Close image viewer" data-lightbox-close>
+  <!-- Dark background, so the close button stays visible over a photo -->
+  <button
+    type="button"
+    class="absolute right-4 top-4 z-10 grid size-11 place-items-center rounded-full bg-black/60 text-white shadow-lg backdrop-blur-sm transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+    aria-label="Close image viewer"
+    data-lightbox-close
+  >
     <Icon name="x" size="md" />
   </button>
 
-  <!-- The pill sits at the bottom. From md it may overlap the photo, so the photo can be larger. -->
+  <!-- The pill sits at the bottom. It may overlap the photo, so the photo can be larger. -->
   {photos.length > 1 && (
     <div class="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 rounded-full bg-black/60 p-1.5 text-white shadow-lg backdrop-blur-sm">
       <button type="button" class={round} aria-label="Previous image" data-lightbox-prev>
@@ -82,16 +89,17 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
     display: grid;
     place-items: center;
     margin: 0;
-    padding: 4.5rem 1rem 6rem;
+    padding: 0;
     scroll-snap-align: start;
     min-width: 0;
   }
 
   /* Every photo fills the same box, whatever its resolution (a small photo is
-     enlarged). On a phone the box is clear of the close button and the controls. */
+     enlarged). On a phone the photo uses the full window width; a tall photo may
+     go under the close button and the pill, which have a dark background. */
   .lightbox-slide img {
-    width: calc(100vw - 2rem);
-    height: calc(100dvh - 10.5rem);
+    width: 100vw;
+    height: 100dvh;
     object-fit: contain;
     user-select: none;
   }
