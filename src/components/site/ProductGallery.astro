@@ -2,8 +2,9 @@
 /**
  * ProductGallery (velocity-allow-hardcoded: this site has one language, English)
  * Product photos from Sanity. On a phone: a swipe row (CSS scroll snap).
- * From lg: one large photo, then a 2-column grid. Each photo opens the
- * lightbox (PhotoLightbox). No React and no extra script.
+ * The phone row loops continuously (loop.ts). From lg: one large photo, then a
+ * 2-column grid (the loop copies are hidden there). Each photo opens the
+ * lightbox (PhotoLightbox). No React.
  */
 import PhotoLightbox from '@/components/site/PhotoLightbox.astro';
 import { imageSize, imageUrl, srcset, type Product } from '@/components/site/shop';
@@ -33,6 +34,7 @@ const photos = images.map((image, index) => {
   <ul
     class="-mx-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-2 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
     aria-label={`${title} photos`}
+    data-product-row
   >
     {photos.map((photo, index) => (
       <li class:list={['w-[85%] shrink-0 snap-center sm:w-[60%] lg:w-auto', index === 0 && 'lg:col-span-2']}>
@@ -60,3 +62,14 @@ const photos = images.map((image, index) => {
   </ul>
   <PhotoLightbox label={`${title} photos`} photos={photos.map((photo) => photo.full)} />
 </div>
+
+<script>
+  import { loop } from '@/components/site/loop';
+
+  // The phone row loops continuously; from lg the row is a grid and the copies are hidden
+  document.querySelectorAll<HTMLElement>('[data-product-row]').forEach((list) => {
+    const row = loop(list, { align: 'center', copyClass: 'lg:hidden' });
+    // After the lightbox closes, show the last photo it showed
+    list.closest('[data-photo-gallery]')?.addEventListener('lightbox-close', (event) => row.jump((event as CustomEvent<number>).detail));
+  });
+</script>

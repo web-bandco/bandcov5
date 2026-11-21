@@ -4,9 +4,9 @@
  * A row of photos, one at a time. Each photo opens the lightbox (PhotoLightbox)
  * at full size. No React: CSS scroll snap and one small script.
  *
- * Same markup and look as the Velocity Carousel, but the previous / next buttons
- * loop: after the last photo comes the first. (The Velocity Carousel stops at the
- * ends, and Velocity owns its file.) A swipe stops at the ends.
+ * Same markup and look as the Velocity Carousel, but the row loops continuously
+ * (loop.ts), with the buttons and with a swipe: after the last photo comes the
+ * first. (The Velocity Carousel stops at the ends, and Velocity owns its file.)
  *
  *   <PhotoCarousel label="Meet the cats" photos={[{ img, alt }]} sizes="..." />
  */
@@ -76,19 +76,16 @@ const button =
 </div>
 
 <script>
-  // Previous / next move one photo; after the last photo comes the first. A wrap jumps directly.
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  import { loop } from '@/components/site/loop';
+
+  // Previous / next and swipe loop continuously (loop.ts)
   document.querySelectorAll<HTMLElement>('[data-photo-carousel]').forEach((carousel) => {
     const track = carousel.querySelector<HTMLElement>('[data-carousel-track]');
     if (!track) return;
-    const slides = [...track.children] as HTMLElement[];
-    const left = (slide: HTMLElement) => slide.offsetLeft - slides[0].offsetLeft;
-    const go = (step: number) => {
-      const current = slides.findIndex((slide) => left(slide) >= track.scrollLeft - 2);
-      const next = (current + step + slides.length) % slides.length;
-      track.scrollTo({ left: left(slides[next]), behavior: next === current + step && !reduceMotion ? 'smooth' : 'instant' });
-    };
-    carousel.querySelector('[data-carousel-prev]')?.addEventListener('click', () => go(-1));
-    carousel.querySelector('[data-carousel-next]')?.addEventListener('click', () => go(1));
+    const row = loop(track);
+    carousel.querySelector('[data-carousel-prev]')?.addEventListener('click', () => row.go(-1));
+    carousel.querySelector('[data-carousel-next]')?.addEventListener('click', () => row.go(1));
+    // After the lightbox closes, show the last photo it showed
+    carousel.closest('[data-photo-gallery]')?.addEventListener('lightbox-close', (event) => row.jump((event as CustomEvent<number>).detail));
   });
 </script>
