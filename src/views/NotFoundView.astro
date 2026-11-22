@@ -121,6 +121,11 @@ const quickLinks = [
 </style>
 
 <script>
+  import { track } from '@/components/site/track';
+
+  // Record the broken address, so it can get a redirect (GA4, only with consent)
+  track('page_not_found', { broken_url: location.pathname, referrer: document.referrer || '(direct)' });
+
   // One random memoji per visit.
   const box = document.getElementById('memoji');
   const memojis: string[] = JSON.parse(box?.dataset.memojis ?? '[]');

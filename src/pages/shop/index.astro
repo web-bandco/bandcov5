@@ -120,7 +120,9 @@ const sortOptions = [
 </style>
 
 <script>
-  const shop = document.querySelector<HTMLElement>('[data-shop]');
+  import { track } from '@/components/site/track';
+
+  const shop =document.querySelector<HTMLElement>('[data-shop]');
   const grid = shop?.querySelector<HTMLElement>('[data-shop-grid]');
   if (shop && grid) {
     const cards = [...grid.querySelectorAll<HTMLElement>('[data-product]')];
@@ -166,11 +168,17 @@ const sortOptions = [
       if (status) status.textContent = `${shown} ${shown === 1 ? 'item' : 'items'} shown`;
     };
 
-    for (const box of boxes) box.addEventListener('change', update);
+    for (const box of boxes) {
+      box.addEventListener('change', () => {
+        update();
+        track('use_filter', { filter_type: box.name, filter_value: box.value, filter_action: box.checked ? 'add' : 'remove' });
+      });
+    }
     sort?.addEventListener('change', update);
     clear?.addEventListener('click', () => {
       for (const box of boxes) box.checked = false;
       update();
+      track('use_filter', { filter_action: 'clear_all' });
     });
   }
 </script>

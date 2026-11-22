@@ -54,6 +54,8 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
 </PageLayout>
 
 <script>
+  import { track } from '@/components/site/track';
+
   type PagefindResult = {
     url: string;
     excerpt: string;
@@ -142,6 +144,11 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
       run(input.value);
     });
     input.addEventListener('input', () => run(input.value));
+    // GA4 'search' event when a visitor opens a result (only with analytics consent)
+    list.addEventListener('click', (e) => {
+      const term = input.value.trim();
+      if (term && (e.target as Element).closest('a[href]')) track('search', { search_term: term });
+    });
 
     const initial = new URL(location.href).searchParams.get('q');
     if (initial) {

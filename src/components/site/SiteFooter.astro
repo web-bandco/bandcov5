@@ -115,4 +115,20 @@ const link = 'text-sm text-foreground-muted transition-colors hover:text-foregro
       (window as unknown as { openConsentSettings?: () => void }).openConsentSettings?.();
     }
   });
+
+  // Velocity's ConsentBanner gives its switches a label with no text (WCAG 4.1.2).
+  // Name each switch from its visible category name and description.
+  document.querySelectorAll<HTMLElement>('.consent-category').forEach((category) => {
+    const key = category.dataset.category;
+    const toggle = category.querySelector('[role="switch"]');
+    const name = category.querySelector('.consent-category-label');
+    const description = category.querySelector('.consent-category-description');
+    if (!key || !toggle || !name) return;
+    name.id = `consent-${key}-name`;
+    toggle.setAttribute('aria-labelledby', name.id);
+    if (description) {
+      description.id = `consent-${key}-description`;
+      toggle.setAttribute('aria-describedby', description.id);
+    }
+  });
 </script>

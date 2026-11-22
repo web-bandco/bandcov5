@@ -50,7 +50,9 @@ if (Astro.csp) {
 </form>
 
 <script>
-  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  import { track } from '@/components/site/track';
+
+  const form =document.querySelector<HTMLFormElement>('[data-contact-form]');
   const button = form?.querySelector<HTMLButtonElement>('[data-submit]');
   const label = button?.querySelector<HTMLElement>('[data-label]');
   const status = form?.querySelector<HTMLElement>('[data-form-status]');
@@ -99,6 +101,7 @@ if (Astro.csp) {
           form.reset();
           (window as unknown as { hcaptcha?: { reset: () => void } }).hcaptcha?.reset();
           show('success', 'Message sent', 'We will get back to you soon.');
+          track('generate_lead', { form_name: 'contact_form' });
         } else {
           show('error', 'Failed to send', result.message || 'Something went wrong.');
         }

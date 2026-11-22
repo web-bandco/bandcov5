@@ -50,7 +50,9 @@ const url = Astro.url.pathname.replace(/(.)\/$/, '$1');
 </style>
 
 <script>
-  const modal = document.querySelector<HTMLElement & { open(): void; isOpen: boolean }>('[data-site-search]');
+  import { track } from '@/components/site/track';
+
+  const modal =document.querySelector<HTMLElement & { open(): void; isOpen: boolean }>('[data-site-search]');
   const pageInput = document.querySelector<HTMLInputElement>('#search-query'); // only on the Search page
   let opener: HTMLElement | null = null;
   let loading: Promise<void> | null = null;
@@ -92,6 +94,12 @@ const url = Astro.url.pathname.replace(/(.)\/$/, '$1');
       if (fallback) location.href = '/search';
     }
   };
+
+  // GA4 'search' event when a visitor opens a result (only with analytics consent)
+  modal?.addEventListener('click', (event) => {
+    const term = modal.querySelector('input')?.value.trim();
+    if (term && (event.target as Element).closest('a[href]')) track('search', { search_term: term });
+  });
 
   document.querySelectorAll<HTMLElement>('[data-search-open]').forEach((link) => {
     link.addEventListener('click', (event) => {

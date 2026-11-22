@@ -106,13 +106,16 @@
 - [x] Shop and product pages (Sanity read with plain fetch, no packages; filters and sort with Velocity Sheet, Checkbox and Select and one short script; CSS-only product gallery; shop red darkened for AA; no React)
 - [x] Home (rotating hero on CSS scroll snap with pause, previous and next; 3 quick-link cards; What is B&Co; 3 newest Site Updates; SiteCta; no React; 6 photos 19.5 MB to 4.2 MB)
 - [x] Search page on (Velocity Pagefind page; Search in the footer Quick Links; the header search icon and Ctrl/⌘ + K open Pagefind's own search pop-up (Component UI, src/components/site/SiteSearch.astro: no package, loads on first use, site colours, full screen on a phone; Velocity has no search pop-up and its Dialog moves focus to the close button); result links without the end slash; controls and the CTA marked data-pagefind-ignore; English text in en.ts; 23 pages indexed, not Home, Blog list, Search or 404)
-- [ ] Preview checked on PC and phone: https://upgrade-velocity-2-6-bandcov5.hbemails.workers.dev
+- [x] Preview checked on PC and phone: https://upgrade-velocity-2-6-bandcov5.hbemails.workers.dev (22 November 2026, commit `4b77c95`)
 
 ### Phase 5: Analytics, consent and security
-- [ ] GA4 strict consent, 2 categories, page-view check
-- [ ] CSP allows Google, Web3Forms and hCaptcha only where used
+- [x] GA4 strict consent, 2 categories, page-view check (consent.config.ts: version 2, Necessary and Analytics only, UK text; tested: no Google request before a choice or after "Decline", 1 page view per page after "Accept"; the footer "Cookie Preferences" link reopens the settings; the consent switches get their names in SiteFooter.astro, because Velocity's switch label has no text)
+  - Events (src/components/site/track.ts, sent only with analytics consent): `generate_lead` (contact), `page_not_found` (404), `search` (a result opened from the pop-up or the Search page), `use_filter` (shop), `photo_lightbox_open`, `share` and `article_scroll` 25/50/75% (blog posts). Dropped: `site_navigation`, `ui_interaction`, `cta_click`, `click_vinted`, `click_ebay` (GA4 enhanced measurement records outbound clicks).
+  - Preview builds keep the live GA4 ID (Harry's choice). Filter by host name in GA4.
+- [x] CSP allows Google, Web3Forms and hCaptcha only where used (no change: Velocity adds the Google hosts on every page because GA4 is set; Web3Forms and hCaptcha only on Contact; no CSP errors after "Accept")
   - Note: every page allows `'wasm-unsafe-eval'` in script-src (WebAssembly only, for the Pagefind search pop-up in SiteSearch.astro). Keep it.
-- [ ] `_redirects` and `_headers`
+- [x] `_redirects` and `_headers` (old redirects copied; old security headers plus `Content-Security-Policy: frame-ancestors 'none'`, because a meta CSP cannot block framing; year-long cache for `/_astro/*` only, because no page loads `/fonts/` (the font there is for the share images at build time))
+- [ ] GA4 settings (Harry): enhanced measurement on, but "Site search" and "Page changes based on browser history events" off; Google signals and ads personalisation off; data retention 2 months; custom dimensions for the event parameters you want in reports
 - [ ] Preview checked on PC and phone: https://upgrade-velocity-2-6-bandcov5.hbemails.workers.dev
 
 ### Phase 6: Test and go live

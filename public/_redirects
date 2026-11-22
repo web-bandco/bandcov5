@@ -1,0 +1,4 @@
+# Cloudflare redirects (https://developers.cloudflare.com/workers/static-assets/redirects/)
+# Old URLs that must keep working. Phase 6 compares the old and new sitemaps.
+/terms-and-conditions   /about/terms   301
+/terms-and-conditions/  /about/terms   301

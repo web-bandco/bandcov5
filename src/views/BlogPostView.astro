@@ -47,3 +47,38 @@ const alternates =
 >
   <Content />
 </BlogLayout>
+
+<script>
+  // GA4 events for a post (sent only with analytics consent, see track.ts)
+  import { track } from '@/components/site/track';
+
+  const title = document.querySelector('h1')?.textContent?.trim() ?? document.title;
+
+  // share: the X, LinkedIn and Copy link buttons (Velocity's ShareButtons)
+  document.addEventListener('click', (event) => {
+    const target = event.target as Element;
+    const method = target.closest('a[href^="https://twitter.com/intent/"]')
+      ? 'x'
+      : target.closest('a[href^="https://www.linkedin.com/sharing/"]')
+        ? 'linkedin'
+        : target.closest('.copy-link-btn')
+          ? 'copy_link'
+          : null;
+    if (method) track('share', { method, content_type: 'article', item_id: title });
+  });
+
+  // article_scroll: 25, 50 and 75% of the post text read (GA4 records 90% of the page itself)
+  const body = document.querySelector<HTMLElement>('[data-pagefind-body]');
+  if (body) {
+    const depths = [25, 50, 75];
+    const check = () => {
+      const box = body.getBoundingClientRect();
+      const read = ((window.innerHeight - box.top) / box.height) * 100;
+      while (depths.length && read >= depths[0]) {
+        track('article_scroll', { scroll_depth: `${depths.shift()}%`, article_title: title });
+      }
+      if (!depths.length) window.removeEventListener('scroll', check);
+    };
+    window.addEventListener('scroll', check, { passive: true });
+  }
+</script>

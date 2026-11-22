@@ -131,6 +131,7 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
 
 <script>
   import { loop } from '@/components/site/loop';
+  import { track as trackEvent } from '@/components/site/track'; // 'track' here is the photo row
 
   document.querySelectorAll<HTMLElement>('[data-photo-gallery]').forEach((gallery) => {
     const dialog = gallery.querySelector<HTMLDialogElement>('[data-lightbox]');
@@ -162,6 +163,7 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
         dialog.showModal();
         row.jump(i);
         show(i);
+        trackEvent('photo_lightbox_open', { gallery_name: dialog.getAttribute('aria-label') ?? '', photo: i + 1 });
       });
     });
 

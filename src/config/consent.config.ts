@@ -2,7 +2,7 @@ import type { ConsentConfig } from '@/lib/consent.types';
 
 const consentConfig: ConsentConfig = {
   /** Bump to force re-consent when categories change */
-  version: 1,
+  version: 2,
 
   /** 'consent_mode_v2' = scripts load with denied defaults, cookieless pings
    *  'strict' = scripts fully blocked until consent granted */
@@ -14,42 +14,31 @@ const consentConfig: ConsentConfig = {
   categories: {
     necessary: {
       label: 'Necessary',
-      description: 'Essential cookies required for the website to function. These cannot be disabled.',
+      description:
+        'Remembers your cookie choices and your light or dark mode setting. These are saved only in your browser and cannot be turned off.',
       required: true,
       defaultEnabled: true,
       gcmTypes: ['security_storage'],
     },
     analytics: {
       label: 'Analytics',
-      description: 'Help us understand how visitors interact with the website by collecting anonymous usage data.',
+      description: 'Google Analytics counts visits and shows how pages are used. It loads only if you accept.',
       required: false,
       defaultEnabled: false,
+      // No advert category: the site has no adverts, and GA4 has Google signals and ads personalisation off
       gcmTypes: ['analytics_storage'],
-    },
-    marketing: {
-      label: 'Marketing',
-      description: 'Used to deliver relevant ads and track ad campaign performance across websites.',
-      required: false,
-      defaultEnabled: false,
-      gcmTypes: ['ad_storage', 'ad_user_data', 'ad_personalization'],
-    },
-    preferences: {
-      label: 'Preferences',
-      description: 'Allow the website to remember choices you make, such as language or region.',
-      required: false,
-      defaultEnabled: false,
-      gcmTypes: ['functionality_storage', 'personalization_storage'],
     },
   },
 
   ui: {
-    heading: 'Cookie Preferences',
-    description: 'We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic.',
-    acceptAll: 'Accept All',
-    declineAll: 'Decline All',
-    customize: 'Customize',
-    savePreferences: 'Save Preferences',
-    settingsHeading: 'Privacy Settings',
+    heading: 'Cookie preferences',
+    description:
+      'With your permission, we use Google Analytics cookies to understand how visitors use this site. We do not show adverts.',
+    acceptAll: 'Accept all',
+    declineAll: 'Decline all',
+    customize: 'Customise',
+    savePreferences: 'Save preferences',
+    settingsHeading: 'Cookie settings',
     alwaysOnLabel: 'Always on',
     privacyPolicyLabel: 'Privacy Policy',
   },
