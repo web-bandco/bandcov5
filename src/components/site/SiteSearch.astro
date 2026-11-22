@@ -1,0 +1,111 @@
+---
+/**
+ * SiteSearch (trial)
+ * The search pop-up with live results, opened by the header search icon or
+ * Ctrl + K (⌘ + K on a Mac). It is Pagefind's own Component UI (<pagefind-modal>),
+ * which `npm run build` writes to /pagefind/ with the search index. So there is
+ * no extra package and no custom pop-up code here.
+ *
+ * - The pop-up files (about 47 KB) load only when a visitor first opens search.
+ * - Its colours use the site tokens, so dark mode follows the theme toggle.
+ * - If the files cannot load (for example on the dev server), the icon opens
+ *   the Search page instead.
+ * - Each page gives Pagefind its URL without the end slash (data-pagefind-meta),
+ *   because the site uses trailingSlash: 'never'.
+ */
+
+// Pagefind runs its search engine as WebAssembly, and the pop-up is on every page
+Astro.csp?.insertScriptResource("'wasm-unsafe-eval'");
+
+const url = Astro.url.pathname.replace(/(.)\/$/, '$1');
+---
+
+<span hidden data-pagefind-meta={`url:${url}`}></span>
+<pagefind-modal reset-on-close data-site-search></pagefind-modal>
+
+<style is:global>
+  /* Pagefind sets its colours on :root. Setting them on the pop-up itself wins,
+     and the site tokens change with the .dark class. */
+  pagefind-modal {
+    --pf-text: var(--foreground);
+    --pf-text-secondary: var(--foreground-secondary);
+    --pf-text-muted: var(--foreground-muted);
+    --pf-background: var(--background-elevated);
+    --pf-border: var(--border-strong);
+    --pf-border-focus: var(--ring);
+    --pf-skeleton: var(--background-tertiary);
+    --pf-skeleton-shine: var(--background-secondary);
+    --pf-hover: var(--background-secondary);
+    --pf-mark: var(--foreground);
+    --pf-outline-focus: var(--ring);
+    --pf-font: var(--font-manrope), sans-serif;
+    --pf-input-height: 44px;
+    --pf-summary-font-size: 14px;
+    --pf-result-title-font-size: 16px;
+    --pf-result-excerpt-font-size: 14px;
+    --pf-border-radius: 12px;
+    --pf-modal-max-width: 42rem;
+    --pf-modal-backdrop: rgb(0 0 0 / 0.6);
+  }
+</style>
+
+<script>
+  const modal = document.querySelector<HTMLElement & { open(): void; isOpen: boolean }>('[data-site-search]');
+  const pageInput = document.querySelector<HTMLInputElement>('#search-query'); // only on the Search page
+  let opener: HTMLElement | null = null;
+  let loading: Promise<void> | null = null;
+  const script = '/pagefind/pagefind-component-ui.js'; // written by the build, so a variable (not checked by TypeScript)
+
+  // Load the pop-up's CSS and script the first time (from the same site, so the CSP allows them).
+  // Stop after 8 seconds, so a broken build cannot leave the icon doing nothing.
+  const load = () =>
+    (loading ??= Promise.race([
+      new Promise<void>((resolve, reject) => {
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = '/pagefind/pagefind-component-ui.css';
+        css.onload = () => resolve();
+        css.onerror = reject;
+        document.head.append(css);
+      })
+        .then(() => import(/* @vite-ignore */ script))
+        .then(() => customElements.whenDefined('pagefind-modal'))
+        .then(() => {
+          // Focus goes back to the icon (or key press origin) when the pop-up closes
+          modal?.querySelector('dialog')?.addEventListener('close', () => opener?.focus());
+        }),
+      new Promise<void>((_, reject) => setTimeout(reject, 8000)),
+    ]).catch((error: unknown) => {
+      loading = null; // try again next time
+      throw error;
+    }));
+
+  // From the icon, a failed load opens the Search page. From Ctrl + K it does nothing,
+  // so a visitor never loses text typed in a form.
+  const openSearch = async (from: HTMLElement | null, fallback: boolean) => {
+    if (pageInput) return pageInput.focus(); // the Search page has its own field
+    opener = from;
+    try {
+      await load();
+      modal?.open();
+    } catch {
+      if (fallback) location.href = '/search';
+    }
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-search-open]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; // new tab or window
+      event.preventDefault();
+      openSearch(link, true);
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'k') {
+      if (modal?.isOpen) return;
+      event.preventDefault();
+      openSearch(document.activeElement instanceof HTMLElement ? document.activeElement : null, false);
+    }
+  });
+</script>

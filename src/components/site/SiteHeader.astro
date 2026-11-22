@@ -14,6 +14,7 @@ import ThemeToggle from '@/components/layout/ThemeToggle.astro';
 import Button from '@/components/ui/form/Button/Button.astro';
 import Icon from '@/components/ui/primitives/Icon/Icon.astro';
 import LinktreeIcon from '@/components/site/LinktreeIcon.astro';
+import SiteSearch from '@/components/site/SiteSearch.astro';
 import siteConfig from '@/config/site.config';
 import logomark from '@/assets/branding/logomark.png';
 import logomarkDark from '@/assets/branding/logomark-dark.png';
@@ -29,9 +30,10 @@ type Props = ComponentProps<typeof Header>;
   </a>
 
   <Fragment slot="actions">
-    <Button variant="ghost" size="sm" icon href="/search" aria-label="Search the site">
+    <Button variant="ghost" size="sm" icon href="/search" aria-label="Search the site" aria-keyshortcuts="Control+K Meta+K" data-search-open>
       <Icon name="search" size="md" />
     </Button>
+    <SiteSearch />
     <ThemeToggle />
     <Button
       variant="ghost"
