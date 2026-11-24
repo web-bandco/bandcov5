@@ -3,9 +3,15 @@
  * lightboxes, the product photo row on a phone).
  *
  * It adds a hidden copy of the last slide before the first, and of the first
- * slide after the last. The row always moves in the direction asked; when it
- * stops on a copy, it jumps (no animation) to the real slide the copy shows.
+ * slide after the last. The row always moves in the direction asked. To leave a
+ * copy, the row moves by the width of all the real slides at once: the copy and
+ * the real slide look the same, so the move cannot be seen, even mid-animation.
  * Copies are not headings and cannot be reached by screen readers or Tab.
+ *
+ * - Arrow buttons and keys: snap is off while the row animates, so a press during
+ *   an animation continues from where the row is (no jump to a slide).
+ * - Swipe and trackpad: the row leaves a copy only when it has stopped and no
+ *   finger is on it, so the browser's own scrolling is never interrupted.
  *
  *   const row = loop(track, { onChange: (index) => ... });
  *   row.go(1); row.jump(3); row.index();
@@ -52,9 +58,10 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
   const all = [...track.children] as HTMLElement[];
 
   // Positions in the row: 0 = copy of the last slide, 1..count = real slides, count + 1 = copy of the first.
-  // `target` is where the last button press goes, so quick presses add up.
-  let position = 1;
-  let target = 1;
+  let position = 1; // the slide nearest to the view
+  let target = 1; // where the arrows are taking the row (quick presses add up)
+  let animating = false; // an arrow animation is running (snap is off)
+  let touching = false; // a finger is on the row
   const real = (p: number) => (p - 1 + count) % count;
   const smooth: ScrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
 
@@ -64,7 +71,9 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
     const offset = track.scrollLeft + slide.left - row.left;
     return align === 'center' ? offset - (track.clientWidth - slide.width) / 2 : offset;
   };
-  const scrollTo = (p: number, behavior: ScrollBehavior) => track.scrollTo({ left: left(p), behavior });
+  const instant = (x: number) => track.scrollTo({ left: x, behavior: 'instant' });
+  const width = () => left(2) - left(1); // one slide and its gap
+  const at = () => 1 + (track.scrollLeft - left(1)) / (width() || 1); // position with a fraction, e.g. 3.6
   const nearest = () => {
     const row = track.getBoundingClientRect();
     const distance = (p: number) => Math.abs(left(p, row) - track.scrollLeft);
@@ -72,47 +81,136 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
     for (let p = 1; p < all.length; p++) if (distance(p) < distance(best)) best = p;
     return best;
   };
+  const snap = (on: boolean) => {
+    track.style.scrollSnapType = on ? '' : 'none';
+  };
+  // Move by all the real slides (1 = forward). A copy and its real slide look the same.
+  const wrap = (direction: 1 | -1) => instant(track.scrollLeft + direction * count * width());
 
-  const leaveCopy = () => {
-    const p = position === 0 ? count : position === count + 1 ? 1 : position;
-    if (p !== position) {
-      position = p;
-      scrollTo(p, 'instant');
+  // Arrow animation: scroll towards the target. A target past a copy waits at the copy.
+  const aim = () => track.scrollTo({ left: left(Math.max(0, Math.min(count + 1, target))), behavior: smooth });
+  // When the row reaches the last (or first) real slide on its way past it, move by all
+  // the slides, so that the next slides are ahead (cannot be seen). True if it moved.
+  const rebase = () => {
+    const now = at();
+    if (target > count && now >= count) {
+      wrap(-1);
+      target -= count;
+      return true;
     }
-    return p;
+    if (target < 1 && now <= 1) {
+      wrap(1);
+      target += count;
+      return true;
+    }
+    return false;
   };
 
-  let settle = 0;
-  track.addEventListener('scroll', () => {
-    if (!track.clientWidth) return; // hidden (a closed lightbox)
-    const p = nearest();
-    const changed = real(p) !== real(position);
-    position = p;
-    if (changed) onChange?.(real(p));
-    clearTimeout(settle);
-    settle = window.setTimeout(() => { target = leaveCopy(); }, 120);
-  }, { passive: true });
+  // When the row has stopped: leave a copy, and turn snap back on
+  const settle = () => {
+    if (touching || !track.clientWidth) return;
+    if (animating && rebase()) aim(); // more presses are waiting (if none, the row is already there)
+    const p = at();
+    const goal = left(Math.max(0, Math.min(count + 1, target)));
+    if (animating && Math.abs(track.scrollLeft - goal) > 2) {
+      // Still on the way: Chrome also sends scrollend when an animation is replaced. If the
+      // row has really stopped short (the animation was cancelled), accept where it is.
+      const x = track.scrollLeft;
+      window.setTimeout(() => {
+        if (animating && track.scrollLeft === x) {
+          animating = false;
+          settle();
+        }
+      }, 100);
+      return;
+    }
+    animating = false;
+    let n = Math.round(p);
+    if (n <= 0) {
+      wrap(1);
+      n += count;
+    } else if (n >= count + 1) {
+      wrap(-1);
+      n -= count;
+    }
+    target = n; // the scroll event sets `position` (and calls onChange if the slide changed)
+    snap(true);
+  };
+
+  // 'scrollend' waits for the finger to lift and the snap to finish. Older browsers use a short wait.
+  const hasScrollEnd = 'onscrollend' in window;
+  let timer = 0;
+  const later = () => {
+    clearTimeout(timer);
+    timer = window.setTimeout(settle, 150);
+  };
+  if (hasScrollEnd) track.addEventListener('scrollend', settle);
+
+  track.addEventListener(
+    'scroll',
+    () => {
+      if (!track.clientWidth) return; // hidden (a closed lightbox)
+      const p = nearest();
+      const changed = real(p) !== real(position);
+      position = p;
+      if (changed) onChange?.(real(p));
+      if (animating && (target > count + 1 || target < 0) && rebase()) aim(); // quick presses past a copy
+      if (!hasScrollEnd) later();
+    },
+    { passive: true },
+  );
+
+  // A finger, trackpad or mouse wheel on the row takes over from an arrow animation
+  const stopArrows = () => {
+    if (!animating) return;
+    animating = false;
+    snap(true);
+  };
+  track.addEventListener(
+    'touchstart',
+    () => {
+      touching = true;
+      stopArrows();
+    },
+    { passive: true },
+  );
+  track.addEventListener('wheel', stopArrows, { passive: true });  const lift = () => {
+    touching = false;
+    if (!hasScrollEnd) later();
+  };
+  track.addEventListener('touchend', lift, { passive: true });
+  track.addEventListener('touchcancel', lift, { passive: true });
 
   // Keep the slide in place when the width changes (not when a phone's address bar moves)
-  let width = track.clientWidth;
+  let rowWidth = track.clientWidth;
   window.addEventListener('resize', () => {
-    if (track.clientWidth === width) return;
-    width = track.clientWidth;
-    if (width) scrollTo(position, 'instant');
+    if (track.clientWidth === rowWidth) return;
+    rowWidth = track.clientWidth;
+    stopArrows();
+    if (rowWidth) instant(left(position));
   });
 
-  scrollTo(1, 'instant');
+  instant(left(1));
 
   return {
     go(step) {
-      clearTimeout(settle); // a wait from the last movement must not reset the new target
-      if (target === position) target = leaveCopy();
-      target = Math.max(0, Math.min(count + 1, target + step));
-      scrollTo(target, smooth);
+      clearTimeout(timer);
+      const now = at();
+      if (!animating) target = Math.round(now);
+      animating = true;
+      snap(false);
+      // Every press counts (at most two full turns ahead of the row)
+      target = Math.max(Math.floor(now) - 2 * count, Math.min(Math.ceil(now) + 2 * count, target + step));
+      rebase();
+      aim();
+      if (smooth === 'instant') settle();
     },
     jump(index) {
+      clearTimeout(timer);
+      animating = false;
+      snap(true);
       position = target = index + 1;
-      scrollTo(position, 'instant');
+      instant(left(position));
     },
     index: () => real(position),
   };
