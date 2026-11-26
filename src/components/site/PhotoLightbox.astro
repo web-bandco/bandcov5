@@ -18,8 +18,10 @@ const { label, photos } = Astro.props;
 const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white';
 ---
 
-<dialog class="lightbox" aria-label={label} data-lightbox>
-  <!-- Focusable, so keyboard users can scroll the photos (the arrow keys also work anywhere in the viewer) -->
+<!-- tabindex -1: the script gives the viewer itself focus when it opens, not the photo row.
+     Otherwise some phones show the row's focus ring as a white border round the screen. -->
+<dialog class="lightbox" aria-label={label} tabindex="-1" data-lightbox>
+  <!-- Focusable (Tab), so keyboard users can scroll the photos (the arrow keys also work anywhere in the viewer) -->
   <div class="lightbox-track focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white" tabindex="0" role="group" aria-label="Photos" data-lightbox-track>
     {photos.map((photo, index) => (
       <figure class="lightbox-slide">
@@ -63,6 +65,7 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
     border: 0;
     background: rgb(0 0 0 / 0.96);
     overflow: hidden;
+    outline: none; /* the viewer has focus when it opens; the controls have their own focus rings */
   }
 
   .lightbox::backdrop {
@@ -161,6 +164,7 @@ const round = 'grid size-11 place-items-center rounded-full bg-white/10 text-whi
       button.addEventListener('click', () => {
         const i = Number(button.dataset.lightboxOpen);
         dialog.showModal();
+        dialog.focus(); // not the photo row (see the note on the dialog)
         row.jump(i);
         show(i);
         trackEvent('photo_lightbox_open', { gallery_name: dialog.getAttribute('aria-label') ?? '', photo: i + 1 });

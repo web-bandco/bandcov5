@@ -174,7 +174,9 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
     },
     { passive: true },
   );
-  track.addEventListener('wheel', stopArrows, { passive: true });  const lift = () => {
+  track.addEventListener('wheel', stopArrows, { passive: true });
+
+  const lift = () => {
     touching = false;
     if (!hasScrollEnd) later();
   };
