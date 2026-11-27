@@ -62,6 +62,7 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
   let target = 1; // where the arrows are taking the row (quick presses add up)
   let animating = false; // an arrow animation is running (snap is off)
   let touching = false; // a finger is on the row
+  let stall = 0; // timer: an arrow animation that stopped part way
   const real = (p: number) => (p - 1 + count) % count;
   const smooth: ScrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
 
@@ -116,7 +117,8 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
       // Still on the way: Chrome also sends scrollend when an animation is replaced. If the
       // row has really stopped short (the animation was cancelled), accept where it is.
       const x = track.scrollLeft;
-      window.setTimeout(() => {
+      clearTimeout(stall);
+      stall = window.setTimeout(() => {
         if (animating && track.scrollLeft === x) {
           animating = false;
           settle();
@@ -137,14 +139,22 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
     snap(true);
   };
 
-  // 'scrollend' waits for the finger to lift and the snap to finish. Older browsers use a short wait.
-  const hasScrollEnd = 'onscrollend' in window;
+  // 'scrollend' waits for the finger to lift and the snap to finish. A short wait after the
+  // last movement or finger lift is also needed: when a finger is still down as the row stops
+  // on an end copy (fast swipes), 'scrollend' has already fired, and at the end of the row no
+  // more scrolling (so no new 'scrollend') can happen. Browsers without 'scrollend' use only the wait.
+  // The wait acts only on a row that rests on a slide: between two slides, the browser's snap
+  // has still to move it (its scroll events start the wait again).
   let timer = 0;
+  const rest = () => {
+    const p = at();
+    if (animating || Math.abs(p - Math.round(p)) < 0.02) settle();
+  };
   const later = () => {
     clearTimeout(timer);
-    timer = window.setTimeout(settle, 150);
+    timer = window.setTimeout(rest, 150);
   };
-  if (hasScrollEnd) track.addEventListener('scrollend', settle);
+  track.addEventListener('scrollend', settle);
 
   track.addEventListener(
     'scroll',
@@ -155,7 +165,7 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
       position = p;
       if (changed) onChange?.(real(p));
       if (animating && (target > count + 1 || target < 0) && rebase()) aim(); // quick presses past a copy
-      if (!hasScrollEnd) later();
+      later();
     },
     { passive: true },
   );
@@ -178,7 +188,7 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
 
   const lift = () => {
     touching = false;
-    if (!hasScrollEnd) later();
+    later();
   };
   track.addEventListener('touchend', lift, { passive: true });
   track.addEventListener('touchcancel', lift, { passive: true });
@@ -197,6 +207,7 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
   return {
     go(step) {
       clearTimeout(timer);
+      clearTimeout(stall);
       const now = at();
       if (!animating) target = Math.round(now);
       animating = true;
@@ -209,6 +220,7 @@ export function loop(track: HTMLElement, { onChange, align = 'start', copyClass 
     },
     jump(index) {
       clearTimeout(timer);
+      clearTimeout(stall);
       animating = false;
       snap(true);
       position = target = index + 1;
